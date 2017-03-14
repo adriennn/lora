@@ -1,4 +1,5 @@
-var express = require('express'),
+var compression = require('compression'),
+    express = require('express'),
     path = require('path'),
     logger = require('morgan'),
     bodyParser = require('body-parser'),
@@ -14,9 +15,14 @@ var mainroute = require('./routes/index'),
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('trust proxy', true);
+app.set('subdomain offset', 2);
+app.set('json replacer', ' ');
+app.set('json space', 4);
 
 // attach thrid-party middleware to app root
 //app.use(helmet());
+app.use(compression())
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

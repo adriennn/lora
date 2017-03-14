@@ -10,12 +10,31 @@ var methods = {
   uplink: function(a, b, callback) {
     console.log(callback.toString());
     callback(null, 'this uplink router');
+    // do something with the incoming data
   },
-  status: function(args, callback) {
+  outdated: function(a, b, callback) {
+    console.log(callback.toString());
+    callback(null, 'this uplink router');
+    // do something with the incoming data
+  },
+  statuss: function(args, callback) {
     callback(null, 'my status router');
   },
   downlink: function(args, callback) {
-    callback(null, 'downlink router');
+    // check that the device for which the downlink data
+    // request is sent matches the one for which data is saved 
+    // in current application state
+    // if (a.b /* nothing to be sent back to device*/) {
+      callback(null, {
+        "pending": false,
+        "confirmed": false,
+        "payload": "ohboyohboyohboy"
+      });
+    // }
+    // else if (a.c /* got something stored in app.set() for this device */) {
+      // send a downlink?
+    // }
+    
   },
   post_uplink: function(args, callback) {
     // network server sends (to the app) payloads received from other gateways as

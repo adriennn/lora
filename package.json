@@ -3,15 +3,16 @@
   "version": "0.0.5",
   "private": false,
   "description": "A server and user interface for managing lorawan devices and payloads",
-  "repository":"https://github.com/adriennn/lora",
-  "author":"adriennn",
-  "license":"MIT",
-  "keywords":"lorawan lora radio iot express jayson",
+  "repository": "https://github.com/adriennn/lora",
+  "author": "adriennn",
+  "license": "MIT",
+  "keywords": "lorawan lora radio iot express jayson",
   "scripts": {
     "start": "pm2 -n node-lora -u www-data start bin/www"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
+    "compression": "^1.6.2",
     "debug": "~2.6.0",
     "express": "~4.14.1",
     "helmet": "^3.5.0",
