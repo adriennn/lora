@@ -6,7 +6,7 @@
   "repository": "https://github.com/adriennn/lora",
   "author": "adriennn",
   "license": "MIT",
-  "keywords": "lorawan lora radio iot express jayson",
+  "keywords": "lorawan lora radio iot expressjs jayson",
   "scripts": {
     "start": "pm2 -n node-lora -u www-data start bin/www"
   },
