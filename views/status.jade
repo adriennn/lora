@@ -1,0 +1,17 @@
+extends index
+
+block tabcontent
+  p.h5 Read status of remote device.
+  form(action='/lora/form?status',method='post',name="status")
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Device unique ID
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='DevEUI',name='deveui')
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Device network address
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='DevAddr',name='devaddr')
+    div.form-group.row
+      div.col-12
+        input.btn.btn-success.float-right(type='submit',value='Send query')
+        

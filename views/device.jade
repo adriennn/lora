@@ -1,0 +1,24 @@
+extends index
+
+block tabcontent
+  p.h5 Register a new device on the network (method: notify).
+  form(action='/lora/form?device',method='post',name="device")
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Method
+      div.col-8
+        select.form-control(id='',type='text',value='',placeholder='RPC method to call',name='method')
+          option(value="status",name='method') Status
+          option(value="notify",name='method') Notify
+          option(value="uplink",name='method') Uplink
+          option(value="downlink",name='method') Downlink
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Device unique ID
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='Dev_EUI',name='dev_eui')
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') API key
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='Api_Key',name='api_key')
+    div.form-group.row
+      div.col-12
+        input.btn.btn-success.float-right(type='submit',value='Send query')      

@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  .container
+  
+    include header
+
+    .jumbotron
+      .card
+        .card-header
+          ul.nav.nav-tabs.card-header-tabs(role='tablist')
+            each menuitem in [{id: 'listen',title:'Listen to stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'device',title:'New device',url:'/lora/form/device'}]
+              if (id == menuitem.id)
+                li.nav-item
+                  a.nav-link.active(role='tab', data-toggle='tab', href=menuitem.url) #{menuitem.title}
+              else
+                li.nav-item
+                  a.nav-link(role='tab', data-toggle='tab', href=menuitem.url) #{menuitem.title}  
+        .card-block
+          block tabcontent
+            p Use this tool to send or fetch data to and from a known device or to register a new device on the network.
+
+
+      include footer

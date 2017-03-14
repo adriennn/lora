@@ -1,0 +1,21 @@
+extends index
+
+block tabcontent
+  p Result of the RPC-JSON request
+  
+  table
+    thead.thead-inverse
+      tr
+        th Key
+        th Value
+    tbody
+      each val, index in response
+        if response.result
+          tr
+            td.bg-success= index
+            td.bg-success= val
+      
+        if response.error
+          tr
+            td.bg-danger= index
+            td.bg-danger=JSON.stringify(val, null, 6)
