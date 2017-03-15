@@ -4,9 +4,12 @@ var compression = require('compression'),
     logger = require('morgan'),
     bodyParser = require('body-parser'),
     jayson = require('jayson'),
-    helmet = require('helmet');
+    helmet = require('helmet'),
+    bodylogger = require('morgan-body');
 
 var app = express();
+
+bodylogger(app);
 
 var mainroute = require('./routes/index'),
     formroute = require('./routes/form'),
@@ -21,11 +24,11 @@ app.set('json replacer', ' ');
 app.set('json space', 4);
 
 // attach thrid-party middleware to app root
-//app.use(helmet());
+app.use(helmet());
 app.use(compression())
-app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// app.use(logger('combined'));
 
 // attach routes
 app.use(express.static(path.join(__dirname, 'public')));

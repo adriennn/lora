@@ -76,7 +76,7 @@ formRouter.get('/listen', function(req, res, next) {
   */
 
 // incoming data from everynet
-/*var json = {
+/*var json = { 0059ac0000150013f
   "params": {
     "dev_eui": "d7549c622c909b6b",
     "dev_addr": "179de157",
@@ -102,7 +102,6 @@ formRouter.get('/send', function(req, res, next) {
 
 // Get the data in the express objects
 var getParams = function(req, res, next) {
-  
   // console.log('in get params');
   // process the form with a loop
   // console.log('form data: ', JSON.stringify(req.body));

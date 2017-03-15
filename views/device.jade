@@ -7,11 +7,12 @@ block tabcontent
       label.col-4.col-form-label.text-muted(for='') Method
       div.col-8
         select.form-control(id='',type='text',value='',placeholder='RPC method to call',name='method')
-          option(value="status",name='method') Status
+          option(value="status_request",name='method') Status request
           option(value="notify",name='method') Notify
           option(value="uplink",name='method') Uplink
           option(value="outdate",name='method') Outdated
           option(value="downlink",name='method') Downlink
+          option(value="join",name='method') Join
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Device unique ID
       div.col-8

@@ -8,7 +8,7 @@
   "license": "MIT",
   "keywords": "lorawan lora radio iot expressjs jayson",
   "scripts": {
-    "start": "pm2 -n node-lora -u www-data start bin/www"
+    "start": "pm2 -n lora-rpc -u www-data start bin/www"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -18,6 +18,7 @@
     "helmet": "^3.5.0",
     "jade": "~1.11.0",
     "jayson": "^2.0.3",
-    "morgan": "~1.7.0"
+    "morgan": "~1.7.0",
+    "morgan-body": "^0.9.5"
   }
 }

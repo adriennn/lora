@@ -1,7 +1,7 @@
 extends index
 
 block tabcontent
-  p.h5 Submit data and instructions to a device.
+  p.h5 Submit data and instructions to a device once a downlink call matching the below paramaters hits the app.
   form(action='/lora/form?send',method='post',name="instructions")
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Device unique ID
@@ -18,7 +18,7 @@ block tabcontent
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Payload
       div.col-8
-        input.form-control(id='',type='text',value='',placeholder='Command or binary payload',name='commbin')
+        input.form-control(id='',type='text',value='',placeholder='Command or binary payload',name='combin')
     div.form-group.row
       div.col-12
         input.btn.btn-success.float-right(type='submit',value='Send query')
