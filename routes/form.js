@@ -112,16 +112,15 @@ var set1m2mCommandString = function(command, payload) {
 };
 
 // incoming data from 1m2m
-typedef struct {
-byte MsgID;       // Message Identification Value = 0x09
+
+/*byte MsgID;       // Message Identification Value = 0x09
 int16 VBat;       // Battery voltage in mV
 int16 AnalogIn1;  // AnalogIn 1 in mV
 int16 AnalogIn2;  // AnalogIn 2 in mV
 int16 AnalogIn3;  // future use
 int16 Analogin4;  // future use
-}TAnalogMsg;
 
-ports 6 + 7 allow serial connection
+TAnalogMsg;*/
 
 // Make the call to JSON-RPC api
 var makeManualApiCall = function(req, res, next) {
