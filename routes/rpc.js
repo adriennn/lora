@@ -1,30 +1,15 @@
 /* Router for RPC interface */
 var express = require('express'),
     path = require('path'),
+    fs = require('fs'),
     RPCrouter = express.Router(),
     jayson = require('jayson');
 
+var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+
 // RPC methods for Everynet and 1m2m devices
 var methods = {
-  setAPPEUI: function() {
-    // if ()
-    var CmdSeq = 0x01,
-        Cmd = 0xFD,
-        APPEUI = 00000000;
-    
-    return (CmdSeq +1) + Cmd + APPEUI;
-    
-  },
-  setABP: function() {
-    
-    var CmdSeq = 0x01,
-        Cmd = 0xFC,
-        DevAddr = 0000,
-        AppSKey = 0000000000000000,
-        NwSKey = 0000000000000000;
-    
-    return (CmdSeq +1) + Cmd + DevAddr + AppSKey + NwSKey;
-  },
+
   uplink: function(args, callback) {
 
    /* Parameters in the request
@@ -82,21 +67,54 @@ var methods = {
      * args.counter_down
      */
     
-    // TODO check if we need to set APPEUI or set ABP
+    // console.log('device data in storage: ', JSON.stringify(currentdevice));
+    console.log('received DEVEUI in downlink request: ', args.dev_eui);
     
-    var result = {
-        "dev_eui": args.dev_eui,
-        "pending": true,
-        "confirmed": true,
-        "payload": Buffer.from(methods.setAPPEUI(), 'base64').toString('utf-8')
-      };
-      done(null, result);
-    }, {
-      collect: true,
-      params: { 
-        pending: false, 
-        confirmed: false
+    var deveui = args.dev_eui;
+    
+    // check that the request matches something already in storage
+    for (var key in currentdevice) {
+      if (currentdevice.hasOwnProperty(key)) {
+        if (key === deveui.toString()) {
+          // if there is non alphnum char, exit
+          if (!deveui.match(/^[0-9a-z]+$/) && !currentdevice[key].payload.match(/^[0-9a-z]+$/)) {
+            done(null, 'error: device not found');
+          }
+
+          // if the answer contains TAliveMsg it's from the 1m2m device it will send back the original command as well
+          if (args.TAliveMsg) {
+            console.log('Alive at: ', args.TAliveMsg);
+            console.log('original command: ', args.CmdAck);
+            
+            // if the downlink contains a confirmed value, remove the payload from the file and save the new file
+            if (args.confirmed === true) {
+              delete currentdevice[deveui];
+              var exportofile = fs.createWriteStream(path.join(__dirname, './../config/device.json'));
+              exportofile.write(JSON.stringify(currentdevice));
+              done(null, 'ok');
+            }
+
+          // else send back a payload
+          } else {
+            var payloadhex = Buffer.from(currentdevice[key].payload).toString('hex');
+            var payload = Buffer.from(payloadhex).toString('base64');
+            console.log('base64 PAYLOAD: ', payload);
+            console.log('matching keys: ', currentdevice[key]);
+            
+            var result = {
+              "pending": false,
+              "confirmed": false,
+              "payload": payload
+            };
+            console.log('sending away payload');
+            done(null, result);
+          }
+        } 
+      } 
+      if (!currentdevice.hasOwnProperty(key)) {
+        done(null, 'error: device not found');
       }
+    }
   }),
   post_uplink: function(args, callback) {
     
@@ -127,21 +145,28 @@ var methods = {
     callback(null, 'ok');
   },
   join: jayson.Method(function(args, done) {
-    var result = args.dev_eui + ' WAZAAA ' + args.api_key;
+    var result = args.dev_eui + 'invalid' + args.api_key;
     done(null, result);
   }, {
     collect: true,
-    params: { dev_eui: "NoDeviceSet", api_key: "NoApiKeySet"} // map of defaults
+    params: { 
+      "dev_eui": "NoDeviceSet", 
+      "api_key": "NoApiKeySet"
+    }
   }),
 };
 
-// Any request coming to garbagepla.net/lora/rpc will be handled by the jayson server
-// and the response will be rendered
-RPCrouter.use('/', jayson.server(methods, {params: Object}).middleware());
-
-RPCrouter.post('/', function(req, res) {
-  // TODO need socket.io to have live feed of incoming packets
-  res.json('listen', {'request': req.body});
+RPCrouter.post('*', function(req, res, next) {
+  console.log(req.body);
+  req.io.sockets.emit("rpcrequest", req.body);
+  next();
 });
+
+// Any request coming to https://garbagepla.net/lora/rpc will be handled by the jayson server
+var jaysonserver = jayson.server(methods, {params: Object});
+// set extra error codes
+
+
+RPCrouter.use('/', jaysonserver.middleware());
 
 module.exports = RPCrouter;

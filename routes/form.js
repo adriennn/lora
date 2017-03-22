@@ -1,9 +1,11 @@
 var express = require('express'),
     formRouter = express.Router(),
     path = require('path'),
-    clientRPC = require(path.join(__dirname,'/../middleware/RPCclient.js'));
+    fs = require('fs'),
+    client = require(path.join(__dirname,'/../middleware/RPCclient.js'));
 
-// ADD NEW DEVICE
+var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+
 /* param	    LoRaWAN name	value_type	necessity	description
 *--------------------------------------------------------------------------------
 * dev_eui	    DevEUI	        string	    required	Device unique ID
@@ -29,7 +31,7 @@ formRouter.get('/device', function(req, res, next) {
 
 formRouter.get('/listen', function(req, res, next) {
   res.render('listen', {
-    title: 'Listen to data from a given device',
+    title: 'Listen to RPC calls',
     id: 'listen'
   });
 });
@@ -75,27 +77,9 @@ formRouter.get('/listen', function(req, res, next) {
   * alt	float	Altitude in meters
   */
 
-// incoming data from everynet
-/*var json = { 0059ac0000150013f
-  "params": {
-    "dev_eui": "d7549c622c909b6b",
-    "dev_addr": "179de157",
-    "tx_time": 1488446487.259191,
-    "max_size": 242,
-    "counter_down": 0
-  },
-  "jsonrpc": "2.0",
-  "id": "72655e7a7eed",
-  "method": "downlink"
-}*/
-
-formRouter.get('/receive', function(req, res, next) {
-  res.render('receive' /*, {key: value}*/);
-});
-
 formRouter.get('/send', function(req, res, next) {
   res.render('send', {
-    title: 'Send a request to a device',
+    title: 'Send data to a device',
     id: 'send'
   });
 });
@@ -114,36 +98,105 @@ var getParams = function(req, res, next) {
   next();      
 };
 
-// Make the call to JSON-RPC api
-var makeApiCall = function(res, req, next) {
-    
-  // console.log('params: ', req.locals);
-  var method = req.locals.method;
-  // remove the method from the parameters before the rpc call
-  delete req.locals.method;
-  // console.log('params: ', req.locals);
-  // console.log('method: ', method);  
+var set1m2mCommandString = function(command, payload) {
   
-  clientRPC.request(method, req.locals, function(err, response) {
+  // TODO increment command counts for each dev_eui separately in ./config/device.json
     
-    if (err) {
-      console.log('Jayson RPC client error: ', err);
-    }
-        
-    if (response) {
-      console.log(response);
-      req.locals.rpcresponse = response;
-      
-      next();
-    }    
+  switch (command) {
+    case 'reboot': return '0xFEFEFE';
+    case 'setAPPEUI': return '0xFD' + payload; // 01FD0102030405060708
+    case 'setABP': return '0x' + payload; // 01FC0102030405060708090A0B0C0D0E0F10111213141516171819101A1B1C1D1E1F20212223
+    case 'reset': return '0xEFFFFE';
+    case 'UTSensors': return '0x0A' + payload; // default sensor
+  }
+};
+
+// incoming data from 1m2m
+typedef struct {
+byte MsgID;       // Message Identification Value = 0x09
+int16 VBat;       // Battery voltage in mV
+int16 AnalogIn1;  // AnalogIn 1 in mV
+int16 AnalogIn2;  // AnalogIn 2 in mV
+int16 AnalogIn3;  // future use
+int16 Analogin4;  // future use
+}TAnalogMsg;
+
+ports 6 + 7 allow serial connection
+
+// Make the call to JSON-RPC api
+var makeManualApiCall = function(req, res, next) {
+  
+  console.log('params: ', res.locals);
+  
+  res.on('http timeout', function(data) {
+    console.log('http timeout data: ', data);
   });
+  
+  if (res.locals.method) {
+    var method = res.locals.method;
+    // remove the method from the parameters before the rpc call
+    delete res.locals.method;
+    // console.log('params: ', req.locals);
+    // console.log('method: ', method);  
+
+    client.request(method, res.locals, function(err, response) {
+
+      if (err) {
+        console.log('Jayson RPC client error: ', err);
+        // TODO make this via jayson which so far hasn't picked up'
+        res.render('response', {"response": {"error": {"code": -32002, "message" : "device not found"}}});
+      }
+
+      if (response) {
+        console.log(response);
+        res.locals.response = response;
+        next();
+      }    
+    });
+    
+    client.on('http timeout', function(err) {
+      console.log(err);
+    });
+    
+  } else { next(); }
+};
+
+var saveRequestToFile = function(req, res, next) {
+  // if there's no method field in the request we're saving the data to a file
+  // we could also look up the original request url
+  if (!res.locals.method) {
+  console.log("saveRequesttoFile data: ", JSON.stringify(res.locals));
+    // build json params
+    var packet = {
+        "dev_eui" : res.locals.dev_eui,
+        "payload" : res.locals.payload
+    };
+
+    if (packet.payload.length > 0) {
+      
+      // append to JSON 
+      currentdevice[packet.dev_eui] = packet;
+      
+      var exportofile = fs.createWriteStream(path.join(__dirname, './../config/device.json'));
+      exportofile.write(JSON.stringify(currentdevice));
+      res.render('response', {'saved': 'Saved to file'});
+    } else { next(); }
+  }
+  // else we're calling from the test form so move to the following middleware
+  else { next(); }
 };
 
 var renderResponse = function(res, req) {
-  req.render('response', {'response': req.locals.rpcresponse});
+  // console.log('rendering response: ', req.locals);
+  if (req.locals.response) {
+    req.render('response', {'response': req.locals.response});
+  } else {
+    req.render('response', {'saved': 'Not saved, payload mandatory'});
+  }
+  
 };
 
 // Route for handling manual RPC call init from a form
-formRouter.post('*', getParams, makeApiCall, renderResponse);
+formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse);
 
 module.exports = formRouter;

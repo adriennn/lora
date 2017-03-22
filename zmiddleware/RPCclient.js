@@ -7,6 +7,10 @@ var core_url = 'http://127.0.0.1:5000/lora/rpc';
 
 // TODO if (core_url.indexOf(http || https ))
 
-var rpcclient = jayson.client.http(core_url);
+var client = jayson.client.http(core_url);
 
-module.exports = rpcclient;
+client.on('http request', function(req) {
+  req.setTimeout(5000);
+});
+
+module.exports = client;

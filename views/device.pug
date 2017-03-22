@@ -1,0 +1,46 @@
+extends index
+
+block tabcontent
+  p.h5 Register a new device on the network.
+  form(action='/lora/form?device',method='post',name="device")
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Priority
+      div.col-8
+        select.form-control(id='',type='text',value='',placeholder='Priority for sending payload',name='priority')
+          option(value="1",name='priority') 1
+          option(value="2",name='priority') 2
+          option(value="3",name='priority') 3
+          option(value="4",name='priority') 4
+
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Method
+      div.col-8
+        select.form-control(id='',type='text',value='',placeholder='RPC method to call',name='method')
+          option(value="status_request",name='method') Status request
+          option(value="notify",name='method') Notify
+          option(value="uplink",name='method') Uplink
+          option(value="outdated",name='method') Outdated
+          option(value="downlink",name='method') Downlink
+          option(value="join",name='method') Join
+          option(value="test",name='method') Test call
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Device unique ID
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='Dev_EUI',name='dev_eui')
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Cmmand type
+      div.col-8
+        select.form-control(id='',type='text',value='',placeholder='Command type for payload',name='command')
+          option(value="reboot",name='command') Reboot
+          option(value="reset",name='command') Factory reset
+          option(value="set_eui",name='command') Set Application EUI
+          option(value="set_abp",name='command') Activation by personalization parameters
+          option(value="UTSensors",name='command') Update time sensor values (default 5 min)
+
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Payload
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='payload message',name='payload')
+    div.form-group.row
+      div.col-12
+        input.btn.btn-success.float-right(type='submit',value='Send query')      

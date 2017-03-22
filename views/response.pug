@@ -3,10 +3,13 @@ extends index
 block tabcontent
   p Result of the RPC-JSON request
   
-  if response.result
-    pre(style="color:green") !{JSON.stringify(response, undefined, ' ')}
-  if response.error
-    pre(style="color:red") !{JSON.stringify(response, undefined, ' ')}
+  if response
+    if response.error
+      pre(style="color:red") !{JSON.stringify(response, undefined, 3)}
+    if response.result
+      pre(style="color:green") !{JSON.stringify(response, undefined, 3)}
+  if saved
+    pre(style="color:blue") !{JSON.stringify(saved, undefined, 3)}
   
   
   // Or use a table to highlight the data

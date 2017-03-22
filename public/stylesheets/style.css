@@ -22,6 +22,17 @@ body {
   color: #777;
 }
 
+li {
+  padding-bottom: 2px !important;
+  padding-top: 2px !important;
+}
+
+#datablock {
+  max-height: 30vh;
+  overflow-y: scroll;
+  padding-left: 0 !important;
+}
+
 /* Customize container */
 @media (min-width: 48em) {
   .container {
