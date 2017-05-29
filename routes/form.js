@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var express = require('express'),
     formRouter = express.Router(),
     path = require('path'),
@@ -133,9 +135,15 @@ formRouter.get('/test', function (req, res, next) {
   });
 });
 formRouter.get('/listen', function (req, res, next) {
+  
+  var iosourceurl = process.env.IO_CONNECT;
+  
+  console.log('io source: ', iosourceurl);
+  
   res.render('listen', {
     title: 'Listen to RPC calls',
-    id: 'listen'
+    id: 'listen',
+    iosourceurl : iosourceurl
   });
 });
 formRouter.get('/send', function (req, res, next) {

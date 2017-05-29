@@ -5,7 +5,7 @@ block tabcontent
   ul#datablock
   
   script.
-    var socket = io('127.0.0.1:5000');
+    var socket = io(!{JSON.stringify(iosourceurl)});
     
     socket.on('rpcrequest', function (data) {
     
