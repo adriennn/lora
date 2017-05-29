@@ -10,7 +10,7 @@ mainRouter.get('/', function(req, res, next) {
   res.render('index', { title: 'Lora' });
 });
 
-// Retrieve data from config file
+// Retrieve data from config file in config/device.json
 mainRouter.get('/:dev_eui', function (req, res, next) {
   
   console.log('req.params: ', req.params);
