@@ -6,20 +6,22 @@
   "repository": "https://github.com/adriennn/lora",
   "author": "adriennn",
   "license": "MIT",
-  "keywords": "lorawan lora radio iot expressjs jayson",
+  "keywords": "lorawan lora radio iot expressjs jayson json-rpc rpc",
   "scripts": {
-    "start": "pm2 -n lora-rpc -u www-data start bin/www"
+    "start": "pm2 -n lora -u www-data start bin/www"
   },
   "dependencies": {
-    "body-parser": "~1.16.0",
+    "body-parser": "~1.17.1",
     "compression": "^1.6.2",
     "debug": "~2.6.0",
-    "express": "~4.14.1",
+    "express": "~4.15.2",
+    "express-state": "^1.4.0",
     "helmet": "^3.5.0",
     "jayson": "^2.0.3",
     "morgan": "~1.7.0",
     "morgan-body": "^0.9.5",
     "pug": "^2.0.0-beta11",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "validator": "^7.0.0"
   }
 }

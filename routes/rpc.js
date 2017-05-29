@@ -6,11 +6,13 @@ var express = require('express'),
     jayson = require('jayson');
 
 var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+var payload = currentdevice['payload'];
+var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));
 
 // RPC methods for Everynet and 1m2m devices
 var methods = {
-
-  uplink: function(args, callback) {
+  
+  uplink: jayson.Method(function (args, done) {
 
    /* Parameters in the request
     * uplink method only needs to return 'ok'
@@ -23,10 +25,20 @@ var methods = {
     * args.radio [includes numerous sub params]
     */
     
-    callback(null, 'ok');
-    // do something with the incoming data like save to db
-  },
-  outdated: function(args, callback) {
+    console.log('data from uplink() method', args);
+    
+    // append to JSON object
+    packetsdatabase[args.dev_eui];
+          
+    var savetofile = fs.createWriteStream(path.join(__dirname, './../config/packets.json'));
+    savetofile.write(JSON.stringify(packetsdatabase));
+    
+    // TODO send to socket via external function and render via 1m2m API
+    // http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=020004370bc6140000fe000000000000
+    
+    done(null, 'ok');
+  }),
+  outdated: function (args, callback) {
     
    /* Parameters in the request
     * same as in uplink method
@@ -36,7 +48,7 @@ var methods = {
     
     callback(null, 'ok');
   },
-  status: function(args, callback) {
+  status: function (args, callback) {
     
    /* Parameters in the request
     * args.dev_eui
@@ -47,7 +59,7 @@ var methods = {
     
     callback(null, 'ok');
   },
-  satus_request: function(args, callback) {
+  satus_request: function (args, callback) {
     
    /* Parameters in the request
     * 
@@ -57,7 +69,7 @@ var methods = {
     
     callback(null, 'ok');
   },
-  downlink: jayson.Method(function(args, done) {
+  downlink: jayson.Method(function (args, done) {
     
     /* Parameters in the request
      * args.dev_eui
@@ -68,12 +80,9 @@ var methods = {
      */
     
     // console.log('device data in storage: ', JSON.stringify(currentdevice));
-    console.log('received DEVEUI in downlink request: ', args.dev_eui);
-    
-    var deveui = args.dev_eui;
-    
+        
     // check that the request matches something already in storage
-    for (var key in currentdevice) {
+    /* for (var key in currentdevice) {
       if (currentdevice.hasOwnProperty(key)) {
         if (key === deveui.toString()) {
           // if there is non alphnum char, exit
@@ -98,25 +107,37 @@ var methods = {
           } else {
             var payloadhex = Buffer.from(currentdevice[key].payload).toString('hex');
             var payload = Buffer.from(payloadhex).toString('base64');
-            console.log('base64 PAYLOAD: ', payload);
-            console.log('matching keys: ', currentdevice[key]);
-            
-            var result = {
-              "pending": false,
-              "confirmed": false,
-              "payload": payload
-            };
-            console.log('sending away payload');
+            console.log('matching keys: ', currentdevice[key]);*/
+    
+        // var payloadhex = Buffer.from('01FDfe8af05f2b5d6ced', 'hex');
+        
+        if (!payload) {
+          
+            done(null, null);
+          
+		// if the dev_eui from the Network Server matches what's on file we send the payload
+        } else if (args.dev_eui == currentdevice['dev_eui']) {
+          
+            var result = { "pending": false,
+                           "confirmed": false,
+                           "payload": payload };
+          
             done(null, result);
-          }
-        } 
-      } 
-      if (!currentdevice.hasOwnProperty(key)) {
-        done(null, 'error: device not found');
-      }
-    }
+          
+            // TODO need to check for Network Server response
+            // if (network.server.response = ok) { 
+            //   delete currentdevice['dev_eui']
+            //   var exportofile = fs.createWriteStream(path.join(__dirname, './../config/device.json'));
+            //   exportofile.write(JSON.stringify(currentdevice));
+            // }
+          
+        }  else {
+          
+            done(null, null);
+          
+        }
   }),
-  post_uplink: function(args, callback) {
+  post_uplink: function (args, callback) {
     
    /* Parameters in the request
     * this type of request contains redundant packets obtained through other gateways
@@ -132,7 +153,7 @@ var methods = {
     
     callback(null, 'ok');
   },
-  notify: function(args, callback) {
+  notify: function (args, callback) {
 
    /* Parameters in the request
     * only for always-on 'class C' devices
@@ -144,28 +165,31 @@ var methods = {
     
     callback(null, 'ok');
   },
-  join: jayson.Method(function(args, done) {
-    var result = args.dev_eui + 'invalid' + args.api_key;
-    done(null, result);
-  }, {
-    collect: true,
-    params: { 
-      "dev_eui": "NoDeviceSet", 
-      "api_key": "NoApiKeySet"
-    }
-  }),
+  join: jayson.Method (function(args, done) {
+    
+      var result = { 'dev_eui' : args.dev_eui,
+                     'api_key' : args.api_key }
+      
+      done(null, result);
+  })
+  
 };
 
 RPCrouter.post('*', function(req, res, next) {
-  console.log(req.body);
+	
+  // var io = req.app.get('socketio');
+  
+  console.log('req value from RPCRouter.post(): ', req.body);
+	
+  // io.emit("rpcrequest", req.body);
+
   req.io.sockets.emit("rpcrequest", req.body);
+  
   next();
 });
 
 // Any request coming to https://garbagepla.net/lora/rpc will be handled by the jayson server
 var jaysonserver = jayson.server(methods, {params: Object});
-// set extra error codes
-
 
 RPCrouter.use('/', jaysonserver.middleware());
 

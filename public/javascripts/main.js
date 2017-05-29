@@ -1,25 +1,23 @@
-$(function(){
- $('#search').on('keyup', function(e){
-   if(e.keyCode === 13) {
-     var parameters = { search: $(this).val() };
-       $.get( '/searching',parameters, function(data) {
-       $('#results').html(data);
-     });
-    };
- });
-});
+var socket = io('https://garbagepla.net/lora/rpc');
+socket.on('rpcrequest', function (data) {
+  console.log(data);
+  var datablock = document.getElementById('datablock');
+  var dataline = document.createElement('li');
+  dataline.classList.add('list-group-item');
 
-var app = (function(){
-  
-  var bindEvents = function(){},
-      dispatcher = function(){},
-  
-      return {
-    init: init
-  }
-}());
-
-
-document.readyState('complete', function() {
-  app.init();
+  if (data.method == 'downlink') {
+    dataline.classList.add('list-group-item-success');
+    }
+  if (data.method == 'uplink') {
+    dataline.classList.add('list-group-item-info');
+    }
+  if (data.method == 'error') {
+    dataline.classList.add('list-group-item-danger');
+    }
+  if (data.method == 'status') {
+    dataline.classList.add('list-group-item-warning');
+    }        
+  dataline.setAttribute("title", JSON.stringify(data, undefined, 3));
+  datablock.prepend(dataline);
+  dataline.innerHTML = '<span>'+ data.method.toString() +'</span>';
 });

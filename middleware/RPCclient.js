@@ -6,6 +6,7 @@ var core_url = 'http://127.0.0.1:5000/lora/rpc';
 // var core_url = 'https://garbagepla.net/lora/rpc';
 
 // TODO if (core_url.indexOf(http || https ))
+// TODO allow to choose url for testing form
 
 var client = jayson.client.http(core_url);
 
