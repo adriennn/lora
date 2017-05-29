@@ -177,6 +177,7 @@ var methods = {
 
 RPCrouter.post('*', function(req, res, next) {
 	
+  // FIXME
   // var io = req.app.get('socketio');
   
   console.log('req value from RPCRouter.post(): ', req.body);
