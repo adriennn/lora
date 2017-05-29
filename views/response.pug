@@ -1,12 +1,14 @@
 extends index
 
 block tabcontent
-  p Result of the RPC-JSON request
   
   if response
     if response.error
+      p Result of RPC call
       pre(style="color:#d9534f") !{JSON.stringify(response, undefined, 3)}
     if response.result
+      p Result of RPC call
       pre(style="color:#5cb85c") !{JSON.stringify(response, undefined, 3)}
   if saved
+    p Result of the operation
     pre(style="color:#5bc0de") !{JSON.stringify(saved, undefined, 3)}

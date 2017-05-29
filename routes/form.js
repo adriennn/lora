@@ -3,7 +3,7 @@ var express = require('express'),
     path = require('path'),
     fs = require('fs'),
     validator = require('validator'),
-    client = require(path.join(__dirname,'/../middleware/RPCclient.js'));
+    rpcclient = require(path.join(__dirname,'/../middleware/RPCclient.js'));
 
 var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
 
@@ -19,7 +19,7 @@ var getParams = function (req, res, next) {
      }
   }
   
-  console.log('Saved form data: ', res.locals);
+  console.log('Saved form data from getParams(): ', res.locals);
   
   next();
 };
@@ -39,20 +39,17 @@ var set1m2mCommandString = function (command, payload) {
 
 var makeManualApiCall = function (req, res, next) {
   
-  console.log('params: ', res.locals);
-  
-  res.on('http timeout', function(data) {
-    console.log('http timeout data: ', data);
-  });
-  
+  console.log('params from makeManualApiCall(): ', res.locals);
+    
   if (res.locals.method) {
+    
     var method = res.locals.method;
+    
     // remove the method from the parameters before the rpc call
     delete res.locals.method;
-    // console.log('params: ', req.locals);
-    // console.log('method: ', method);  
+    console.log('method: ', method);  
 
-    client.request(method, res.locals, function(err, response) {
+    rpcclient.request(method, res.locals, function (err, response) {
 
       if (err) {
         console.log('Jayson RPC client error: ', err);
@@ -63,15 +60,19 @@ var makeManualApiCall = function (req, res, next) {
       if (response) {
         console.log(response);
         res.locals.response = response;
-        next(renderResponse);
+        next();
       }    
     });
     
-    client.on('http timeout', function(err) {
-      console.log(err);
+    res.on('http timeout', function (data) {
+      console.log('http timeout data: ', data);
     });
     
-  } else { next(renderResponse); }
+    rpcclient.on('http timeout', function(err) {
+      console.log('http client timeout error: ', err);
+    });
+    
+  }
 };
 
 var saveRequestToFile = function (req, res, next) {
@@ -79,13 +80,9 @@ var saveRequestToFile = function (req, res, next) {
   // if there's no method field in the request we're saving the data to a file
   if (!res.locals.method) {
 	  
-    console.log("res.locals: ", JSON.stringify(res.locals));
+    console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals));
 	  
     if (res.locals.payload.length > 0) {
-            
-      // Encode the payload
-      // var payloadstr = Buffer.from('reslocalspayload', 'hex');
-      // var encryptedpayload = payloadstr.toString('base64');
       
       if ( validator.isHexadecimal(res.locals.payload) ) {
 
@@ -94,28 +91,26 @@ var saveRequestToFile = function (req, res, next) {
             var packet = { "dev_eui" : res.locals.dev_eui,
                            "payload" : res.locals.payload,
                            "encrypted_payload": encryptedpayload };
+        
+            // console.log('packet from saveRequestToFile()', packet);
 
-            currentdevice = packet;
-
-            var exportofile = fs.createWriteStream(path.join(__dirname, './../config/device.json'));
-            exportofile.write(JSON.stringify(currentdevice));
-
-            res.render('response', {'saved': 'Saved to file'});
+            fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet)); 
+        
+            res.render('response', {'saved': 'Successfully saved to file.'});
 
         } else {
         
-            var err = new Error('Not a valid hexadecimal payload.');
-            err.status = 404;
-            next(err);
+            res.render('response', {'saved': 'Not a valid hexadecimal payload.'});
       }
               
     } else { 
 		
-		next(makeManualApiCall); 
+        res.render('response', {'saved': 'Not saved, payload is mandatory.'});
 	}
+    
   } else { 
-	  
-	  next(makeManualApiCall);   // else we're calling from the test form so move to the next middleware
+	  // else we're calling from the test form so move to the next middleware
+	  next();   
   }
 };
 

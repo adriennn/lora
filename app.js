@@ -52,17 +52,15 @@ io.sockets.on('connection', function (socket) {
 	
     console.log('client connect');
 	
-	socket.on('rpcrequest', function (data) {
-		console.log('caught a rpcrequest on the socket socket');
-	});
 });
+
 app.use(function (req, res, next) {
   // set the sock in the req so we can access it anywhere
   req.io = io;
   next();
 });
 
-// error handler
+/*// error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.path = req.path;
@@ -77,7 +75,12 @@ app.use(function (req, res, next) {
   var err = new Error('Express: Not Found');
   err.status = 404;
   next(err);
-});
+});*/
+
+app.use(function (err, req, res, next) {
+  console.log('error: ', err)
+  res.status(500).send('Something broke!')
+})
 
 // export both app and server to be able to use socketio in req and res everywhere
 module.exports = {app: app, server: server};

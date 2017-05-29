@@ -3,15 +3,16 @@ var express = require('express'),
     path = require('path'),
     fs = require('fs');
 
-var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
-
 // home page
 mainRouter.get('/', function(req, res, next) {
   res.render('index', { title: 'Lora' });
 });
 
 // Retrieve data from config file in config/device.json
+// TODO put into external module
 mainRouter.get('/:dev_eui', function (req, res, next) {
+  
+  var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
   
   console.log('req.params: ', req.params);
   
