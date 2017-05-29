@@ -10,7 +10,7 @@ block content
       .card
         .card-header
           ul.nav.nav-tabs.card-header-tabs(role='tablist')
-            each menuitem in [{id: 'listen',title:'Listen to stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'device',title:'New device',url:'/lora/form/device'}]
+            each menuitem in [{id: 'listen',title:'Listen to stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'}]
               if (id == menuitem.id)
                 li.nav-item
                   a.nav-link.active(role='tab', data-toggle='tab', href=menuitem.url) #{menuitem.title}

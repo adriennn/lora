@@ -7,27 +7,6 @@ var express = require('express'),
 
 var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
 
-formRouter.get('/device', function (req, res, next) {
-  res.render('device', {
-    title: 'Add or register a device',
-    id: 'device'
-  });
-});
-
-formRouter.get('/listen', function (req, res, next) {
-  res.render('listen', {
-    title: 'Listen to RPC calls',
-    id: 'listen'
-  });
-});
-
-formRouter.get('/send', function (req, res, next) {
-  res.render('send', {
-    title: 'Send data to a device',
-    id: 'send'
-  });
-});
-
 var getParams = function (req, res, next) {
 
   // process the form with a loop
@@ -46,15 +25,15 @@ var getParams = function (req, res, next) {
 };
 
 var set1m2mCommandString = function (command, payload) {
-  
-  // TODO increment command counts for each dev_eui separately in ./config/device.json
-    
+      
   switch (command) {
-    case 'reboot': return '0xFEFEFE';
-    case 'setAPPEUI': return '0xFD' + payload; // 01FD0102030405060708
-    case 'setABP': return '0x' + payload;      // 01FC0102030405060708090A0B0C0D0E0F10111213141516171819101A1B1C1D1E1F20212223
-    case 'reset': return '0xEFFFFE';           // device flashes before rebooting
-    case 'UTSensors': return '0x0A' + payload; // default sensor
+      
+    case 'reboot':    return '0xFEFEFE'         ;
+    case 'setAPPEUI': return '0xFD'    + payload; // 01FD0102030405060708
+    case 'setABP':    return '0x'      + payload; // 01FC0102030405060708090A0B0C0D0E0F10111213141516171819101A1B1C1D1E1F20212223
+    case 'reset':     return '0xEFFFFE'         ; // device flashes before rebooting
+    case 'UTSensors': return '0x0A'    + payload; // default sensor
+    case 'UTAnalog':  return '0x20'    + payload; // analog sensors, default is 0 (off), time in minutes
   }
 };
 
@@ -66,7 +45,6 @@ var makeManualApiCall = function (req, res, next) {
     console.log('http timeout data: ', data);
   });
   
-  // 
   if (res.locals.method) {
     var method = res.locals.method;
     // remove the method from the parameters before the rpc call
@@ -133,11 +111,11 @@ var saveRequestToFile = function (req, res, next) {
               
     } else { 
 		
-		next(renderResponse); 
+		next(makeManualApiCall); 
 	}
   } else { 
 	  
-	  next(renderResponse);   // else we're calling from the test form so move to the next middleware
+	  next(makeManualApiCall);   // else we're calling from the test form so move to the next middleware
   }
 };
 
@@ -149,11 +127,28 @@ var renderResponse = function (res, req) {
     req.render('response', {'response': req.locals.response});
 	  
   } else {
-    req.render('response', {'saved': 'Not saved, payload mandatory'});
+    req.render('response', {'saved': 'Not saved, payload is mandatory.'});
   }
 };
 
-// Route for handling the forms
-formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, /*retrievePacket,*/ renderResponse);
+formRouter.get('/test', function (req, res, next) {
+  res.render('test', {
+    title: 'Test RPC calls',
+    id: 'test'
+  });
+});
+formRouter.get('/listen', function (req, res, next) {
+  res.render('listen', {
+    title: 'Listen to RPC calls',
+    id: 'listen'
+  });
+});
+formRouter.get('/send', function (req, res, next) {
+  res.render('send', {
+    title: 'Send data to a device',
+    id: 'send'
+  });
+});
+formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse);
 
 module.exports = formRouter;

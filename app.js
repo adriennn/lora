@@ -31,9 +31,9 @@ app.set('socketio', io);
 app.use(csp({
   directives: {
     defaultSrc: ["'self'"],
-    connectSrc: ["'self'", 'wss://127.0.0.1:5000', 'ws://127.0.0.1:5000','https://garbagepla.net','ws://garbagepla.net', 'wss://garbagepla.net'],
-    styleSrc: ["'self'", "'unsafe-inline'",'https://garbagepla.net'],
-    scriptSrc: ["'self'",'cdnjs.cloudflare.com', "'unsafe-inline'",'https://garbagepla.net']
+    connectSrc: ["'self'", 'wss://127.0.0.1:5000', 'ws://127.0.0.1:5000', 'https://garbagepla.net', 'ws://garbagepla.net', 'wss://garbagepla.net'],
+    styleSrc: ["'self'", "'unsafe-inline'", 'https://garbagepla.net'],
+    scriptSrc: ["'self'", 'cdnjs.cloudflare.com', "'unsafe-inline'", 'https://garbagepla.net', 'https://cdnjs.cloudflare.com']
   }
 }));
 app.use(compression());

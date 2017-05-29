@@ -6,7 +6,7 @@ var express = require('express'),
     jayson = require('jayson');
 
 var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
-var payload = currentdevice['payload'];
+var encryptedpayload = currentdevice['encypted_payload'];
 var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));
 
 // RPC methods for Everynet and 1m2m devices
@@ -111,16 +111,16 @@ var methods = {
     
         // var payloadhex = Buffer.from('01FDfe8af05f2b5d6ced', 'hex');
         
-        if (!payload) {
+        if (!encryptedpayload) {
           
-            done(null, null);
+            done(null, {"pending": false});
           
 		// if the dev_eui from the Network Server matches what's on file we send the payload
         } else if (args.dev_eui == currentdevice['dev_eui']) {
           
             var result = { "pending": false,
                            "confirmed": false,
-                           "payload": payload };
+                           "payload": encryptedpayload };
           
             done(null, result);
           
@@ -133,8 +133,7 @@ var methods = {
           
         }  else {
           
-            done(null, null);
-          
+            done(null, {"pending": false});
         }
   }),
   post_uplink: function (args, callback) {
@@ -177,7 +176,6 @@ var methods = {
 
 RPCrouter.post('*', function(req, res, next) {
 	
-  // FIXME
   // var io = req.app.get('socketio');
   
   console.log('req value from RPCRouter.post(): ', req.body);
