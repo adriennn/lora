@@ -7,12 +7,6 @@ var express = require('express'),
     exportDataToFile = require(path.join(__dirname,'/../middleware/exportData.js'));
 
 
-// TODO we need to be able to reload these files each time a new downlink call comes in and yet the
-// downlink method below must remain lean and fast
-
-var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
-var encryptedpayload = currentdevice['encypted_payload'];
-var deveui = currentdevice['dev_eui'];
 
 var exportDataToFile = function exportDataToFile (ref, data) {
   
@@ -91,6 +85,14 @@ var methods = {
   },
   downlink: jayson.Method(function (args, done) {
     
+      // TODO we need to be able to reload these files each time a new downlink call comes in and yet the
+      // downlink method below must remain lean and fast
+      // Make a Redis DB and work from there
+    
+      var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+      var encryptedpayload = currentdevice.encrypted_payload;
+      var deveui = currentdevice.dev_eui;
+    
     /* Parameters in the request
      * args.dev_eui
      * args.dev_addr
@@ -103,12 +105,14 @@ var methods = {
     
     // TODO build and check packet queue
     
-      if (!encryptedpayload) {
+      if ( !encryptedpayload ) {
 
+          console.log('encypted payload missing');
+        
           done();
 
       // if the dev_eui from the Network Server matches what's on file we send the payload
-      } else if (encryptedpayload && args.dev_eui == deveui) {
+      } else if ( encryptedpayload && args.dev_eui == deveui ) {
 
           var result = { "pending": false,
                          "confirmed": false,
@@ -118,6 +122,9 @@ var methods = {
 
       }  else {
 
+          // TODO revert with Device Not Found error
+          console.log('nothing in storage');
+        
           done();
       }
   }),
