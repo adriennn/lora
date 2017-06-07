@@ -7,6 +7,12 @@ block tabcontent
   script.
     var socket = io(!{JSON.stringify(iosourceurl)});
     
+    //- var time = function (s) {
+    //-   return new Date(s * 1e3).toISOString().slice(-13, -5);
+    //- };
+    
+    //- var request_time = time(data.params.tx_time);
+    
     socket.on('rpcrequest', function (data) {
     
       console.log(data);
@@ -31,6 +37,6 @@ block tabcontent
 
       dataline.setAttribute("title", JSON.stringify(data, undefined, 3));
       datablock.prepend(dataline);
-      dataline.innerHTML = '<span>'+ data.method.toString() + ' ' + data.params.dev_eui.toString() + '</span>';
+      dataline.innerHTML = '<span>Method: '+ data.method.toString() + ' | Device: ' + data.params.dev_eui.toString() + '</span>';
       
     });

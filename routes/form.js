@@ -14,22 +14,22 @@ var getParams = function (req, res, next) {
   // process the form with a loop
   // console.log('form data: ', JSON.stringify(req.body));
   for (var key in req.body) {
-	  
+
      if (req.body.hasOwnProperty(key)) {
-		 
+
        res.locals[key] = req.body[key];
      }
   }
-  
+
   console.log('Saved form data from getParams(): ', res.locals);
-  
+
   next();
 };
 
 var set1m2mCommandString = function (command, payload) {
-      
+
   switch (command) {
-      
+
     case 'reboot':    return '0xFEFEFE'         ;
     case 'setAPPEUI': return '0xFD'    + payload; // 01FD0102030405060708
     case 'setABP':    return '0x'      + payload; // 01FC0102030405060708090A0B0C0D0E0F10111213141516171819101A1B1C1D1E1F20212223
@@ -40,16 +40,16 @@ var set1m2mCommandString = function (command, payload) {
 };
 
 var makeManualApiCall = function (req, res, next) {
-  
+
   console.log('params from makeManualApiCall(): ', res.locals);
-    
+
   if (res.locals.method) {
-    
+
     var method = res.locals.method;
-    
+
     // remove the method from the parameters before the rpc call
     delete res.locals.method;
-    console.log('method: ', method);  
+    console.log('method: ', method);
 
     rpcclient.request(method, res.locals, function (err, response) {
 
@@ -63,29 +63,29 @@ var makeManualApiCall = function (req, res, next) {
         console.log(response);
         res.locals.response = response;
         next();
-      }    
+      }
     });
-    
+
     res.on('http timeout', function (data) {
       console.log('http timeout data: ', data);
     });
-    
+
     rpcclient.on('http timeout', function(err) {
       console.log('http client timeout error: ', err);
     });
-    
+
   }
 };
 
 var saveRequestToFile = function (req, res, next) {
-  
+
   // if there's no method field in the request we're saving the data to a file
   if (!res.locals.method) {
-	  
+
     console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals));
-	  
+
     if (res.locals.payload.length > 0) {
-      
+
       if ( validator.isHexadecimal(res.locals.payload) ) {
 
             var encryptedpayload = Buffer.from(res.locals.payload, 'hex').toString('base64');
@@ -93,36 +93,36 @@ var saveRequestToFile = function (req, res, next) {
             var packet = { "dev_eui" : res.locals.dev_eui,
                            "payload" : res.locals.payload,
                            "encrypted_payload": encryptedpayload };
-        
+
             // console.log('packet from saveRequestToFile()', packet);
 
-            fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet)); 
-        
+            fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet));
+
             res.render('response', {'saved': 'Successfully saved to file.'});
 
         } else {
-        
+
             res.render('response', {'saved': 'Not a valid hexadecimal payload.'});
       }
-              
-    } else { 
-		
+
+    } else {
+
         res.render('response', {'saved': 'Not saved, payload is mandatory.'});
 	}
-    
-  } else { 
+
+  } else {
 	  // else we're calling from the test form so move to the next middleware
-	  next();   
+	  next();
   }
 };
 
 var renderResponse = function (res, req) {
-  
+
   // console.log('rendering response: ', req.locals);
   if (req.locals.response) {
-    
+
     req.render('response', {'response': req.locals.response});
-	  
+
   } else {
     req.render('response', {'saved': 'Not saved, payload is mandatory.'});
   }
@@ -134,24 +134,27 @@ formRouter.get('/test', function (req, res, next) {
     id: 'test'
   });
 });
+
 formRouter.get('/listen', function (req, res, next) {
-  
+
   var iosourceurl = process.env.IO_CONNECT;
-  
+
   console.log('io source: ', iosourceurl);
-  
+
   res.render('listen', {
     title: 'Listen to RPC calls',
     id: 'listen',
     iosourceurl : iosourceurl
   });
 });
+
 formRouter.get('/send', function (req, res, next) {
   res.render('send', {
     title: 'Send data to a device',
     id: 'send'
   });
 });
+
 formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse);
 
 module.exports = formRouter;
