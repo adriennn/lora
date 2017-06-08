@@ -109,8 +109,8 @@ var catchRpc = function catchRpc (req, res, next) {
 
           req.body.params.humanpayload = obj;
 
-          // set the polluton scale for the winsen ZP01-MP503 module if the data is present
-          if (req.body.params.humanpayload.AnIn1) {
+          // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
+          if (req.body.params.humanpayload.MsgID == 'Analog') {
               req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
           }
 
