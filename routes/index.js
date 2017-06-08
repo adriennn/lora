@@ -11,30 +11,30 @@ mainRouter.get('/', function(req, res, next) {
 // Retrieve data from config file in config/device.json
 // TODO put into external module
 mainRouter.get('/:dev_eui', function (req, res, next) {
-  
+
   var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
-  
+
   console.log('req.params: ', req.params);
-  
+
   var id = req.params.dev_eui;
-  
+
   res.locals.dev_eui = currentdevice['dev_eui'];
   res.locals.payload = currentdevice['payload'];
   res.locals.encrypted_payload = currentdevice['encrypted_payload'];
-  
+
   console.log('id: ', id);
   console.log('res.locals.dev_eui',res.locals.dev_eui);
-  
+
   if ( id === res.locals.dev_eui) {
-    
+
     res.render('checkpayload', { title: 'Current configuration data',
                                  id: 'deveui',
                                  data: res.locals });
   } else {
-    
+
       var err = new Error('Device not found.');
       err.status = 404;
-      next(err);
+      res.render(err);
   }
 });
 
