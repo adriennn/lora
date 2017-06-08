@@ -85,13 +85,13 @@ var getQualityIndex = function (AnIn1, AnIn2) {
 
     var quality;
 
-    if ( Anin1 < 250 && AnIn2 < 250 ) {
+    if ( AnIn1 < 250 && AnIn2 < 250 ) {
         quality = 'clean';
-    } else if ( Anin1 < 250 && AnIn2 > 3000 ) {
+    } else if ( AnIn1 < 250 && AnIn2 > 3000 ) {
         quality = 'light';
-    } else if ( Anin1 > 3000 && AnIn2 < 250 ) {
+    } else if ( AnIn1 > 3000 && AnIn2 < 250 ) {
         quality = 'medium';
-    } else if ( Anin1 > 3000 && AnIn2 > 3000 ) {
+    } else if ( AnIn1 > 3000 && AnIn2 > 3000 ) {
         quality = 'high';
     }
 
