@@ -9,7 +9,6 @@ mainRouter.get('/', function(req, res, next) {
 });
 
 // Retrieve data from config file in config/device.json
-// TODO put into external module
 mainRouter.get('/:dev_eui', function (req, res, next) {
 
   var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));

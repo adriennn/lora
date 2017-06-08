@@ -105,21 +105,31 @@ var catchRpc = function catchRpc (req, res, next) {
     console.log('req value from RPCRouter.post(*): ', req.body);
 
     // Create a promise for decoding the 1m2m payload before sending it to the listen.pug view
-    decode1m2mpayload(req.body.params.payload).then( function (obj) {
+    if (req.body.params.payload) {
 
-          req.body.params.humanpayload = obj;
+        decode1m2mpayload(req.body.params.payload).then( function (obj) {
 
-          // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
-          if (req.body.params.humanpayload.MsgID == 'Analog') {
-              req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
-          }
+              req.body.params.humanpayload = obj;
 
-          console.log('Added decoded payload to req.body: ', req.body);
+              // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
+              if (req.body.params.humanpayload.MsgID == 'Analog') {
+                
+                  req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
+              }
 
-          io.emit("rpcrequest", req.body);
-    }) ;
+              console.log('Added decoded payload to req.body: ', req.body);
 
-    next();
+              io.emit("rpcrequest", req.body);
+
+              next();
+        }) ;
+
+    } else {
+
+        io.emit("rpcrequest", req.body);
+
+        next();
+    }
 };
 
 // RPC methods for Everynet and 1m2m devices
