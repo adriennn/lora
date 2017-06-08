@@ -40,40 +40,40 @@ var decode1m2mpayload = function (obj) {
 
         http.get(url, function (res) {
 
-          const { statusCode } = res;
-          const contentType = res.headers['content-type'];
+            const { statusCode } = res;
+            const contentType = res.headers['content-type'];
 
-          let error;
+            let error;
 
-          if (statusCode !== 200) {
+            if (statusCode !== 200) {
 
-            error = new Error('Request Failed.\n' +
-                              `Status Code: ${statusCode}`);
-          }
-
-          if (error) {
-
-            console.error(error.message);
-            // consume response data to free up memory
-            res.resume();
-            return;
-          }
-
-          let rawData = '';
-
-          res.on('data', function (chunk) { rawData += chunk; });
-
-          res.on('end', function () {
-
-            try {
-              const parsedData = JSON.parse(rawData);
-              console.log('Parsed response data', parsedData.toString());
-              resolve( parsedData );
-
-            } catch (e) {
-              console.error(e.message);
+                error = new Error('Request Failed.\n' +
+                                `  Status Code: ${statusCode}`);
             }
-          });
+
+            if (error) {
+
+                console.error(error.message);
+                // consume response data to free up memory
+                res.resume();
+                return;
+            }
+
+            let rawData = '';
+
+            res.on('data', function (chunk) { rawData += chunk; });
+
+            res.on('end', function () {
+
+              try {
+                  const parsedData = JSON.parse(rawData);
+                  console.log('Parsed response data', parsedData.toString());
+                  resolve( parsedData );
+
+              } catch (e) {
+                  console.error(e.message);
+              }
+            });
 
         }).on('error', (e) => {
           console.error(`Got error: ${e.message}`);
@@ -113,7 +113,7 @@ var catchRpc = function catchRpc (req, res, next) {
 
               // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
               if (req.body.params.humanpayload.MsgID == 'Analog') {
-                
+
                   req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
               }
 
@@ -185,10 +185,9 @@ var methods = {
 
     done(null, 'ok');
   },
-  downlink: jayson.Method(function (args, done) {
+  downlink: jayson.Method( function (args, done) {
 
       // Make a Redis DB and work from there
-
       var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
 
     /* Parameters in the request
@@ -213,7 +212,7 @@ var methods = {
 
           var result = { "pending": false,
                          "confirmed": false,
-                         "payload": encryptedpayload };
+                         "payload": currentdevice.ncrypted_payload };
 
           exportDataToFile('erase', {});
 
