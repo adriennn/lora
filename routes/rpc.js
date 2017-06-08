@@ -4,8 +4,7 @@ var express = require('express'),
     fs = require('fs'),
     RPCrouter = express.Router(),
     jayson = require('jayson'),
-    http = require('http')/*,
-    exportDataToFile = require(path.join(__dirname,'/../middleware/exportData.js'))*/;
+    http = require('http');
 
 var exportDataToFile = function exportDataToFile (ref, data) {
 
@@ -82,6 +81,22 @@ var decode1m2mpayload = function (obj) {
     });
 };
 
+var getQualityIndex = function (AnIn1, AnIn2) {
+    var quality;
+
+    if ( Anin1 < 250 && AnIn2 < 250 ) {
+        quality = 'clean';
+    } else if ( Anin1 < 250 && AnIn2 > 3000 ) {
+        quality = 'light';
+    } else if ( Anin1 > 3000 && AnIn2 < 250 ) {
+        quality = 'medium';
+    } else if ( Anin1 > 3000 && AnIn2 > 3000 ) {
+        quality = 'high';
+    }
+
+    return quality;
+};
+
 var catchRpc = function catchRpc (req, res, next) {
 
     var io = req.app.get('socketio');
@@ -89,11 +104,14 @@ var catchRpc = function catchRpc (req, res, next) {
     console.log('req value from RPCRouter.post(*): ', req.body);
 
     // Create a promise for decoding the 1m2m payload before sending it to the listen.pug view
-    decode1m2mpayload(req.body.params.payload).then( function (o) {
+    decode1m2mpayload(req.body.params.payload).then( function (obj) {
 
-          req.body.params.humanpayload = o;
+          req.body.params.humanpayload = obj;
 
-          console.log('added decoded payload to req: ', req.body);
+          // set the polluton scale for the winsen ZP01-MP503 module
+          req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
+
+          console.log('Added decoded payload to req.body: ', req.body);
 
           io.emit("rpcrequest", req.body);
     }) ;
