@@ -1,16 +1,32 @@
 extends index
 
 block tabcontent
-  p.h5 Save data and instructions to be submitted to a device once a downlink call matching the device id hits the app.
+  p.h5 Save instructions to be submitted to a device once a downlink call matching the device id hits the app.
   form(action='/lora/form?save',method='post',name="instructions")
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Device unique ID
       div.col-8
         input.form-control(id='',type='text',value='',placeholder='DevEUI',name='dev_eui')
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Payload
+      label.col-4.col-form-label.text-muted(for='') Command sequence
       div.col-8
-        input.form-control(id='',type='text',value='',placeholder='Hexadecimal payload',name='payload')
+        input.form-control(id='',type='text',value='',placeholder='Command sequence number',name='command_seq')
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Command string
+      div.col-8
+        select.form-control(id='',type='text',value='',placeholder='Reference command string',name='command_str')
+          option(value="FEFEFE") Reboot
+          option(value="EFFFFE") Reset device
+          option(value="FD") Set aplication id of device (SetAPPEUI)
+          option(value="FC") Set authentication by personalization (SetABP)
+          option(value="0A") Default sensors update time (UTSensors)
+          option(value="20") Analog sensors update time (UTAnalog)
+          option(value="07") Time delay between wakeups when device is Idle (UTIdle)
+          option(value="02") Delay time until device is Idle (DTIdle)
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Command payload
+      div.col-8
+        input.form-control(id='',type='text',value='',placeholder='Payload value',name='command_val')
     div.form-group.row
       div.col-12
         input.btn.btn-success.float-right(type='submit',value='Save')

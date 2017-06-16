@@ -67,21 +67,25 @@ var makeManualApiCall = function (req, res, next) {
 var saveRequestToFile = function (req, res, next) {
 
   // if there's no method field in the request we're saving the data to a file
-  if (!res.locals.method) {
+  if ( !res.locals.method)  {
 
     console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals));
 
-    if (res.locals.payload.length > 0) {
+    if ( res.locals.command_str.length > 0 ) {
 
-      if ( validator.isHexadecimal(res.locals.payload) ) {
+      var mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val;
 
-            var encryptedpayload = Buffer.from(res.locals.payload, 'hex').toString('base64');
+      console.log('mergedhexpayload: ', mergedpayload);
+
+      if ( validator.isHexadecimal( mergedpayload ) ) {
+
+            var encryptedpayload = Buffer.from(mergedpayload, 'hex').toString('base64');
 
             var packet = { "dev_eui" : res.locals.dev_eui,
-                           "payload" : res.locals.payload,
+                           "payload" : mergedpayload,
                            "encrypted_payload": encryptedpayload };
 
-            // console.log('packet from saveRequestToFile()', packet);
+            console.log('packet from saveRequestToFile()', packet);
 
             fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet));
 
@@ -131,7 +135,7 @@ formRouter.get('/listen', function (req, res, next) {
   res.render('listen', {
     title: 'Listen to RPC calls',
     id: 'listen',
-    iosourceurl : iosourceurl
+    iosourceurl: iosourceurl
   });
 });
 

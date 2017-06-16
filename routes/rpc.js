@@ -98,6 +98,12 @@ var getQualityIndex = function (AnIn1, AnIn2) {
     return quality;
 };
 
+var convertTime = function (s) {
+
+    return new Date(s * 1e3).toISOString().slice(-13, -5);
+
+};
+
 var catchRpc = function catchRpc (req, res, next) {
 
     var io = req.app.get('socketio');
@@ -109,12 +115,16 @@ var catchRpc = function catchRpc (req, res, next) {
 
         decode1m2mpayload(req.body.params.payload).then( function (obj) {
 
-              req.body.params.humanpayload = obj;
+              req.body.params.human_payload = obj;
+
+              // Make the time readable
+              var unixtime = req.body.params.rx_time || req.body.params.tx_time;
+              req.body.params.human_time = convertTime(unixtime);
 
               // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
-              if (req.body.params.humanpayload.MsgID == 'Analog') {
+              if (req.body.params.human_payload.MsgID == 'Analog') {
 
-                  req.body.params.pollutionlevel = getQualityIndex(parseInt(req.body.params.humanpayload.AnIn1, 10), parseInt(req.body.params.humanpayload.AnIn2, 10));
+                  req.body.params.pollution_level = getQualityIndex(parseInt(req.body.params.human_payload.AnIn1, 10), parseInt(req.body.params.human_payload.AnIn2, 10));
               }
 
               console.log('Added decoded payload to req.body: ', req.body);
