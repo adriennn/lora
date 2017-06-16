@@ -59,26 +59,26 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.path = req.path;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  var err = new Error('Express: Not Found');
-  err.status = 404;
-  next(err);
-});
-
 // app.use(function (err, req, res, next) {
-//   console.log('error: ', err)
-//   res.status(500).send('Something broke!')
-// })
+//   // set locals, only providing error in development
+//   res.locals.path = req.path;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+//
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   var err = new Error('Express: Not Found');
+//   err.status = 404;
+//   next(err);
+// });
+
+app.use(function (err, req, res, next) {
+  console.log('error: ', err)
+  res.status(500).send('Something broke!')
+})
 
 // export both app and server to be able to use socketio in req and res everywhere
 module.exports = {app: app, server: server};

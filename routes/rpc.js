@@ -12,14 +12,25 @@ var exportDataToFile = function exportDataToFile (ref, data) {
 
       case 'uplink' :
 
-          var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));
-          var data = data;
+          var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));;
 
           packetsdatabase.push(data);
 
           fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase));
 
           break;
+
+      case 'cmdack' :
+
+          var commandqueue = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/command_queue.json'), 'utf8'));
+
+          if ( data.dev_eui == commandqueue[data.dev_eui] || !commandqueue[data.dev_eui] ) {
+
+              commandqueue[data.dev_eui] = data.cmd_ack;
+
+              fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue));
+
+          }
 
       case 'erase' :
 
@@ -106,6 +117,8 @@ var convertTime = function (s) {
 
 };
 
+// TODO keep track of CmdAck value in the app for each device
+
 var catchRpc = function catchRpc (req, res, next) {
 
     var io = req.app.get('socketio');
@@ -133,6 +146,14 @@ var catchRpc = function catchRpc (req, res, next) {
                   req.body.params.pollution_level = getQualityIndex(parseInt(req.body.params.human_payload.AnIn1, 10), parseInt(req.body.params.human_payload.AnIn2, 10));
               }
 
+              // check if it's a TAlive message so we an extract the CmdAck param
+              if (req.body.params.human_payload.MsgID == 'Alive') {
+
+                  exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
+                                               "cmd_ack" : red.body.params.human_payload.CmdAck });
+
+              }
+
               console.log('Added decoded payload to req.body: ', req.body);
 
               io.emit("rpcrequest", req.body);
@@ -148,7 +169,7 @@ var catchRpc = function catchRpc (req, res, next) {
     }
 };
 
-// RPC methods for Everynet and 1m2m devices
+// RPC methods for Everynet network
 var methods = {
 
     uplink: jayson.Method(function (args, done) {
