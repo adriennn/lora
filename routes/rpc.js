@@ -119,10 +119,12 @@ var catchRpc = function catchRpc (req, res, next) {
 
               // Make the time readable
               if ( req.body.params.rx_time || req.body.params.tx_time ) {
-                  var unixtime = req.body.params.rx_time || req.body.params.tx_time;
+
+                  var unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time;
+
                   req.body.params.human_time = convertTime(unixtime);
               }
-              
+
               // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
               if (req.body.params.human_payload.MsgID == 'Analog') {
 
