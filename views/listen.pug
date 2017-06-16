@@ -10,9 +10,7 @@ block tabcontent
     socket.on('rpcrequest', function (data) {
     
       console.log(data);
-      
-      var req_time = data.human_time || '';
-    
+          
       var datablock = document.getElementById('datablock');
       var dataline = document.createElement('li');
 
@@ -33,6 +31,6 @@ block tabcontent
 
       dataline.setAttribute("title", JSON.stringify(data, undefined, 3));
       datablock.prepend(dataline);
-      dataline.innerHTML = '<span>Time:' + req_time.toString() + 'Method: '+ data.method.toString() + ' | Device: ' + data.params.dev_eui.toString() + '</span>';
+      dataline.innerHTML = '<span>Time:' + data.params.human_time.toString() + 'Method: '+ data.method.toString() + ' | Device: ' + data.params.dev_eui.toString() + '</span>';
       
     });
