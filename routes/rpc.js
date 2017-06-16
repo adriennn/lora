@@ -145,11 +145,11 @@ var catchRpc = function catchRpc (req, res, next) {
               }
 
               // check if it's a TAlive message so we an extract the CmdAck param
-              if (req.body.params.human_payload.MsgID == 'Alive') {
-
-                  exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
-                                               "cmd_ack" : red.body.params.human_payload.CmdAck });
-              }
+              // if (req.body.params.human_payload.MsgID == 'Alive') {
+              //
+              //     exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
+              //                                  "cmd_ack" : red.body.params.human_payload.CmdAck });
+              // }
 
               console.log('Added decoded payload to req.body: ', req.body);
 
