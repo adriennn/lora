@@ -67,7 +67,7 @@ var makeManualApiCall = function (req, res, next) {
 var saveRequestToFile = function (req, res, next) {
 
   // if there's no method field in the request we're saving the data to a file
-  if ( !res.locals.method)  {
+  if ( !res.locals.method ) {
 
     console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals));
 
