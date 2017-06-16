@@ -110,20 +110,20 @@ var catchRpc = function catchRpc (req, res, next) {
 
     console.log('req value from RPCRouter.post(*): ', req.body);
 
+    // Make the time readable
+    if ( req.body.params.rx_time || req.body.params.tx_time ) {
+
+        var unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time;
+
+        req.body.params.human_time = convertTime(unixtime);
+    }
+
     // Create a promise for decoding the 1m2m payload before sending it to the listen.pug view
     if (req.body.params.payload) {
 
         decode1m2mpayload(req.body.params.payload).then( function (obj) {
 
               req.body.params.human_payload = obj;
-
-              // Make the time readable
-              if ( req.body.params.rx_time || req.body.params.tx_time ) {
-
-                  var unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time;
-
-                  req.body.params.human_time = convertTime(unixtime);
-              }
 
               // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
               if (req.body.params.human_payload.MsgID == 'Analog') {
