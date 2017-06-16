@@ -100,9 +100,9 @@ var getQualityIndex = function (AnIn1, AnIn2) {
 
 var convertTime = function (s) {
 
-    var jstime = s * 1e3;
+    // var jstime = s * 1e3;
 
-    return new Date(jstime + UTC).toISOString().slice(-13, -5);
+    return new Date(s * 1e3).toISOString().slice(-13, -5);
 
 };
 
