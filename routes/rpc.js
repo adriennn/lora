@@ -246,9 +246,11 @@ var methods = {
 
           var result = { "pending": false,
                          "confirmed": false,
-                         "payload": currentdevice.ncrypted_payload };
+                         "payload": currentdevice.encrypted_payload };
 
           exportDataToFile('erase', {});
+
+          console.log('sending payload');
 
           done(null, result);
 
