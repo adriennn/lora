@@ -24,13 +24,11 @@ var exportDataToFile = function exportDataToFile (ref, data) {
 
           var commandqueue = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/command_queue.json'), 'utf8'));
 
-          if ( data.dev_eui == commandqueue[data.dev_eui] || !commandqueue[data.dev_eui] ) {
+          commandqueue[data.dev_eui] = data.cmd_ack;
 
-              commandqueue[data.dev_eui] = data.cmd_ack;
+          fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue));
 
-              fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue));
-
-          }
+          break;
 
       case 'erase' :
 
@@ -151,7 +149,6 @@ var catchRpc = function catchRpc (req, res, next) {
 
                   exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
                                                "cmd_ack" : red.body.params.human_payload.CmdAck });
-
               }
 
               console.log('Added decoded payload to req.body: ', req.body);
