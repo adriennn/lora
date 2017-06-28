@@ -8,25 +8,25 @@ block tabcontent
       div.col-8
         input.form-control(id='',type='text',value='',placeholder='DevEUI',name='dev_eui')
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Command sequence
+      label.col-4.col-form-label.text-muted(for='') Command sequence in hexadecimal
       div.col-8
         input.form-control(id='',type='text',value='',placeholder='Command sequence number',name='command_seq')
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Command string
       div.col-8
         select.form-control(id='',type='text',value='',placeholder='Reference command string',name='command_str')
-          option(value="FE") Reboot
-          option(value="EF") Reset device
+          option(value="FE") Reboot device
+          option(value="EF") Factory reset device
           option(value="FD") Set application id of device (SetAPPEUI)
           option(value="FC") Set activation by personalization (SetABP)
           option(value="0A") Default sensors update time in minutes (UTSensors)
-          option(value="20") Analog sensors update time  in minutes (UTAnalog)
+          option(value="20") Analog sensors update time in minutes (UTAnalog)
           option(value="07") Time delay in hours between wakeups when device is idle (UTIdle)
           option(value="02") Delay time in seconds until device is idle (DTIdle)
           option(value="01") Time in seconds to check for movement (DTMove)
           option(value="05") Update time in minutes while moving 0..255 (UTMoving)
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Command payload
+      label.col-4.col-form-label.text-muted(for='') Command payload in hexadecimal
       div.col-8
         input.form-control(id='',type='text',value='',placeholder='Payload value',name='command_val')
     div.form-group.row

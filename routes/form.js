@@ -9,6 +9,62 @@ var express = require('express'),
 
 var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
 
+var parseLog = function ( data ) {
+
+      return new Promise ( function (resolve, reject) {
+
+          // Data format for chartjs if we don't have matching x-axis data
+          // https://github.com/chartjs/Chart.js/issues/1544
+          // [{x: 'time', y: 'temp'},{...},...]
+
+          // Extract the elements with GenSens data
+          var gensensonly = data.filter( function (el) {
+
+              return el.human_payload.MsgID === 'GenSens';
+          });
+
+          // Extract the elements specific to a single logger
+          // TODO dry this up
+          var gh = gensensonly.filter ( function (el) {
+
+            return el.dev_eui === '0059ac000015013f';
+          });
+
+          var gh_array = [];
+
+          gh.forEach( function (el) {
+
+            gh_array.push({
+              'x': new Date(el.rx_time * 1e3),
+              'y': parseFloat(el.human_payload.Temp)
+            });
+            // gh_obj[new Date(el.rx_time * 1e3)] = parseFloat(el.human_payload.Temp);
+          });
+
+          var cl = gensensonly.filter ( function (el) {
+
+            return el.dev_eui === '0059ac000015014d';
+          });
+
+          var cl_array = [];
+
+          cl.forEach( function (el) {
+              cl_array.push({
+                'x': new Date(el.rx_time * 1e3),
+                'y': parseFloat(el.human_payload.Temp)
+              });
+            // cl_obj[new Date(el.rx_time * 1e3)] = parseFloat(el.human_payload.Temp);
+          });
+
+          merged = {};
+
+          merged['cl'] = cl_array;
+          merged['gh'] = gh_array;
+
+          resolve(merged);
+      });
+};
+
 var getParams = function (req, res, next) {
 
   // process the form with a loop
@@ -75,6 +131,8 @@ var saveRequestToFile = function (req, res, next) {
 
       var mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val;
 
+      // TODO get user input in decimal and transform to hexadecimal including 0 padding if necessary
+
       console.log('mergedhexpayload: ', mergedpayload);
 
       if ( validator.isHexadecimal( mergedpayload ) ) {
@@ -137,6 +195,25 @@ formRouter.get('/listen', function (req, res, next) {
     id: 'listen',
     iosourceurl: iosourceurl
   });
+});
+
+formRouter.get('/records', function (req, res, next) {
+
+    var data = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));
+
+    // Parse the logfiles currently in storage for GenSens data
+    parseLog(data).then( function ( obj ) {
+
+        console.log('parsed obj: ', obj);
+
+        res.locals.templog = JSON.stringify(obj);
+
+        res.render('records', {
+          title: 'Logged data',
+          id: 'records',
+          data: res.locals.templog
+        });
+    });
 });
 
 formRouter.get('/send', function (req, res, next) {

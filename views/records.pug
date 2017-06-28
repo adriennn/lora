@@ -1,0 +1,67 @@
+extends index
+
+block scriptsandstyles
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js')
+
+block tabcontent
+  p(class='small')
+    a(href='http://www.chartjs.org/')  chartjs
+  canvas#graph
+    
+  script.
+    var dataframe = !{data}
+    console.log(dataframe);
+    
+    var ctx = document.getElementById("graph").getContext("2d");
+    
+    var config = {
+      type: 'line',
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time'
+          }]
+        }
+      },
+      data: {
+        datasets: [{
+          label: "greenhouse",
+          backgroundColor: "rgba(131, 191, 63, 0.5)",
+          borderColor: "rgba(131, 191, 63, 0.5)",
+          fill: false,
+          data: dataframe.gh
+        }, {
+          label: "cellar",
+          backgroundColor: "rgba(51, 81, 116, 1)",
+          borderColor: "rgba(51, 81, 116, 1)",
+          fill: false,
+          data: dataframe.cl
+        }]
+      }
+    };
+    
+    //- Chart.pluginService.register({
+    //-   
+    //-   beforeInit: function (chart) {
+    //-       
+    //-     var data = chart.config.data;
+    //- 
+    //-     for (var key in dataframe.gh) {
+    //-       
+    //-       if (dataframe.gh.hasOwnProperty(key)) {
+    //-           data.datasets[0].labels.push(key);
+    //-           data.datasets[0].data.push(dataframe.gh[key]);
+    //-       }
+    //-     }
+    //-     
+    //-     for (var key in dataframe.cl) {
+    //-       
+    //-       if (dataframe.cl.hasOwnProperty(key)) {
+    //-           data.datasets[1].labels.push(key);
+    //-           data.datasets[1].data.push(dataframe.cl[key]);
+    //-       }
+    //-     }
+    //-   }
+    //- });
+    
+    var mychart = new Chart(ctx, config);

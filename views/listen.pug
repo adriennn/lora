@@ -1,17 +1,12 @@
 extends index
 
+block scriptsandstyles
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js")
+
 block tabcontent
   p.h5 Data coming from all active devices.
   ul#datablock
-    
-  //- table#datablock(class='table')
-  //-   thead
-  //-     tr
-  //-       th Time
-  //-       th Method
-  //-       th Device
-  //-   tbody
-            
+
   script.
     var socket = io(!{JSON.stringify(iosourceurl)});
     
