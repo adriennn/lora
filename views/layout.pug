@@ -5,9 +5,59 @@ html
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
 
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/stylesheets/bs-4-alpha-6.css')
+
+    style(type='text/css').
+
+      body {
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+      }
+
+      .header,
+      .footer {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+
+      .header {
+        padding-bottom: 1rem;
+      }
+
+      .footer {
+        padding-top: 1rem;
+        color: #777;
+      }
+
+      li {
+        padding-bottom: 2px !important;
+        padding-top: 2px !important;
+      }
+
+      #datablock {
+        max-height: 30vh;
+        overflow-y: scroll;
+        padding-left: 0 !important;
+      }
+
+      @media (min-width: 48em) {
+        .container {
+          max-width: 46rem;
+        }
+      }
+
+      .jumbotron {
+        text-align: left;
+        border-bottom: .05rem solid #e5e5e5;
+        margin-bottom: 0 !important;
+        padding: 
+      }
       
+      .jumbotron .btn {
+        padding: .75rem 1.5rem;
+      }
+      
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', rel='stylesheet') 
+    
     block scriptsandstyles
   body
     block content
