@@ -13,8 +13,7 @@ var parseLog = function ( data ) {
 
       return new Promise ( function (resolve, reject) {
 
-          // Data format for chartjs if we don't have matching x-axis data
-          // https://github.com/chartjs/Chart.js/issues/1544
+          // Data format for chartist-js
           // [{x: 'time', y: 'temp'},{...},...]
 
           // Extract the elements with GenSens data
@@ -35,10 +34,9 @@ var parseLog = function ( data ) {
           gh.forEach( function (el) {
 
             gh_array.push({
-              'x': new Date(el.rx_time * 1e3),
+              'x': el.rx_time,
               'y': parseFloat(el.human_payload.Temp)
             });
-            // gh_obj[new Date(el.rx_time * 1e3)] = parseFloat(el.human_payload.Temp);
           });
 
           var cl = gensensonly.filter ( function (el) {
@@ -50,10 +48,9 @@ var parseLog = function ( data ) {
 
           cl.forEach( function (el) {
               cl_array.push({
-                'x': new Date(el.rx_time * 1e3),
+                'x': el.rx_time,
                 'y': parseFloat(el.human_payload.Temp)
               });
-            // cl_obj[new Date(el.rx_time * 1e3)] = parseFloat(el.human_payload.Temp);
           });
 
           merged = {};

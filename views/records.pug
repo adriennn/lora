@@ -1,67 +1,116 @@
 extends index
 
 block scriptsandstyles
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js')
+  script(src='https://rawgit.com/hansmaad/chartist-plugin-zoom/master/dist/chartist-plugin-zoom.min.js')
+  script(src='https://rawgit.com/gionkunz/chartist-plugin-threshold/master/dist/chartist-plugin-threshold.min.js')
+
+  link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')    
+    
+  style(type='text/css').
+  
+    .ct-zoom-rect {
+      fill: rgba(0, 0, 0, 0);
+      stroke: grey;
+      stroke-width: 3px;
+    }
+    
+    .ct-line {
+      stroke-width: 2px;
+    }
+    
+    .ct-series-a .ct-line, .ct-series-a .ct-point {
+      stroke: rgba(48, 255, 134, 0.5);
+    }
+    
+    .ct-series-b .ct-line, .ct-series-b .ct-point {
+      stroke: rgba(35, 162, 209, 0.5);
+    }
+
+    .ct-point {
+      stroke-width: 4px;
+    }
+    
+    .ct-line.ct-threshold-above, .ct-point.ct-threshold-above {
+      stroke: rgba(255, 103, 48, 0.5);
+    }
 
 block tabcontent
-  p(class='small')
-    a(href='http://www.chartjs.org/')  chartjs
-  canvas#graph
+  #graph.ct-chart
+
+  div
+    p(class='small text-muted')
+      | Made with 
+      a(href='http://gionkunz.github.io/chartist-js')  Chartist 
+      | for 
+      a(href="https://lillklobbpermaculture.com/") Lillklobb Permaculture. 
+      | You can select an area on the chart to enlarge the data. Threshold temperature is set at 25 degrees Celsius.
+  div
+    button#clicky.btn-primary.float-right Reset chart
     
   script.
-    var dataframe = !{data}
-    console.log(dataframe);
+    var df = !{data}
+    console.log(df);
+
+    df.gh.forEach(item => item.x = new Date(item.x * 1e3));
+    df.cl.forEach(item => item.x = new Date(item.x * 1e3));
     
-    var ctx = document.getElementById("graph").getContext("2d");
-    
-    var config = {
-      type: 'line',
-      options: {
-        scales: {
-          xAxes: [{
-            type: 'time'
-          }]
+    var options = {
+      height: '300',
+      axisX: {
+        type: Chartist.AutoScaleAxis,
+        labelInterpolationFnc: function(value) {
+          return moment(value).format('MMM D');
         }
       },
-      data: {
-        datasets: [{
-          label: "greenhouse",
-          backgroundColor: "rgba(131, 191, 63, 0.5)",
-          borderColor: "rgba(131, 191, 63, 0.5)",
-          fill: false,
-          data: dataframe.gh
-        }, {
-          label: "cellar",
-          backgroundColor: "rgba(51, 81, 116, 1)",
-          borderColor: "rgba(51, 81, 116, 1)",
-          fill: false,
-          data: dataframe.cl
-        }]
-      }
+      axisY: {
+        type: Chartist.AutoScaleAxis,
+        high: 50
+      },
+      plugins: [
+        Chartist.plugins.zoom({
+          onZoom : onZoom
+        }),
+        Chartist.plugins.ctThreshold({
+          threshold: 24
+        })
+      ]
+    };
+        
+    var data = {
+      series: [
+        { 
+          name: 'Greenhouse',
+          data: df.gh
+        },
+        {
+          name: 'Barn',
+          data: df.cl
+        }
+      ]
     };
     
-    //- Chart.pluginService.register({
-    //-   
-    //-   beforeInit: function (chart) {
-    //-       
-    //-     var data = chart.config.data;
-    //- 
-    //-     for (var key in dataframe.gh) {
-    //-       
-    //-       if (dataframe.gh.hasOwnProperty(key)) {
-    //-           data.datasets[0].labels.push(key);
-    //-           data.datasets[0].data.push(dataframe.gh[key]);
-    //-       }
-    //-     }
-    //-     
-    //-     for (var key in dataframe.cl) {
-    //-       
-    //-       if (dataframe.cl.hasOwnProperty(key)) {
-    //-           data.datasets[1].labels.push(key);
-    //-           data.datasets[1].data.push(dataframe.cl[key]);
-    //-       }
-    //-     }
-    //-   }
-    //- });
+    var responsiveOptions = [
+      ['screen and (min-width: 400px)', {
+        showPoint: false,
+        height: '200'
+        }],
+      ['screen and (max-width: 399px)', {
+        height: '200'
+      }]
+    ];
     
-    var mychart = new Chart(ctx, config);
+    var chart = new Chartist.Line('#graph', data, options, responsiveOptions);
+    
+    var resetFnc;
+    
+    function onZoom(chart, reset) {
+      resetFnc = reset;
+    }
+    
+    var button = document.getElementById('clicky')
+      
+    button.addEventListener('click', function () {
+      resetFnc && resetFnc();
+    });

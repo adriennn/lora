@@ -8,7 +8,8 @@
   "license": "MIT",
   "keywords": "lorawan lora radio iot expressjs jayson json-rpc rpc",
   "scripts": {
-    "start": "pm2 -n lora -u www-data start bin/www --env development"
+    "start": "pm2 -n lora -u www-data start bin/www --env development",
+    "prod": "pm2 -n lora -u www-data start bin/www --env production"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
