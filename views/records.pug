@@ -5,8 +5,10 @@ block scriptsandstyles
   script(src='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js')
   script(src='https://rawgit.com/hansmaad/chartist-plugin-zoom/master/dist/chartist-plugin-zoom.min.js')
   script(src='https://rawgit.com/gionkunz/chartist-plugin-threshold/master/dist/chartist-plugin-threshold.min.js')
+  //- script(src='https://rawgit.com/tmmdata/chartist-plugin-tooltip/master/dist/chartist-plugin-tooltip.min.js')
 
-  link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')    
+  link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')
+  //- link(href='', rel='stylesheet')  
     
   style(type='text/css').
   
@@ -29,11 +31,50 @@ block scriptsandstyles
     }
 
     .ct-point {
-      stroke-width: 4px;
+      stroke-width: 8px;
     }
     
     .ct-line.ct-threshold-above, .ct-point.ct-threshold-above {
       stroke: rgba(255, 103, 48, 0.5);
+    }
+    
+    .chartist-tooltip {
+      position: absolute;
+      display: inline-block;
+      opacity: 0;
+      min-width: 5em;
+      padding: .5em;
+      background: #F4C63D;
+      color: #453D3F;
+      font-family: Oxygen,Helvetica,Arial,sans-serif;
+      font-weight: 700;
+      text-align: center;
+      pointer-events: none;
+      z-index: 1;
+      -webkit-transition: opacity .2s linear;
+      -moz-transition: opacity .2s linear;
+      -o-transition: opacity .2s linear;
+      transition: opacity .2s linear; 
+    }
+    
+    .chartist-tooltip:before {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      margin-left: -15px;
+      border: 15px solid transparent;
+      border-top-color: #F4C63D; 
+    }
+    
+    .chartist-tooltip.tooltip-show {
+      opacity: 1; 
+    }
+
+    .ct-area, .ct-line {
+      pointer-events: none;
     }
 
 block tabcontent
@@ -74,7 +115,8 @@ block tabcontent
         }),
         Chartist.plugins.ctThreshold({
           threshold: 24
-        })
+        }),
+        //- Chartist.plugins.tooltip()
       ]
     };
         

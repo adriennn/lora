@@ -9,14 +9,13 @@ block content
     .jumbotron
       .card
         .card-header
-          ul.nav.nav-tabs.card-header-tabs(role='tablist')
+          nav.nav.nav-pills.flex-column.flex-sm-row
             each menuitem in [{id: 'listen',title:'Listen to stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id: 'records',title:'Records',url:'/lora/form/records'}]
               if (id == menuitem.id)
-                li.nav-item
-                  a.nav-link.active(role='tab', data-toggle='tab', href=menuitem.url) #{menuitem.title}
+                a(class='flex-sm-fill text-sm-center nav-link active' href=menuitem.url) #{menuitem.title}
               else
-                li.nav-item
-                  a.nav-link(role='tab', data-toggle='tab', href=menuitem.url) #{menuitem.title}  
+                a(class='flex-sm-fill text-sm-center nav-link' href=menuitem.url) #{menuitem.title}
+                
         .card-block
           block tabcontent
             p Use this tool to send or fetch data to and from a known device or to register a new device on the network.
