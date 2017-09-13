@@ -13,6 +13,11 @@ var parseLog = function ( data ) {
 
       return new Promise ( function (resolve, reject) {
 
+          var gh_array = [];
+          var cl_array = [];
+          var cu_array = [];
+          var gu_array = [];
+
           // Data format for chartist-js
           // [{x: 'time', y: 'temp'},{...},...]
 
@@ -29,14 +34,18 @@ var parseLog = function ( data ) {
             return el.dev_eui === '0059ac000015013f';
           });
 
-          var gh_array = [];
-
           gh.forEach( function (el) {
 
             gh_array.push({
               'x': el.rx_time,
               'y': parseFloat(el.human_payload.Temp)
             });
+
+            gu_array.push({
+              'x': el.rx_time,
+              'y': parseInt(el.human_payload.Humidity)
+            });
+
           });
 
           var cl = gensensonly.filter ( function (el) {
@@ -44,12 +53,16 @@ var parseLog = function ( data ) {
             return el.dev_eui === '0059ac000015014d';
           });
 
-          var cl_array = [];
-
           cl.forEach( function (el) {
+
               cl_array.push({
                 'x': el.rx_time,
                 'y': parseFloat(el.human_payload.Temp)
+              });
+
+              cu_array.push({
+                'x': el.rx_time,
+                'y': parseInt(el.human_payload.Humidity)
               });
           });
 
@@ -57,6 +70,8 @@ var parseLog = function ( data ) {
 
           merged['cl'] = cl_array;
           merged['gh'] = gh_array;
+          merged['gu'] = gu_array;
+          merged['cu'] = cu_array;
 
           resolve(merged);
       });

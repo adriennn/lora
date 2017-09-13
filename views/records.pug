@@ -4,9 +4,8 @@ block scriptsandstyles
   script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js')
   script(src='https://rawgit.com/hansmaad/chartist-plugin-zoom/master/dist/chartist-plugin-zoom.min.js')
-  script(src='https://rawgit.com/gionkunz/chartist-plugin-threshold/master/dist/chartist-plugin-threshold.min.js')
-  //- script(src='https://rawgit.com/tmmdata/chartist-plugin-tooltip/master/dist/chartist-plugin-tooltip.min.js')
-
+  script(src='https://rawgit.com/shbmbhrdwj/chartist-plugin-multithreshold/master/dist/chartist-plugin-multithreshold.min.js')
+  
   link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')
   //- link(href='', rel='stylesheet')  
     
@@ -22,59 +21,52 @@ block scriptsandstyles
       stroke-width: 2px;
     }
     
-    .ct-series-a .ct-line, .ct-series-a .ct-point {
-      stroke: rgba(48, 255, 134, 0.5);
-    }
-    
-    .ct-series-b .ct-line, .ct-series-b .ct-point {
-      stroke: rgba(35, 162, 209, 0.5);
-    }
-
-    .ct-point {
-      stroke-width: 8px;
-    }
-    
-    .ct-line.ct-threshold-above, .ct-point.ct-threshold-above {
-      stroke: rgba(255, 103, 48, 0.5);
-    }
-    
-    .chartist-tooltip {
-      position: absolute;
-      display: inline-block;
-      opacity: 0;
-      min-width: 5em;
-      padding: .5em;
-      background: #F4C63D;
-      color: #453D3F;
-      font-family: Oxygen,Helvetica,Arial,sans-serif;
-      font-weight: 700;
-      text-align: center;
-      pointer-events: none;
-      z-index: 1;
-      -webkit-transition: opacity .2s linear;
-      -moz-transition: opacity .2s linear;
-      -o-transition: opacity .2s linear;
-      transition: opacity .2s linear; 
-    }
-    
-    .chartist-tooltip:before {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      margin-left: -15px;
-      border: 15px solid transparent;
-      border-top-color: #F4C63D; 
-    }
-    
-    .chartist-tooltip.tooltip-show {
-      opacity: 1; 
-    }
-
     .ct-area, .ct-line {
       pointer-events: none;
+    }
+
+    /* TOOO use less with mixins to create the shades */
+    /* Below freezing */
+    .ct-series-a .ct-line.ct-threshold-0 {
+        stroke: #ff00bf;
+    }
+    /* Very low */
+    .ct-series-a .ct-line.ct-threshold-1 {
+        stroke:  #80b3ff;
+    }
+    /* ok range */
+    .ct-series-a .ct-line.ct-threshold-2 {
+        stroke:  #5cd65c;
+    }
+    /* Too high */
+    .ct-series-a .ct-line.ct-threshold-3 {
+        stroke:  #ff9900;
+    }
+    
+    /* Below freezing */
+    .ct-series-b .ct-line.ct-threshold-0 {
+        stroke: #8c5c80;
+    }
+    /* Very low */
+    .ct-series-b .ct-line.ct-threshold-1 {
+        stroke:  #86b4c9;
+    }
+    /* ok range */
+    .ct-series-b .ct-line.ct-threshold-2 {
+        stroke:  #95ce6d;
+    }
+    /* Too high */
+    .ct-series-b .ct-line.ct-threshold-3 {
+        stroke:  #efd856;
+    }
+    
+    /* Humidity */
+    .ct-series-c .ct-line.ct-threshold-0, .ct-series-b .ct-line.ct-threshold-1, .ct-series-c .ct-line.ct-threshold-2, .ct-series-c .ct-line.ct-threshold-3  {
+        stroke:  blue !important;
+    }
+    
+    .ct-series-d .ct-line.ct-threshold-0, .ct-series-d .ct-line.ct-threshold-1, .ct-series-d .ct-line.ct-threshold-2, .ct-series-d .ct-line.ct-threshold-3  {
+        stroke:  lightblue !important;
     }
 
 block tabcontent
@@ -86,19 +78,30 @@ block tabcontent
       a(href='http://gionkunz.github.io/chartist-js')  Chartist 
       | for 
       a(href="https://lillklobbpermaculture.com/") Lillklobb Permaculture. 
-      | You can select an area on the chart to enlarge the data. Threshold temperature is set at 25 degrees Celsius.
-  div
-    button#clicky.btn.btn-primary.float-right Reset chart
-    
+      | Select an area on the chart to zoom in on the data.
+  .container
+    .btn-toolbar.float-right(role='toolbar')
+      .btn-group.mr-2(role='group')
+        button#resetty.btn.btn-secondary Reset chart
+      .input-group
+        span.input-group-btn.mr-0
+          button#setty.btn.btn-secondary(type='button') Set x, y, z
+        input#inputty(type='text', placeholder='   new \u00B0C thresholds')
+
   script.
-    var df = !{data}
+    
+    'use strict';
+    
+    var df = !{data};
     console.log(df);
 
     df.gh.forEach(item => item.x = new Date(item.x * 1e3));
     df.cl.forEach(item => item.x = new Date(item.x * 1e3));
+    df.gu.forEach(item => item.x = new Date(item.x * 1e3));
+    df.cu.forEach(item => item.x = new Date(item.x * 1e3));
     
     var options = {
-      height: '300',
+      height: '400',
       axisX: {
         type: Chartist.AutoScaleAxis,
         labelInterpolationFnc: function(value) {
@@ -107,15 +110,16 @@ block tabcontent
       },
       axisY: {
         type: Chartist.AutoScaleAxis,
-        high: 50
+        high: 100
       },
       plugins: [
         Chartist.plugins.zoom({
           onZoom : onZoom
         }),
-        Chartist.plugins.ctThreshold({
-          threshold: 24
-        }),
+        //- Chartist.plugins.ctThreshold({ threshold: threshold }),
+        Chartist.plugins.ctMultiThreshold({
+                threshold: [5, 10, 25]
+            })
         //- Chartist.plugins.tooltip()
       ]
     };
@@ -129,6 +133,14 @@ block tabcontent
         {
           name: 'Barn',
           data: df.cl
+        },
+        {
+          name: 'Humid cellar',
+          data: df.cu
+        },
+        {
+          name: 'Humid gh',
+          data: df.gu
         }
       ]
     };
@@ -142,7 +154,7 @@ block tabcontent
         height: '200'
       }]
     ];
-    
+        
     var chart = new Chartist.Line('#graph', data, options, responsiveOptions);
     
     var resetFnc;
@@ -151,8 +163,18 @@ block tabcontent
       resetFnc = reset;
     }
     
-    var button = document.getElementById('clicky')
+    var buttonReset = document.getElementById('resetty');
       
-    button.addEventListener('click', function () {
+    buttonReset.addEventListener('click', function () {
       resetFnc && resetFnc();
+    });
+    
+    var buttonSet = document.getElementById('setty');
+    var inputSet = document.getElementById('inputty');
+    
+    buttonSet.addEventListener('click', function () {
+                              
+      options.plugins.ctMultiThreshold = {threshold: [1, 2, 5]};
+            
+      chart.update(null, options.plugins, true);
     });

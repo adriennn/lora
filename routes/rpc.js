@@ -4,7 +4,9 @@ var express = require('express'),
     fs = require('fs'),
     RPCrouter = express.Router(),
     jayson = require('jayson'),
-    http = require('http');
+    http = require('http'),
+    utils = require('../middleware/utils.js'),
+    methods = require('../middleware/EverynetMethods.js');
 
 var exportDataToFile = function exportDataToFile (ref, data) {
 
@@ -63,7 +65,6 @@ var decode1m2mpayload = function (obj) {
             if (error) {
 
                 console.error(error.message);
-                // consume response data to free up memory
                 res.resume();
                 return;
             }
@@ -114,8 +115,6 @@ var convertTime = function (s) {
     return new Date(s * 1e3).toISOString().slice(-13, -5);
 
 };
-
-// TODO keep track of CmdAck value in the app for each device
 
 var catchRpc = function catchRpc (req, res, next) {
 
