@@ -81,7 +81,7 @@ var methods = {
     join: jayson.Method (function (args, done) {
 
         done(null, 'ok');
-    });
+    })
 };
 
 module.exports = methods;

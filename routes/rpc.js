@@ -4,9 +4,9 @@ var express = require('express'),
     fs = require('fs'),
     RPCrouter = express.Router(),
     jayson = require('jayson'),
-    http = require('http'),
-    utils = require('../middleware/utils.js'),
-    methods = require('../middleware/EverynetMethods.js');
+    http = require('http');
+    // utils = require('../middleware/utils.js'),
+    // methods = require('../middleware/EverynetMethods.js');
 
 var exportDataToFile = function exportDataToFile (ref, data) {
 
