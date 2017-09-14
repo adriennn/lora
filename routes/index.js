@@ -1,7 +1,6 @@
 const express   = require('express')
 const router    = express.Router()
 const path      = require('path')
-// const fs        = require('fs')
 const queue     = require(path.join(__dirname,'/../middleware/queue.js'))
 
 // home page
@@ -11,8 +10,6 @@ router.get('/', (req, res, next) => {
 
 // Display data from command queue
 router.get('/:dev_eui', (req, res, next) => {
-
-    // let currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'))
 
     console.log('req.params: ', req.params)
 

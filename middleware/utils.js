@@ -36,8 +36,8 @@ utils.decode1m2mpayload = (obj) => {
 
       console.log('1m2m payload to make human readable: ', obj)
 
-      var hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
-      var url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o
+      const hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
+      let url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o
 
       http.get(url, function (res) {
 
@@ -47,9 +47,7 @@ utils.decode1m2mpayload = (obj) => {
           let error
 
           if (statusCode !== 200) {
-
-              error = new Error('Request Failed.\n' +
-                              `  Status Code: ${statusCode}`)
+              error = new Error(`Request Failed with status Code: ${statusCode}`)
           }
 
           if (error) {
@@ -67,8 +65,8 @@ utils.decode1m2mpayload = (obj) => {
 
             try {
                 const parsedData = JSON.parse(rawData)
-                console.log('Parsed response data', parsedData.toString())
-                resolve( parsedData )
+                // console.log('Parsed response data', parsedData.toString())
+                resolve(parsedData)
 
             } catch (e) {
                 console.error(e.message)

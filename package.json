@@ -1,6 +1,6 @@
 {
   "name": "express-jayson-lorawan",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": false,
   "description": "A server and user interface for managing lorawan devices and payloads",
   "repository": "https://github.com/adriennn/lora",

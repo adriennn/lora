@@ -64,42 +64,37 @@ const makeManualApiCall = (req, res, next) => {
   }
 }
 
-const saveRequestToFile = (req, res, next) => {
+const saveCommandToQueue = (req, res, next) => {
 
   // if there's no method field in the request we're saving the data to a file
   if ( !res.locals.method ) {
 
-    console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals))
+    console.log("res.locals from form.js saveCommandToQueue(): ", JSON.stringify(res.locals))
 
     if ( res.locals.command_str.length > 0 ) {
 
-      var mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val
+      let mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val
 
       // TODO get user input in decimal and transform to hexadecimal including 0 padding if necessary
       console.log('Merged hexpayload: ', mergedpayload)
 
-      if ( validator.isHexadecimal( mergedpayload ) ) {
+      try {
 
-            var encryptedpayload = Buffer.from(mergedpayload, 'hex').toString('base64')
+          let encryptedpayload = Buffer.from(mergedpayload, 'hex').toString('base64')
 
-            var packet = {
-              "dev_eui" : res.locals.dev_eui,
-              "payload" : mergedpayload,
-              "encrypted_payload": encryptedpayload
-            }
+          let packet = {
+            "dev_eui" : res.locals.dev_eui,
+            "payload" : mergedpayload,
+            "encrypted_payload": encryptedpayload
+          }
 
-            console.log('packet from saveRequestToFile()', packet);
+          console.log('packet from saveCommandToQueue()', packet)
 
-            // fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet))
+          queue.set(res.locals.dev_eui, packet)
 
-            queue.set(res.locals.dev_eui, packet)
+          res.render('response', {'saved': 'Successfully saved to command queue.'})
 
-            res.render('response', {'saved': 'Successfully saved to command queue.'})
-
-        } else {
-
-            res.render('response', {'saved': 'Not a valid hexadecimal payload.'})
-      }
+      } catch (e) {res.render('response', {'saved': e.toString()})}
 
     } else {
 
@@ -172,6 +167,6 @@ formRouter.get('/send', (req, res, next) => {
   })
 })
 
-formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse)
+formRouter.post('*', getParams, saveCommandToQueue, makeManualApiCall, renderResponse)
 
 module.exports = formRouter
