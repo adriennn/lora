@@ -85,7 +85,9 @@ utils.getQualityIndex = (AnIn1, AnIn2) => {
 }
 
 utils.convertTime = (s) => {
-    return new Date(s * 1e3).toISOString().slice(-13, -5)
+
+    if (s) return new Date(s * 1e3).toISOString().slice(-13, -5)
+    else return false
 }
 
 utils.parseLog = (data) => {

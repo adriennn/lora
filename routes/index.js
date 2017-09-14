@@ -35,7 +35,7 @@ router.get('/:dev_eui', (req, res, next) => {
 
     } catch (e) {
         let err = new Error(e.toString())
-        err.status = 404
+        err.status = 500
         res.render(err)
     }
 })

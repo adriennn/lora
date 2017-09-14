@@ -29,38 +29,42 @@ const getParams = (req, res, next) => {
 
 const makeManualApiCall = (req, res, next) => {
 
-  console.log('params from makeManualApiCall(): ', res.locals)
+    console.log('params from makeManualApiCall(): ', res.locals)
 
-  if ( res.locals.method ) {
+    try {
 
-    var method = res.locals.method
+      let method = res.locals.method
 
-    // Remove the method from the parameters before the rpc call
-    delete res.locals.method
-    console.log('method: ', method)
+      // Remove the method from the parameters before the rpc call
+      delete res.locals.method
+      console.log('method: ', method)
 
-    rpcclient.request(method, res.locals, function (err, response) {
+      rpcclient.request(method, res.locals, function (err, response) {
 
-      if ( err ) {
-        console.log('Jayson RPC client error: ', err)
-        res.render('response', {"response": {"error": {"code": -32002, "message" : "device not found"}}})
-      }
+        if ( err ) {
+          console.log('Jayson RPC client error: ', err)
+          res.render('response', {"response": {"error": {"code": -32002, "message" : err.toString()}}})
+        }
 
-      if ( response ) {
-        console.log(response)
-        res.locals.response = response
-        next()
-      }
-    })
+        if ( response ) {
+          console.log(response)
+          res.locals.response = response
+          next()
+        }
+      })
 
-    res.on('http timeout', function (data) {
-      console.log('http timeout data: ', data)
-    })
+      res.on('http timeout', function (data) {
+        console.log('http timeout data: ', data)
+      })
 
-    rpcclient.on('http timeout', function(err) {
-      console.log('http client timeout error: ', err)
-    })
-  }
+      rpcclient.on('http timeout', function(err) {
+        console.log('http client timeout error: ', err)
+      })
+
+    } catch (e) {
+      res.render('response', {"response": {"error": {"code": 'missing method', "message" : e.toString()}}})
+    }
+
 }
 
 const saveCommandToQueue = (req, res, next) => {
