@@ -22,11 +22,6 @@ utils.exportDataToFile = (ref, data) => {
 
             fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue))
             break
-
-        // case 'erase' :
-        //
-        //     fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify({}))
-        //     break
       }
 }
 

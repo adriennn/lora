@@ -1,6 +1,5 @@
 const jayson  = require('jayson')
 const path    = require('path')
-// const fs      = require('fs')
 const utils   = require(path.join(__dirname,'/../middleware/utils.js'))
 const methods = {}
 const queue   = require(path.join(__dirname,'/../middleware/queue.js'))
