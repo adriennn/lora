@@ -24,6 +24,4 @@ node ./www/bin
 
 visit `localhost:5000/lora` in your webrowser and test some stuff.
 
-## TODO
-
-- [ ] Redis DB for storgin data
+Visit the url `/lora/:dev_eui` where `:dev_eui` is the value of the device unique id for which you recorded your command.

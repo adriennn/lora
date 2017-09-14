@@ -1,309 +1,312 @@
-/* Router for RPC interface */
-var express = require('express'),
-    path = require('path'),
-    fs = require('fs'),
-    RPCrouter = express.Router(),
-    jayson = require('jayson'),
-    http = require('http');
-    // utils = require('../middleware/utils.js'),
-    // methods = require('../middleware/EverynetMethods.js');
+/* Route for the RPC interface */
+const express   = require('express')
+const path      = require('path')
+const fs        = require('fs')
+const RPCrouter = express.Router()
+const jayson    = require('jayson')
+// const http = require('http')
+const utils     = require(path.join(__dirname,'/../middleware/utils.js'))
+const methods   = require(path.join(__dirname,'/../middleware/methods.js'))
 
-var exportDataToFile = function exportDataToFile (ref, data) {
+// var exportDataToFile = function exportDataToFile (ref, data) {
+//
+//     switch (ref) {
+//
+//       case 'uplink' :
+//
+//           var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));;
+//
+//           packetsdatabase.push(data);
+//
+//           fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase));
+//
+//           break;
+//
+//       case 'cmdack' :
+//
+//           var commandqueue = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/command_queue.json'), 'utf8'));
+//
+//           commandqueue[data.dev_eui] = data.cmd_ack;
+//
+//           fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue));
+//
+//           break;
+//
+//       case 'erase' :
+//
+//           fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify({}));
+//
+//           break;
+//     }
+// };
 
-    switch (ref) {
+// var decode1m2mpayload = function (obj) {
+//
+//     return new Promise ( function (resolve, reject) {
+//
+//         console.log('1m2m payload to make human readable: ', obj);
+//
+//         var hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex');
+//         var url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o;
+//
+//         http.get(url, function (res) {
+//
+//             const { statusCode } = res;
+//             const contentType = res.headers['content-type'];
+//
+//             let error;
+//
+//             if (statusCode !== 200) {
+//
+//                 error = new Error('Request Failed.\n' +
+//                                 `  Status Code: ${statusCode}`);
+//             }
+//
+//             if (error) {
+//
+//                 console.error(error.message);
+//                 res.resume();
+//                 return;
+//             }
+//
+//             let rawData = '';
+//
+//             res.on('data', function (chunk) { rawData += chunk; });
+//
+//             res.on('end', function () {
+//
+//               try {
+//                   const parsedData = JSON.parse(rawData);
+//                   console.log('Parsed response data', parsedData.toString());
+//                   resolve( parsedData );
+//
+//               } catch (e) {
+//                   console.error(e.message);
+//               }
+//             });
+//
+//         }).on('error', (e) => {
+//           console.error(`Got error: ${e.message}`);
+//         });
+//     });
+// };
 
-      case 'uplink' :
+// var getQualityIndex = function (AnIn1, AnIn2) {
+//
+//     var quality;
+//
+//     if ( AnIn1 < 250 && AnIn2 < 250 ) {
+//         quality = 'clean';
+//     } else if ( AnIn1 < 250 && AnIn2 > 3000 ) {
+//         quality = 'light';
+//     } else if ( AnIn1 > 3000 && AnIn2 < 250 ) {
+//         quality = 'medium';
+//     } else if ( AnIn1 > 3000 && AnIn2 > 3000 ) {
+//         quality = 'high';
+//     }
+//
+//     return quality;
+// };
 
-          var packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));;
+// var convertTime = function (s) {
+//
+//     // var jstime = s * 1e3;
+//
+//     return new Date(s * 1e3).toISOString().slice(-13, -5);
+//
+// };
 
-          packetsdatabase.push(data);
+const catchRpc = (req, res, next) => {
 
-          fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase));
+    let io = req.app.get('socketio')
 
-          break;
-
-      case 'cmdack' :
-
-          var commandqueue = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/command_queue.json'), 'utf8'));
-
-          commandqueue[data.dev_eui] = data.cmd_ack;
-
-          fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue));
-
-          break;
-
-      case 'erase' :
-
-          fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify({}));
-
-          break;
-    }
-};
-
-var decode1m2mpayload = function (obj) {
-
-    return new Promise ( function (resolve, reject) {
-
-        console.log('1m2m payload to make human readable: ', obj);
-
-        var hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex');
-        var url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o;
-
-        http.get(url, function (res) {
-
-            const { statusCode } = res;
-            const contentType = res.headers['content-type'];
-
-            let error;
-
-            if (statusCode !== 200) {
-
-                error = new Error('Request Failed.\n' +
-                                `  Status Code: ${statusCode}`);
-            }
-
-            if (error) {
-
-                console.error(error.message);
-                res.resume();
-                return;
-            }
-
-            let rawData = '';
-
-            res.on('data', function (chunk) { rawData += chunk; });
-
-            res.on('end', function () {
-
-              try {
-                  const parsedData = JSON.parse(rawData);
-                  console.log('Parsed response data', parsedData.toString());
-                  resolve( parsedData );
-
-              } catch (e) {
-                  console.error(e.message);
-              }
-            });
-
-        }).on('error', (e) => {
-          console.error(`Got error: ${e.message}`);
-        });
-    });
-};
-
-var getQualityIndex = function (AnIn1, AnIn2) {
-
-    var quality;
-
-    if ( AnIn1 < 250 && AnIn2 < 250 ) {
-        quality = 'clean';
-    } else if ( AnIn1 < 250 && AnIn2 > 3000 ) {
-        quality = 'light';
-    } else if ( AnIn1 > 3000 && AnIn2 < 250 ) {
-        quality = 'medium';
-    } else if ( AnIn1 > 3000 && AnIn2 > 3000 ) {
-        quality = 'high';
-    }
-
-    return quality;
-};
-
-var convertTime = function (s) {
-
-    // var jstime = s * 1e3;
-
-    return new Date(s * 1e3).toISOString().slice(-13, -5);
-
-};
-
-var catchRpc = function catchRpc (req, res, next) {
-
-    var io = req.app.get('socketio');
-
-    console.log('req value from RPCRouter.post(*): ', req.body);
+    // console.log('req value from RPCRouter.post(*): ', req.body)
 
     // Make the time readable
-    if ( req.body.params.rx_time || req.body.params.tx_time ) {
+    try {
 
-        var unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time;
+        let unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time
+            req.body.params.human_time = utils.convertTime(unixtime)
 
-        req.body.params.human_time = convertTime(unixtime);
-    }
+    } catch (e) { console.log('no timestamp in the data', e) }
 
-    // Create a promise for decoding the 1m2m payload before sending it to the listen.pug view
-    if (req.body.params.payload) {
+    // Decode the 1m2m payload before sending it to the listen.pug view
+    if ( req.body.params.payload ) {
 
-        decode1m2mpayload(req.body.params.payload).then( function (obj) {
+        let decodepayload = utils.decode1m2mpayload(req.body.params.payload)
 
-              req.body.params.human_payload = obj;
+            decodepayload.then( function (obj) {
+
+              req.body.params.human_payload = obj
 
               // set the polluton scale for the winsen ZP01-MP503 module if the analog data is present
-              if (req.body.params.human_payload.MsgID == 'Analog') {
+              if ( req.body.params.human_payload.MsgID == 'Analog' ) {
 
-                  req.body.params.pollution_level = getQualityIndex(parseInt(req.body.params.human_payload.AnIn1, 10), parseInt(req.body.params.human_payload.AnIn2, 10));
+                  req.body.params.pollution_level = utils.getQualityIndex(parseInt(req.body.params.human_payload.AnIn1, 10), parseInt(req.body.params.human_payload.AnIn2, 10))
               }
 
               // check if it's a TAlive message so we an extract the CmdAck param
               // if (req.body.params.human_payload.MsgID == 'Alive') {
               //
-              //     exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
+              //     utils.exportDataToFile('cmdack', { "dev_eui" : req.body.params.dev_eui,
               //                                  "cmd_ack" : red.body.params.human_payload.CmdAck });
               // }
 
-              console.log('Added decoded payload to req.body: ', req.body);
+              console.log('Added decoded payload to req.body: ', req.body)
 
-              io.emit("rpcrequest", req.body);
+              io.emit("rpcrequest", req.body)
 
-              next();
-        }) ;
+              next()
+        })
 
     } else {
 
-        io.emit("rpcrequest", req.body);
+        io.emit("rpcrequest", req.body)
 
-        next();
+        next()
     }
 };
 
 // RPC methods for Everynet network
-var methods = {
-
-    uplink: jayson.Method(function (args, done) {
-
-     /* Parameters in the request
-      * uplink method only needs to return 'ok'
-      * args.dev_eui
-      * args.dev_addr
-      * args.rx_time
-      * args.counter_up
-      * args.port
-      * args.encrypted_payload
-      * args.radio [includes numerous sub params]
-      */
-
-      console.log('data from uplink() method', args);
-
-      exportDataToFile('uplink', args);
-
-      done(null, 'ok');
-  }),
-  outdated: function (args, done) {
-
-     /* Parameters in the request
-      * same as in uplink method
-      * this method delivers packets that were accumulated while application
-      * was unable to receive request from the network server [batch]
-      */
-
-      done(null, 'ok');
-  },
-  status: function (args, done) {
-
-   /* Parameters in the request
-    * args.dev_eui
-    * args.dev_addr
-    * args.battery [battery level: 1-254, 0=external power source, 255=unknown]
-    * args.snr [signal to noise ratio]
-    */
-
-    done(null, 'ok');
-  },
-  satus_request: function (args, done) {
-
-   /* Parameters in the request
-    *
-    * args.api_key
-    * args.dev_eui
-    */
-
-    done(null, 'ok');
-  },
-  downlink: jayson.Method( function (args, done) {
-
-      // Make a Redis DB and work from there
-      var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
-
-    /* Parameters in the request
-     * args.dev_eui
-     * args.dev_addr
-     * args.tx_time
-     * args.max_size
-     * args.counter_down
-     */
-
-      if ( !currentdevice.encrypted_payload ) {
-
-          console.log('encrypted payload missing');
-
-          done(null, { "pending": false,
-                       "confirmed": false,
-                       "payload": "" });
-
-
-      // if the dev_eui from the Network Server matches what's on file we send the payload
-      } else if ( currentdevice.encrypted_payload && args.dev_eui == currentdevice.dev_eui ) {
-
-          var result = { "pending": false,
-                         "confirmed": false,
-                         "payload": currentdevice.encrypted_payload };
-
-          exportDataToFile('erase', {});
-
-          console.log('sending payload');
-
-          done(null, result);
-
-      }  else {
-
-          console.log('nothing in storage');
-
-          done(null, { "pending": false,
-                       "confirmed": false,
-                       "payload": "" });
-      }
-  }),
-  post_uplink: function (args, done) {
-
-   /* Parameters in the request
-    * this type of request contains redundant packets obtained through other gateways
-    * only the timestamp for aquisition by the gateway varies
-    * args.dev_eui
-    * args.dev_addr
-    * args.rx_time
-    * args.counter_up
-    * args.port
-    * args.encrypted_payload
-    * args.radio [includes numerous sub params]
-    */
-
-    done(null, 'ok');
-  },
-  notify: function (args, done) {
-
-     /* Parameters in the request
-      * only for always-on 'class C' devices
-      * notifies the network server of packets available for uplink
-      * network server then emits a 'downlink' request which can be replied to with a payload
-      * args.api_key
-      * args.dev_eui
-      */
-
-      done(null, 'ok');
-  },
-  join: jayson.Method (function (args, done) {
-
-      /*
-       * The join() method is not called if app_key was provided to the network by the user
-       */
-
-        done(null, 'ok');
-  })
-
-};
+// methods = {
+//
+//   uplink : jayson.Method( function (args, done) {
+//
+//      /* Parameters in the request
+//       * uplink method only needs to return 'ok'
+//       * args.dev_eui
+//       * args.dev_addr
+//       * args.rx_time
+//       * args.counter_up
+//       * args.port
+//       * args.encrypted_payload
+//       * args.radio [includes numerous sub params]
+//       */
+//
+//       console.log('data from uplink() method', args);
+//
+//       exportDataToFile('uplink', args);
+//
+//       done(null, 'ok');
+//   }),
+//
+//   outdated: function (args, done) {
+//
+//      /* Parameters in the request
+//       * same as in uplink method
+//       * this method delivers packets that were accumulated while application
+//       * was unable to receive request from the network server [batch]
+//       */
+//
+//       done(null, 'ok');
+//   },
+//   status: function (args, done) {
+//
+//    /* Parameters in the request
+//     * args.dev_eui
+//     * args.dev_addr
+//     * args.battery [battery level: 1-254, 0=external power source, 255=unknown]
+//     * args.snr [signal to noise ratio]
+//     */
+//
+//     done(null, 'ok');
+//   },
+//   satus_request: function (args, done) {
+//
+//    /* Parameters in the request
+//     *
+//     * args.api_key
+//     * args.dev_eui
+//     */
+//
+//     done(null, 'ok');
+//   },
+//   downlink: jayson.Method( function (args, done) {
+//
+//       // Make a Redis DB and work from there
+//       var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+//
+//     /* Parameters in the request
+//      * args.dev_eui
+//      * args.dev_addr
+//      * args.tx_time
+//      * args.max_size
+//      * args.counter_down
+//      */
+//
+//       if ( !currentdevice.encrypted_payload ) {
+//
+//           console.log('encrypted payload missing');
+//
+//           done(null, { "pending": false,
+//                        "confirmed": false,
+//                        "payload": "" });
+//
+//
+//       // if the dev_eui from the Network Server matches what's on file we send the payload
+//       } else if ( currentdevice.encrypted_payload && args.dev_eui == currentdevice.dev_eui ) {
+//
+//           var result = { "pending": false,
+//                          "confirmed": false,
+//                          "payload": currentdevice.encrypted_payload };
+//
+//           exportDataToFile('erase', {});
+//
+//           console.log('sending payload');
+//
+//           done(null, result);
+//
+//       }  else {
+//
+//           console.log('nothing in storage');
+//
+//           done(null, { "pending": false,
+//                        "confirmed": false,
+//                        "payload": "" });
+//       }
+//   }),
+//   post_uplink: function (args, done) {
+//
+//    /* Parameters in the request
+//     * this type of request contains redundant packets obtained through other gateways
+//     * only the timestamp for aquisition by the gateway varies
+//     * args.dev_eui
+//     * args.dev_addr
+//     * args.rx_time
+//     * args.counter_up
+//     * args.port
+//     * args.encrypted_payload
+//     * args.radio [includes numerous sub params]
+//     */
+//
+//     done(null, 'ok');
+//   },
+//   notify: function (args, done) {
+//
+//      /* Parameters in the request
+//       * only for always-on 'class C' devices
+//       * notifies the network server of packets available for uplink
+//       * network server then emits a 'downlink' request which can be replied to with a payload
+//       * args.api_key
+//       * args.dev_eui
+//       */
+//
+//       done(null, 'ok');
+//   },
+//   join: jayson.Method (function (args, done) {
+//
+//       /*
+//        * The join() method is not called if app_key was provided to the network by the user
+//        */
+//
+//         done(null, 'ok');
+//   })
+//
+// };
 
 // Any request coming to /lora/rpc will be handled by the jayson server
-var jaysonserver = jayson.server(methods, {params: Object});
+var jaysonserver = jayson.server(methods.everynet, {params: Object})
 
-RPCrouter.post('*', catchRpc, jaysonserver.middleware());
+RPCrouter.post('*', catchRpc, jaysonserver.middleware())
 
-module.exports = RPCrouter;
+module.exports = RPCrouter

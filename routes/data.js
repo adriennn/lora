@@ -1,3 +1,0 @@
-/*
- * Route for retrieving data
- */

@@ -1,83 +1,17 @@
-require('dotenv').config();
+require('dotenv').config()
 
-var express = require('express'),
-    formRouter = express.Router(),
-    path = require('path'),
-    fs = require('fs'),
-    validator = require('validator'),
-    rpcclient = require(path.join(__dirname,'/../middleware/RPCclient.js'));
+const express    = require('express')
+const formRouter = express.Router()
+const path       = require('path')
+const fs         = require('fs')
+const validator  = require('validator')
+const utils      = require(path.join(__dirname,'/../middleware/utils.js'))
+const rpcclient  = require(path.join(__dirname,'/../middleware/rpcclient.js'))
+const queue      = require(path.join(__dirname,'/../middleware/queue.js'))
 
-var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+// var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'))
 
-var parseLog = function ( data ) {
-
-      return new Promise ( function (resolve, reject) {
-
-          var gh_array = [];
-          var cl_array = [];
-          var cu_array = [];
-          var gu_array = [];
-
-          // Data format for chartist-js
-          // [{x: 'time', y: 'temp'},{...},...]
-
-          // Extract the elements with GenSens data
-          var gensensonly = data.filter( function (el) {
-
-              return el.human_payload.MsgID === 'GenSens';
-          });
-
-          // Extract the elements specific to a single logger
-          // TODO dry this up
-          var gh = gensensonly.filter ( function (el) {
-
-            return el.dev_eui === '0059ac000015013f';
-          });
-
-          gh.forEach( function (el) {
-
-            gh_array.push({
-              'x': el.rx_time,
-              'y': parseFloat(el.human_payload.Temp)
-            });
-
-            gu_array.push({
-              'x': el.rx_time,
-              'y': parseInt(el.human_payload.Humidity)
-            });
-
-          });
-
-          var cl = gensensonly.filter ( function (el) {
-
-            return el.dev_eui === '0059ac000015014d';
-          });
-
-          cl.forEach( function (el) {
-
-              cl_array.push({
-                'x': el.rx_time,
-                'y': parseFloat(el.human_payload.Temp)
-              });
-
-              cu_array.push({
-                'x': el.rx_time,
-                'y': parseInt(el.human_payload.Humidity)
-              });
-          });
-
-          merged = {};
-
-          merged['cl'] = cl_array;
-          merged['gh'] = gh_array;
-          merged['gu'] = gu_array;
-          merged['cu'] = cu_array;
-
-          resolve(merged);
-      });
-};
-
-var getParams = function (req, res, next) {
+const getParams = (req, res, next) => {
 
   // process the form with a loop
   // console.log('form data: ', JSON.stringify(req.body));
@@ -94,147 +28,150 @@ var getParams = function (req, res, next) {
   next();
 };
 
-var makeManualApiCall = function (req, res, next) {
+const makeManualApiCall = (req, res, next) => {
 
-  console.log('params from makeManualApiCall(): ', res.locals);
+  console.log('params from makeManualApiCall(): ', res.locals)
 
-  if (res.locals.method) {
+  if ( res.locals.method ) {
 
-    var method = res.locals.method;
+    var method = res.locals.method
 
-    // remove the method from the parameters before the rpc call
-    delete res.locals.method;
-    console.log('method: ', method);
+    // Remove the method from the parameters before the rpc call
+    delete res.locals.method
+    console.log('method: ', method)
 
     rpcclient.request(method, res.locals, function (err, response) {
 
-      if (err) {
-        console.log('Jayson RPC client error: ', err);
-        // TODO make this via jayson which so far hasn't picked up'
-        res.render('response', {"response": {"error": {"code": -32002, "message" : "device not found"}}});
+      if ( err ) {
+        console.log('Jayson RPC client error: ', err)
+        res.render('response', {"response": {"error": {"code": -32002, "message" : "device not found"}}})
       }
 
-      if (response) {
-        console.log(response);
-        res.locals.response = response;
-        next();
+      if ( response ) {
+        console.log(response)
+        res.locals.response = response
+        next()
       }
-    });
+    })
 
     res.on('http timeout', function (data) {
-      console.log('http timeout data: ', data);
-    });
+      console.log('http timeout data: ', data)
+    })
 
     rpcclient.on('http timeout', function(err) {
-      console.log('http client timeout error: ', err);
-    });
-
+      console.log('http client timeout error: ', err)
+    })
   }
-};
+}
 
-var saveRequestToFile = function (req, res, next) {
+const saveRequestToFile = (req, res, next) => {
 
   // if there's no method field in the request we're saving the data to a file
   if ( !res.locals.method ) {
 
-    console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals));
+    console.log("res.locals from saveRequesttoFile(): ", JSON.stringify(res.locals))
 
     if ( res.locals.command_str.length > 0 ) {
 
-      var mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val;
+      var mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val
 
       // TODO get user input in decimal and transform to hexadecimal including 0 padding if necessary
-
-      console.log('mergedhexpayload: ', mergedpayload);
+      console.log('Merged hexpayload: ', mergedpayload)
 
       if ( validator.isHexadecimal( mergedpayload ) ) {
 
-            var encryptedpayload = Buffer.from(mergedpayload, 'hex').toString('base64');
+            var encryptedpayload = Buffer.from(mergedpayload, 'hex').toString('base64')
 
-            var packet = { "dev_eui" : res.locals.dev_eui,
-                           "payload" : mergedpayload,
-                           "encrypted_payload": encryptedpayload };
+            var packet = {
+              "dev_eui" : res.locals.dev_eui,
+              "payload" : mergedpayload,
+              "encrypted_payload": encryptedpayload
+            }
 
             console.log('packet from saveRequestToFile()', packet);
 
-            fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet));
+            // fs.writeFileSync(path.join(__dirname, './../config/device.json'), JSON.stringify(packet))
 
-            res.render('response', {'saved': 'Successfully saved to file.'});
+            queue.set(res.locals.dev_eui, packet)
+
+            res.render('response', {'saved': 'Successfully saved to command queue.'})
 
         } else {
 
-            res.render('response', {'saved': 'Not a valid hexadecimal payload.'});
+            res.render('response', {'saved': 'Not a valid hexadecimal payload.'})
       }
 
     } else {
 
-        res.render('response', {'saved': 'Not saved, payload is mandatory.'});
+        res.render('response', {'saved': 'Not saved, payload is mandatory.'})
 	}
 
   } else {
 	  // else we're calling from the test form so move to the next middleware
-	  next();
+	  next()
   }
 };
 
-var renderResponse = function (res, req) {
+const renderResponse = (res, req) => {
 
   // console.log('rendering response: ', req.locals);
   if (req.locals.response) {
 
-    req.render('response', {'response': req.locals.response});
+    req.render('response', {'response': req.locals.response})
 
   } else {
-    req.render('response', {'saved': 'Not saved, payload is mandatory.'});
+    req.render('response', {'saved': 'Not saved, payload is mandatory.'})
   }
-};
+}
 
-formRouter.get('/test', function (req, res, next) {
+formRouter.get('/test', (req, res, next) => {
   res.render('test', {
     title: 'Test RPC calls',
     id: 'test'
-  });
-});
+  })
+})
 
-formRouter.get('/listen', function (req, res, next) {
+formRouter.get('/listen', (req, res, next) => {
 
-  var iosourceurl = process.env.IO_CONNECT;
+  var iosourceurl = process.env.IO_CONNECT
 
-  console.log('io source: ', iosourceurl);
+  console.log('io source: ', iosourceurl)
 
   res.render('listen', {
     title: 'Listen to RPC calls',
     id: 'listen',
     iosourceurl: iosourceurl
-  });
-});
+  })
+})
 
-formRouter.get('/records', function (req, res, next) {
+formRouter.get('/records', (req, res, next) => {
 
-    var data = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'));
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'))
 
     // Parse the logfiles currently in storage for GenSens data
-    parseLog(data).then( function ( obj ) {
+    let parsedata = utils.parseLog(data)
 
-        console.log('parsed obj: ', obj);
+        parsedata.then( function ( obj ) {
 
-        res.locals.templog = JSON.stringify(obj);
+          console.log('parsed obj: ', obj)
 
-        res.render('records', {
-          title: 'Logged data',
-          id: 'records',
-          data: res.locals.templog
-        });
-    });
-});
+          res.locals.templog = JSON.stringify(obj)
 
-formRouter.get('/send', function (req, res, next) {
+          res.render('records', {
+            title: 'Logged data',
+            id: 'records',
+            data: res.locals.templog
+          })
+      })
+})
+
+formRouter.get('/send', (req, res, next) => {
   res.render('send', {
     title: 'Send data to a device',
     id: 'send'
-  });
-});
+  })
+})
 
-formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse);
+formRouter.post('*', getParams, saveRequestToFile, makeManualApiCall, renderResponse)
 
-module.exports = formRouter;
+module.exports = formRouter

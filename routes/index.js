@@ -1,52 +1,46 @@
-var express = require('express'),
-    mainRouter = express.Router(),
-    path = require('path'),
-    validator = require('validator'),
-    fs = require('fs');
+const express   = require('express')
+const router    = express.Router()
+const path      = require('path')
+// const fs        = require('fs')
+const queue     = require(path.join(__dirname,'/../middleware/queue.js'))
 
 // home page
-mainRouter.get('/', function(req, res, next) {
-  res.render('index', { title: 'Lora' });
-});
+router.get('/', (req, res, next) => {
+  res.render('index', { title: 'Lora' })
+})
 
-// Retrieve data from config file in config/device.json
-// TODO move this to routes/data.js
-mainRouter.get('/:dev_eui', function (req, res, next) {
+// Display data from command queue
+router.get('/:dev_eui', (req, res, next) => {
 
-    var currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'));
+    // let currentdevice = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/device.json'), 'utf8'))
 
-    console.log('req.params: ', req.params);
+    console.log('req.params: ', req.params)
 
-    var id = req.params.dev_eui;
+    try {
 
-    if ( id ) {
+      let data = queue.get(req.params.dev_eui)
 
-        res.locals.dev_eui = currentdevice['dev_eui'];
-        res.locals.payload = currentdevice['payload'];
-        res.locals.encrypted_payload = currentdevice['encrypted_payload'];
+      res.locals.dev_eui           = data['dev_eui']
+      res.locals.payload           = data['payload']
+      res.locals.encrypted_payload = data['encrypted_payload']
 
-        console.log('id: ', id);
-        console.log('res.locals.dev_eui', res.locals.dev_eui);
+      console.log('req.params.dev_eui: ', req.params.dev_eui)
+      console.log('res.locals.dev_eui: ', res.locals.dev_eui)
 
-        if ( id === res.locals.dev_eui ) {
+      if ( req.params.dev_eui === res.locals.dev_eui ) {
 
-          res.render('checkpayload', { title: 'Current configuration data',
-                                       id: 'deveui',
-                                       data: res.locals });
-        } else {
+          res.render('checkpayload', {
+            title: 'Current command and data in queue',
+            id: 'deveui',
+            data: res.locals
+          })
+      }
 
-            var err = new Error('Device not found.');
-            err.status = 404;
-            res.render(err);
-        }
-
-    } else {
-
-        var err = new Error('Wrong device.');
-        err.status = 404;
-        res.render(err);
-
+    } catch (e) {
+        let err = new Error(e.toString())
+        err.status = 404
+        res.render(err)
     }
-});
+})
 
-module.exports = mainRouter;
+module.exports = router

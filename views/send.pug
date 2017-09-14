@@ -1,7 +1,7 @@
 extends index
 
 block tabcontent
-  p.h5 Save instructions to be submitted to a device once a downlink call matching the device id hits the app.
+  p.h5 Save a command to be submitted to a device once a downlink call matching the device unique id is received by the server.
   form(action='/lora/form?save',method='post',name="instructions")
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Device unique ID
