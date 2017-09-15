@@ -5,24 +5,11 @@ const utils = {}
 
 utils.exportDataToFile = (ref, data) => {
 
-      switch ( ref ) {
+    // let packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'))
+    let packetsdatabase = require(path.join(__dirname,'/../config/packets.json'))
+        packetsdatabase.push(data)
 
-        case 'uplink' :
-
-            let packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'))
-                packetsdatabase.push(data)
-
-            fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase))
-            break
-
-        case 'cmdack' :
-
-            let commandqueue = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/command_queue.json'), 'utf8'))
-                commandqueue[data.dev_eui] = data.cmd_ack
-
-            fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(commandqueue))
-            break
-      }
+    fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase))
 }
 
 utils.decode1m2mpayload = (obj) => {
@@ -34,34 +21,27 @@ utils.decode1m2mpayload = (obj) => {
       const hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
       let url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o
 
-      http.get(url, function (res) {
+      http.get(url, (res) => {
 
           const { statusCode } = res
-          const contentType = res.headers['content-type']
-
-          let error
 
           if (statusCode !== 200) {
-              error = new Error(`Request Failed with status Code: ${statusCode}`)
-          }
-
-          if (error) {
-
+              let error = new Error(`Request Failed with status Code: ${statusCode}`)
               console.error(error.message)
               res.resume()
               return
           }
 
-          let rawData = ''
+          let rawdata = ''
 
-          res.on('data', function (chunk) { rawData += chunk })
+          res.on('data', (chunk) => { rawdata += chunk })
 
-          res.on('end', function () {
+          res.on('end', () => {
 
             try {
-                const parsedData = JSON.parse(rawData)
-                // console.log('Parsed response data', parsedData.toString())
-                resolve(parsedData)
+                const parseddata = JSON.parse(rawdata)
+                // console.log('Parsed response data', parseddata.toString())
+                resolve(parseddata)
 
             } catch (e) {
                 console.error(e.message)
@@ -106,16 +86,16 @@ utils.parseLog = (data) => {
           // [{x: 'time', y: 'temp'},{...},...]
 
           // Extract the elements with GenSens data
-          let gensensonly = data.filter( function (el) {
+          let gensensonly = data.filter((el) => {
               return el.human_payload.MsgID === 'GenSens'
           })
 
           // Extract the elements specific to a single logger
-          let gh = gensensonly.filter ( function (el) {
+          let gh = gensensonly.filter ((el) => {
             return el.dev_eui === '0059ac000015013f'
           })
 
-          gh.forEach( function (el) {
+          gh.forEach((el) => {
 
             gh_array.push({
               'x': el.rx_time,
@@ -129,11 +109,11 @@ utils.parseLog = (data) => {
 
           })
 
-          let cl = gensensonly.filter ( function (el) {
+          let cl = gensensonly.filter ((el) => {
             return el.dev_eui === '0059ac000015014d'
           })
 
-          cl.forEach( function (el) {
+          cl.forEach((el) => {
 
               cl_array.push({
                 'x': el.rx_time,
