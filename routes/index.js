@@ -1,43 +1,22 @@
-const express   = require('express')
-const router    = express.Router()
-const path      = require('path')
-const queue     = require(path.join(__dirname,'/../middleware/queue.js'))
+const express = require('express')
+const router  = express.Router()
+const path    = require('path')
+
+// const menuList = [
+//   {id: 'listen', title:'Live stream', url:'/lora/form/listen'},
+//   {id: 'send', title:'Send data', url:'/lora/form/send'},
+//   {id: 'test', title:'Test calls', url:'/lora/form/test'},
+//   {id: 'records', title:'Records', url:'/lora/form/records'},
+//   {id: 'cache', title:'Commands', url:'/lora/form/cache'},
+//   {id: 'db', title:'Database', url:'/lora/form/db'}
+// ]
 
 // home page
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Lora' })
-})
-
-// Display data from command queue
-router.get('/:dev_eui', (req, res, next) => {
-
-    console.log('req.params: ', req.params)
-
-    try {
-
-      let data = queue.get(req.params.dev_eui)
-
-      res.locals.dev_eui           = data['dev_eui']
-      res.locals.payload           = data['payload']
-      res.locals.encrypted_payload = data['encrypted_payload']
-
-      console.log('req.params.dev_eui: ', req.params.dev_eui)
-      console.log('res.locals.dev_eui: ', res.locals.dev_eui)
-
-      if ( req.params.dev_eui === res.locals.dev_eui ) {
-
-          res.render('checkpayload', {
-            title: 'Current command and data in queue',
-            id: 'deveui',
-            data: res.locals
-          })
-      }
-
-    } catch (e) {
-        let err = new Error(e.toString())
-        err.status = 500
-        res.render(err)
-    }
+  res.render('index',
+    { title: 'Lora',
+      // data: menuList
+    })
 })
 
 module.exports = router

@@ -1,0 +1,82 @@
+extends index
+
+block scriptsandstyles
+  script(src='https://rawgit.com/adriennn/jsqr/master/index.js')
+  script(src='https://rawgit.com/webrtc/adapter/master/release/adapter.js')
+  script(src='https://cdn.jsdelivr.net/npm/image-capture@0.3.4/lib/imagecapture.min.js')
+  link(href='', rel='stylesheet')
+    
+  style(type="text/css").
+
+    video, canvas, #photo {
+      background: lightgray !important;
+      height: 100px !important;
+      width: 200px !important;
+    }
+
+block tabcontent
+  p.h5 Scan the QR code on your device
+    .row(class="justify-content-center align-items-center")
+      form(class="align-items-center",action="/lora/demo",id="sendcode",method="POST")
+        .form-group
+          video(autoplay,class="form-control")
+        .form-group
+          input(class="input-lg form-control",id="qr-url",name="url",placeholder="decoded url")
+        
+  script.
+
+    var scanButton = document.querySelector("#scan");
+    
+    var videoOutput = document.getElementsByTagName("video");
+    var qrcode = new QrCode();
+    
+    qrcode.callback = function(err, result) {
+    
+      console.log(err);
+      console.log(result);
+                
+      if (err) {
+        
+        console.log(err);
+                
+        } else {    
+                    
+        var inputQurl = document.querySelector("#qr-url");
+            inputQurl.value = result.result;
+        
+        document.getElementById("sendcode").submit(); 
+            
+      }
+    }
+    
+    var video = document.querySelector('video');
+    var canvas;
+
+    function takeSnapshot() {
+    
+      var img = document.querySelector('img') || document.createElement('img');
+      var context;
+      var width  = video.offsetWidth;
+      var height = video.offsetHeight;
+
+      canvas = canvas || document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, width, height);
+
+      qrcode.decode(canvas.toDataURL('image/png'));
+    }
+
+    if (navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia({video: true})
+        .then(function(stream) {
+          video.srcObject = stream;
+          video.addEventListener('click', takeSnapshot);
+        })
+        .catch(function(error) {
+          document.body.textContent = 'Could not access the camera. Error: ' + error.name;
+        });
+    }
+  

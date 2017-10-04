@@ -7,19 +7,17 @@ block tabcontent
       label.col-4.col-form-label.text-muted(for='') Method
       div.col-8
         select.form-control(id='',type='text',value='',placeholder='RPC method to call',name='method')
-          option(value="status_request",name='method') Status request
           option(value="notify",name='method') Notify
           option(value="uplink",name='method') Uplink
-          option(value="outdated",name='method') Outdated
           option(value="downlink",name='method') Downlink
           option(value="join",name='method') Join
-          option(value="test",name='method') Test call
+          option(value="test",name='method') Unreferenced method
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Device unique ID
       div.col-8
-        input.form-control(id='',type='text',value='',placeholder='Dev_EUI',name='dev_eui')
+        input.form-control(id='',type='text',value='',placeholder='DEV_EUI',name='dev_eui')
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Cmmand type
+      label.col-4.col-form-label.text-muted(for='') Command type
       div.col-8
         select.form-control(id='',type='text',value='',placeholder='Command type for payload',name='command')
           option(value="reboot",name='command') Reboot

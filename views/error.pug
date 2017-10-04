@@ -1,6 +1,8 @@
-extends layout
+extends index
 
-block content
-  h1= message
-  h2= error.status
+block tabcontent
+  h5
+    |Error message: #{error.message}
+  h5
+    | Error status: #{error.status}
   pre #{error.stack}

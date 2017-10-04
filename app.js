@@ -9,9 +9,13 @@ const bodylogger  = require('morgan-body')
 const app         = express()
 const server      = require('http').Server(app)
 const io          = require('socket.io')(server)
-const mainroute   = require('./routes/index')
-const formroute   = require('./routes/form')
-const rpcroute    = require('./routes/rpc')
+
+/* Routers */
+const mainRoute   = require('./routes/index')
+const formRoute   = require('./routes/form')
+const rpcRoute    = require('./routes/rpc')
+const dataRoute   = require('./routes/data')
+const demoRoute   = require('./routes/demo')
 
 bodylogger(app)
 
@@ -43,15 +47,22 @@ app.use(csp({
                ,  'https://garbagepla.net'
                ,  'https://cdnjs.cloudflare.com'
                ,  'https://rawgit.com'
+               ,  'https://gitcdn.github.io'
              ],
 
     scriptSrc: [  "'self'"
                 , "'unsafe-inline'"
-                ,  'cdnjs.cloudflare.com'
+                ,  'https://cdnjs.cloudflare.com'
                 ,  'https://garbagepla.net'
                 ,  'https://cdnjs.cloudflare.com'
                 ,  'https://rawgit.com'
-              ]
+                ,  'https://gitcdn.github.io'
+                ,  'https://code.jquery.com'
+                ,  'https://cdn.jsdelivr.net'
+              ],
+    imgSrc: [  "'self'"
+              , 'data:'
+              , '*'    ]
   }
 }))
 
@@ -61,14 +72,11 @@ app.use(bodyParser.json())
 
 // attach routes
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/lora/', mainroute)
-app.use('/lora/form', formroute)
-app.use('/lora/rpc', rpcroute)
-
-// setup socketio
-io.sockets.on('connection', (socket) => {
-  console.log('client connect')
-})
+app.use('/lora/', mainRoute)
+app.use('/lora/form', formRoute)
+app.use('/lora/rpc', rpcRoute)
+app.use('/lora/data', dataRoute)
+app.use('/lora/demo', demoRoute)
 
 app.use((req, res, next) => {
   req.io = io
@@ -82,21 +90,22 @@ app.use((err, req, res, next) => {
   res.locals.error = req.app.get('env') === 'development' ? err : {}
   // render the error page
   res.status(err.status || 500)
-  res.render('error')
+  res.render('error', {error: res.locals.error})
 })
 
-// catch 404 and forward to error handler
+// Finally catch 404 and forward to error handler
 app.use((req, res, next) => {
   var err = new Error('Express: Not Found')
   err.status = 404
   next(err)
 })
 
-// app.use((err, req, res, next) => {
-//   console.log('error: ', err)
-//   res.status(500).send('Something broke!')
-// })
-
 // export both app and server to be enable the use of socketio in req and res everywhere
 module.exports = {app: app, server: server}
 console.log('app started at http://localhost:5000/lora')
+console.log('************************************************************************')
+
+// setup socketio
+io.sockets.on('connection', (socket) => {
+  console.log('client connect', socket)
+})

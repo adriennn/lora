@@ -1,25 +1,28 @@
-const jayson  = require('jayson')
 const path    = require('path')
-const utils   = require(path.join(__dirname,'/../middleware/utils.js'))
-const queue   = require(path.join(__dirname,'/../middleware/queue.js'))
+const jayson  = require('jayson')
+const cache   = require(path.join(__dirname,'./cache.js'))
+const utils   = require(path.join(__dirname,'./utils.js'))
 const methods = {}
 
 methods.everynet = {}
 
 methods.everynet.uplink = jayson.Method( function (args, done) {
 
-    utils.exportDataToFile('uplink', args)
+    utils.exportDataToFile(args)
 
+    console.log('hit methods.everynet.uplink')
     done(null, 'ok')
 })
 
 methods.everynet.downlink = jayson.Method( function (args, done) {
 
+    // FIXME if the dev_eui isn't found in the command cache this returns a RPC error and not the cache lookup error
+    console.log('hit methods.everynet.downlink')
     try {
 
-        let data = queue.get(args.dev_eui);
+        let data = cache.get(args.dev_eui, true)
 
-        console.log('data from command queue in downlink: ', data)
+        console.log('Data from command cache in downlink method: ', data)
 
         if ( data.encrypted_payload && args.dev_eui == data.dev_eui ) {
 
@@ -31,26 +34,28 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
             }
 
             // TODO wait for Cmd_Ack in TAlive message before deleting
-            queue.del(args.dev_eui)
-            console.log('sending payload')
+            cache.del(args.dev_eui)
+
+            console.log('sending payload', result)
+
             done(null, result)
         }
 
-    } catch (e) {
+    } catch (err) {
 
-      console.log('Something went wrong in methods.everynet.downlink: ', e)
-      done(null)
+      console.log('Error in methods.everynet.downlink: ', err.message)
+      done(err, null)
     }
 })
 
 methods.everynet.notify = (args, done) => {
-
+    console.log('hit methods.everynet.notify')
     done(null, 'ok')
 }
 
 methods.everynet.join = (args, done) => {
-
-    done(null, 'ok');
+    console.log('hit methods.everynet.join')
+    done(null, 'ok')
 }
 
 module.exports = methods

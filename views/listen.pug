@@ -9,7 +9,7 @@ block tabcontent
 
   script.
     var socket = io(!{JSON.stringify(iosourceurl)});
-    
+        
     socket.on('rpcrequest', function (data) {
     
       console.log(data);

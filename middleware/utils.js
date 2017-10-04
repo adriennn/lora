@@ -3,11 +3,15 @@ const fs   = require('fs')
 const http = require('http')
 const utils = {}
 
-utils.exportDataToFile = (ref, data) => {
+utils.exportDataToFile = (data) => {
+
+    let packet = data
+
+    // return new Promise ( function (resolve, reject) {})
 
     // let packetsdatabase = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'))
     let packetsdatabase = require(path.join(__dirname,'/../config/packets.json'))
-        packetsdatabase.push(data)
+        packetsdatabase.push(packet)
 
     fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase))
 }
@@ -16,7 +20,7 @@ utils.decode1m2mpayload = (obj) => {
 
   return new Promise ( function (resolve, reject) {
 
-      console.log('1m2m payload to make human readable: ', obj)
+      console.log('payload to decode from decode1m2mpayload(): ', obj)
 
       const hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
       let url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o
@@ -44,12 +48,14 @@ utils.decode1m2mpayload = (obj) => {
                 resolve(parseddata)
 
             } catch (e) {
-                console.error(e.message)
+                console.error('Error http res 1m2m API in decode1m2mpayload()', e)
+                reject(e.message)
             }
           })
 
       }).on('error', (e) => {
         console.error(`Got error: ${e.message}`)
+        reject(e.message)
       })
   })
 
@@ -67,15 +73,16 @@ utils.getQualityIndex = (AnIn1, AnIn2) => {
 utils.convertTime = (s) => {
 
     if (s) return new Date(s * 1e3).toISOString().slice(-13, -5)
-    else return false
+    else return 'empty time field'
 }
 
-utils.parseLog = (data) => {
+utils.parseLog = (data /* , deveui*/ ) => {
 
-      // TODO make this more dynamic with parameters for selecting log data
-      // TODO DRY this function look up the unique dev_eui in data and build from there
+      // TODO make this more dynamic with array or single parameter to tell data from which deveice to use in the log
+      // TODO DRY this function
+      // TODO look up the unique dev_eui in data and build separate obj from there
 
-      return new Promise ( function (resolve, reject) {
+      return new Promise ((resolve, reject) => {
 
           let gh_array = []
           let cl_array = []

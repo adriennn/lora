@@ -1,0 +1,5 @@
+extends index
+
+block tabcontent
+  p.h5 Result for #{resource}
+  pre(style="color:grey") !{JSON.stringify(data, undefined, 3)}

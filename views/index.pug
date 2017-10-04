@@ -10,7 +10,8 @@ block content
       .card
         .card-header
           nav.nav.nav-pills.flex-column.flex-sm-row
-            each menuitem in [{id: 'listen',title:'Listen to stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id: 'records',title:'Records',url:'/lora/form/records'}]
+            //- each menuitem in data
+            each menuitem in [{id: 'listen',title:'Live stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id:'show',title:'Show',url:'/lora/data/show'},{id:'demo',title:'Demo',url:'/lora/demo'}]
               if (id == menuitem.id)
                 a(class='flex-sm-fill text-sm-center nav-link active' href=menuitem.url) #{menuitem.title}
               else

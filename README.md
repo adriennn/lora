@@ -2,29 +2,40 @@
 
 ## Getting started
 
-This tool is still a work in progress. Use this to test rpc calls and do other kind of things. The below assumes you have node installed.
-
-Clone the repo and cd to the root directory of the app and type:
+This tool is a work in progress. Use this to test rpc calls and visualize data. It uses `node-cache` for certain command persistence and redis for queues. The below assumes you have node installed.
 
 ```
 npm i
 ```
 
-if you have it, launch the app with pm2:
+if you are using pm2, you can simply do:
 
 ```
 npm start
 ```
 
-or from the root directory fo the app, simply type:
+Else from the root directory of the app type:
 
 ```
 node ./www/bin
 ```
 
-visit `localhost:5000/lora` in your webrowser and test some stuff.
+visit `localhost:5000/lora` in your webrowser and you can send receive RPC and make manual RCP calls.
 
-Visit the url `/lora/:dev_eui` where `:dev_eui` is the value of the device unique id for which you recorded your command data.
+## ENV file
 
-## TODO
-Mongo for storing logs
+Note that you will need to have a `.env` file with the following:
+
+```
+CLIENT_URL=http://127.0.0.1:5000/lora/rpc
+IO_CONNECT=http://127.0.0.1:5000
+NODE_ENV=development
+PORT=5000
+QUEUE_KEY=YOUR_REDIS_SECRET_IF_ANY
+```
+
+## LoraWAN Network Server providers
+Supported methods in the `methods`middleware currently include the Everynet core API. To add your own provider, simply extend the module `method.youprovider.methodA()`. Set the `CLIENT_URL` key in the `.env` with the same value you gave to your network server provider as callback url for your app.
+
+## Backend
+If you are serving your app online, you will need to configure your web server to proxy requests to sockets.ioin addition to node to listen to live rpc calls.

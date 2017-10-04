@@ -12,6 +12,7 @@
     "prod": "pm2 -n lora -u www-data start bin/www --env production"
   },
   "dependencies": {
+    "bee-queue": "^1.1.0",
     "body-parser": "~1.17.1",
     "compression": "^1.6.2",
     "debug": "~2.6.0",
@@ -19,6 +20,8 @@
     "express": "~4.15.2",
     "helmet": "^3.5.0",
     "jayson": "^2.0.3",
+    "mongodb": "^2.2.31",
+    "mongoose": "^4.11.13",
     "morgan": "~1.7.0",
     "morgan-body": "^0.9.5",
     "node-cache": "^4.1.1",
