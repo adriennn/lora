@@ -12,7 +12,7 @@ const url            = 'mongodb://127.0.0.1:27017/lora'
  * see http://docs.everynet.com/platform-api/everynet-core-api-v.1.0/ for all the methods available
  */
 
-mongoose.connect(url, { useMongoClient: true })
+// mongoose.connect(url, { useMongoClient: true })
 
 const dbUtils = {}
 
