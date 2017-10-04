@@ -46,7 +46,7 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
     } catch (err) {
 
       console.log('Error in methods.everynet.downlink: ', err.message)
-      done(err, null)
+      done(null)
     }
 })
 

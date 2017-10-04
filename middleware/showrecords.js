@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
       return next(err)
     }
 
-    let data = JSON.parse(fs.readFileSync(path.join(__dirname, './../config/packets.json'), 'utf8'))
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname, '/../config/packets.json'), 'utf8'))
 
     // TODO MongoDB lookup
     // use the dev_eui field and check if only one or several devices to check then parse and load data in view accordingly

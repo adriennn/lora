@@ -7,7 +7,6 @@ block scriptsandstyles
   script(src='https://rawgit.com/shbmbhrdwj/chartist-plugin-multithreshold/master/dist/chartist-plugin-multithreshold.min.js')
   
   link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')
-  //- link(href='', rel='stylesheet')  
     
   style(type='text/css').
   
@@ -79,14 +78,7 @@ block tabcontent
       | for 
       a(href="https://lillklobbpermaculture.com/") Lillklobb Permaculture. 
       | Select an area on the chart to zoom in on the data.
-  .container
-    .btn-toolbar.float-right(role='toolbar')
-      .btn-group.mr-2(role='group')
-        button#resetty.btn.btn-secondary Reset chart
-      .input-group
-        span.input-group-btn.mr-0
-          button#setty.btn.btn-secondary(type='button') Set x, y, z
-        input#inputty(type='text', placeholder='   new \u00B0C thresholds')
+    button#resetty.btn.btn-secondary Reset chart
 
   script.
     
@@ -169,12 +161,12 @@ block tabcontent
       resetFnc && resetFnc();
     });
     
-    var buttonSet = document.getElementById('setty');
+    // var buttonSet = document.getElementById('setty');
     var inputSet = document.getElementById('inputty');
     
-    buttonSet.addEventListener('click', function () {
+    /*buttonSet.addEventListener('click', function () {
                               
       options.plugins.ctMultiThreshold = {threshold: [1, 2, 5]};
             
       chart.update(null, options.plugins, true);
-    });
+    });*/

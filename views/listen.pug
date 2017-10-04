@@ -16,13 +16,16 @@ block tabcontent
           
       var datablock = document.getElementById('datablock');
       var dataline = document.createElement('li');
+      var humantime;
 
       dataline.classList.add('list-group-item');
 
       if (data.method == 'downlink') {
+        humantime = 'no data';
         dataline.classList.add('list-group-item-success');
       }
       if (data.method == 'uplink') {
+         humantime = data.params.human_time.toString();
         dataline.classList.add('list-group-item-info');
       }
       if (data.method == 'error') {
@@ -32,8 +35,9 @@ block tabcontent
         dataline.classList.add('list-group-item-warning');
       }        
 
+      // TODO link+modal for packte detail
       dataline.setAttribute("title", JSON.stringify(data, undefined, 3));
       datablock.prepend(dataline);
-      dataline.innerHTML = '<span>' + data.params.human_time.toString() + ' | method: '+ data.method.toString() + ' | device: ' + data.params.dev_eui.toString() + '</span>';
+      dataline.innerHTML = '<span>' + humantime + ' | method: '+ data.method.toString() + ' | device: ' + data.params.dev_eui.toString() + '</span>';
       
     });

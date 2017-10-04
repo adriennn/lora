@@ -73,14 +73,18 @@ utils.getQualityIndex = (AnIn1, AnIn2) => {
 utils.convertTime = (s) => {
 
     if (s) return new Date(s * 1e3).toISOString().slice(-13, -5)
-    else return 'empty time field'
+    else return
 }
 
 utils.parseLog = (data /* , deveui*/ ) => {
 
-      // TODO make this more dynamic with array or single parameter to tell data from which deveice to use in the log
+      // TODO make this more dynamic with array or single parameter to tell data from which device to use in the log
       // TODO DRY this function
       // TODO look up the unique dev_eui in data and build separate obj from there
+
+      // deveui.forEach(
+         //extract keys
+      // );
 
       return new Promise ((resolve, reject) => {
 
