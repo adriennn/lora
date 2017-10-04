@@ -109,5 +109,5 @@ console.log('*******************************************************************
 
 // setup socketio
 io.sockets.on('connection', (socket) => {
-  console.log('client connect', socket)
+  console.log('client connect')
 })

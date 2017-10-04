@@ -76,76 +76,50 @@ utils.convertTime = (s) => {
     else return
 }
 
-utils.parseLog = (data /* , deveui*/ ) => {
+utils.parseLog = (data, deveui) => {
 
-      // TODO make this more dynamic with array or single parameter to tell data from which device to use in the log
-      // TODO DRY this function
-      // TODO look up the unique dev_eui in data and build separate obj from there
+    return new Promise ((resolve, reject) => {
 
-      // deveui.forEach(
-         //extract keys
-      // );
+        let devs = deveui
 
-      return new Promise ((resolve, reject) => {
+        let exdata = {}
 
-          let gh_array = []
-          let cl_array = []
-          let cu_array = []
-          let gu_array = []
+        // Extract the elements with GenSens data
+        exdata.gensensonly = data.filter((el) => {
+            return el.human_payload.MsgID === 'GenSens'
+        })
 
-          // Data format for chartist-js
-          // [{x: 'time', y: 'temp'},{...},...]
+        devs.forEach((dev, index) => {
 
-          // Extract the elements with GenSens data
-          let gensensonly = data.filter((el) => {
-              return el.human_payload.MsgID === 'GenSens'
-          })
+            let devstring = dev.toString().trim()
 
-          // Extract the elements specific to a single logger
-          let gh = gensensonly.filter ((el) => {
-            return el.dev_eui === '0059ac000015013f'
-          })
-
-          gh.forEach((el) => {
-
-            gh_array.push({
-              'x': el.rx_time,
-              'y': parseFloat(el.human_payload.Temp)
+            // Extract packets specific to a single device
+            exdata[dev].data = exdata.gensensonly.filter ((el) => {
+              return el.dev_eui === devstring
             })
 
-            gu_array.push({
-              'x': el.rx_time,
-              'y': parseInt(el.human_payload.Humidity)
+            exdata[dev].data_array = []
+
+            // TODO dynamically generate from the keys in human_payload
+            exdata[dev].data.forEach((el) => {
+
+                // Data format for chartist-js
+                // [{x: 'time', y: 'temp'},{...},...]
+
+                exdata[dev].data_array.push({
+                  'x': el.rx_time,
+                  'y': parseFloat(el.human_payload.Temp)
+                })
+
+                exdata[dev].data_array.push({
+                  'x': el.rx_time,
+                  'y': parseInt(el.human_payload.Humidity)
+                })
             })
+        })
 
-          })
-
-          let cl = gensensonly.filter ((el) => {
-            return el.dev_eui === '0059ac000015014d'
-          })
-
-          cl.forEach((el) => {
-
-              cl_array.push({
-                'x': el.rx_time,
-                'y': parseFloat(el.human_payload.Temp)
-              })
-
-              cu_array.push({
-                'x': el.rx_time,
-                'y': parseInt(el.human_payload.Humidity)
-              })
-          })
-
-          let merged = {}
-
-          merged['cl'] = cl_array
-          merged['gh'] = gh_array
-          merged['gu'] = gu_array
-          merged['cu'] = cu_array
-
-          resolve(merged)
-      })
+        resolve(exdata)
+    })
 }
 
 module.exports = utils

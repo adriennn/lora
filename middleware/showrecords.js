@@ -20,8 +20,23 @@ module.exports = (req, res, next) => {
     // use the dev_eui field and check if only one or several devices to check then parse and load data in view accordingly
     // also check recursively for data parameters and build graphs dynamically in the view
 
+    let deveui
+
+    // Get the device or devices to show data for
+    if ( res.locals.dev_eui.indexOf(',') > -1 ) {
+
+        deveui = res.locals.dev_eui.split(',')
+
+    } else {
+
+      deveui = res.locals.dev_eui.split('', 1)
+
+    }
+
+    console.log('Parsed dev_eui field: ', deveui)
+
     // Parse the logfiles currently in storage for GenSens data
-    let parsedata = utils.parseLog(data)
+    let parsedata = utils.parseLog(data, deveui)
 
         parsedata.then((obj) => {
 
