@@ -8,6 +8,8 @@ methods.everynet = {}
 
 methods.everynet.uplink = jayson.Method( function (args, done) {
 
+    // TODO save to db
+
     utils.exportDataToFile(args)
 
     console.log('hit methods.everynet.uplink')
