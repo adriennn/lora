@@ -3,6 +3,22 @@ const fs   = require('fs')
 const http = require('http')
 const utils = {}
 
+StopWatch = function()
+{
+    this.StartMilliseconds = 0;
+    this.ElapsedMilliseconds = 0;
+}
+
+StopWatch.prototype.Start = function()
+{
+    this.StartMilliseconds = new Date().getTime()
+}
+
+StopWatch.prototype.Stop = function()
+{
+    this.ElapsedMilliseconds = new Date().getTime() - this.StartMilliseconds
+}
+
 utils.exportDataToFile = (data) => {
 
     let packet = data
@@ -82,43 +98,76 @@ utils.parseLog = (data, deveui) => {
 
         let devs = deveui
 
-        let exdata = {}
+        // init the filtered data obj to be returned by promise
+        let fd = {}
 
         // Extract the elements with GenSens data
-        exdata.gensensonly = data.filter((el) => {
+        fd.gensens = data.filter((el) => {
             return el.human_payload.MsgID === 'GenSens'
         })
 
+        // 0059ac000015013f & 14d
+
+        /* data structure
+
+        fd.deveui.data_raw {}
+        fd.deveui.data_array []
+        fd.deveui.data_array.Sensor []
+
+
+        */
+
+        var s1 = new StopWatch();
+
+        s1.Start();
+
+
+        // Loop through the list of devices and extract the sensors data
         devs.forEach((dev, index) => {
 
-            let devstring = dev.toString().trim()
+            fd[dev] = fd[dev] || {}
+            fd[dev].data_raw = fd[dev].data_raw || {}
+            fd[dev].data_array = fd[dev].data_array || []
+
+            console.log('fd: ', fd)
+            console.log('fd dev: ', fd[dev])
 
             // Extract packets specific to a single device
-            exdata[dev].data = exdata.gensensonly.filter ((el) => {
-              return el.dev_eui === devstring
+            fd[dev].data_raw = fd.gensens.filter ((el) => {
+              return el.dev_eui === dev
             })
 
-            exdata[dev].data_array = []
+            // Object.keys(fd[dev].data_raw).forEach((el) => {
+            for (let i = 0, keys = Object.keys(fd[dev].data_raw); i < keys.length; i++) {
+            }
 
-            // TODO dynamically generate from the keys in human_payload
-            exdata[dev].data.forEach((el) => {
+            for ( let packet in fd[dev].data_raw ) {
 
-                // Data format for chartist-js
-                // [{x: 'time', y: 'temp'},{...},...]
+                for ( let key in packet.human_payload ) {
 
-                exdata[dev].data_array.push({
-                  'x': el.rx_time,
-                  'y': parseFloat(el.human_payload.Temp)
-                })
+                    // Data format for chartist-js
+                    // [{x: 'time', y: 'temp'},{...},...]
 
-                exdata[dev].data_array.push({
-                  'x': el.rx_time,
-                  'y': parseInt(el.human_payload.Humidity)
-                })
-            })
+                    fd[dev].data_array[key] = fd[dev].data_array[key] || []
+
+                    if (packet.human_payload.hasOwnProperty(key)) {
+
+                       fd[dev].data_array[key].push({
+                         'x': packet.rx_time,
+                         'y': parseFloat(packet.human_payload[key])
+                       })
+                    }
+                }
+            }
         })
 
-        resolve(exdata)
+        console.log('fd at the end: ', fd)
+
+        s1.Stop()
+
+        console.log( 'time elapsed to parse data: ', s1.ElapsedMilliseconds )
+
+        resolve(fd)
     })
 }
 

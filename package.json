@@ -26,6 +26,8 @@
     "morgan-body": "^0.9.5",
     "node-cache": "^4.1.1",
     "pug": "^2.0.0-beta11",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "socket.io-client": "^2.0.3",
+    "ws": "^3.2.0"
   }
 }

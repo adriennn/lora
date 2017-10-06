@@ -23,7 +23,7 @@ bodylogger(app)
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
 
-// Trust this proxy for sockets
+// Trust the nodejs instance as proxy for websockets
 app.set('trust proxy', '127.0.0.1')
 app.set('subdomain offset', 2)
 app.set('json replacer', ' ')
@@ -41,6 +41,7 @@ app.use(csp({
                   , 'https://garbagepla.net'
                   , 'ws://garbagepla.net'
                   , 'wss://garbagepla.net'
+                  , 'http://urho.eu/socket.io'
                 ],
 
     styleSrc: [  "'self'"
@@ -105,7 +106,7 @@ app.use((req, res, next) => {
 // export both app and server to be enable the use of socketio in req and res everywhere
 module.exports = {app: app, server: server}
 console.log('app started at http://localhost:5000/lora')
-console.log('************************************************************************')
+console.log('*********************************************************************************************************')
 
 // setup socketio
 io.sockets.on('connection', (socket) => {

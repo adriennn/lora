@@ -12,6 +12,9 @@ module.exports = (req, res, next) => {
 
       let mergedpayload = res.locals.command_seq + res.locals.command_str + res.locals.command_val
 
+      // Remove 0x
+      mergedpayload = mergedpayload.replace(/0x/gi, "")
+
       // TODO get user input in decimal and transform to hexadecimal including 0 padding if necessary
       console.log('Merged hexpayload: ', mergedpayload)
 

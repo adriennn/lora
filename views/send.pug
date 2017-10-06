@@ -10,26 +10,26 @@ block tabcontent
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Command sequence in hexadecimal
       div.col-8
-        input.form-control(id='',type='text',value='',placeholder='Command sequence number',name='command_seq')
+        input.form-control(id='',type='text',value='',placeholder='Command sequence number (e.g. 0x2)',name='command_seq')
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Command string
       div.col-8
         select.form-control(id='',type='text',value='',placeholder='Reference command string',name='command_str')
-          option(value="FE") Reboot device
-          option(value="EF") Factory reset device
-          option(value="FD") Set application id of device (SetAPPEUI)
-          option(value="FC") Set activation by personalization (SetABP)
-          option(value="0A") Default sensors update time in minutes (UTSensors)
-          option(value="20") Analog sensors update time in minutes (UTAnalog)
-          option(value="07") Time delay in hours between wakeups when device is idle (UTIdle)
-          option(value="02") Delay time in seconds until device is idle (DTIdle)
-          option(value="01") Time in seconds to check for movement (DTMove)
-          option(value="05") Update time in minutes while moving 0..255 (UTMoving)
-          option(value="06") Update time in minutes for 1Wire temperature sensor (UT1WireT)
+          option(value="0xFE") Reboot device
+          option(value="0xEF") Factory reset device
+          option(value="0xFD") Set application id of device (SetAPPEUI)
+          option(value="0xFC") Set activation by personalization (SetABP)
+          option(value="0x0A") Default sensors update time in minutes (UTSensors)
+          option(value="0x20") Analog sensors update time in minutes (UTAnalog)
+          option(value="0x07") Time delay in hours between wakeups when device is idle (UTIdle)
+          option(value="0x02") Delay time in seconds until device is idle (DTIdle)
+          option(value="0x01") Time in seconds to check for movement (DTMove)
+          option(value="0x05") Update time in minutes while moving 0..255 (UTMoving)
+          option(value="0x18") Update time in minutes for 1Wire temperature sensor (UT1WireT)
     div.form-group.row
       label.col-4.col-form-label.text-muted(for='') Command payload in hexadecimal
       div.col-8
-        input.form-control(id='',type='text',value='',placeholder='Payload value',name='command_val')
+        input.form-control(id='',type='text',value='',placeholder='Payload value (e.g. 0x4)',name='command_val')
     div.form-group.row
       div.col-12
         input.btn.btn-success.float-right(type='submit',value='Save')

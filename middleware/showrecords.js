@@ -14,22 +14,24 @@ module.exports = (req, res, next) => {
       return next(err)
     }
 
+    // TODO move this to utils.parselog() and do MongoDB lookup instead of file load
     let data = JSON.parse(fs.readFileSync(path.join(__dirname, '/../config/packets.json'), 'utf8'))
-
-    // TODO MongoDB lookup
-    // use the dev_eui field and check if only one or several devices to check then parse and load data in view accordingly
-    // also check recursively for data parameters and build graphs dynamically in the view
 
     let deveui
 
     // Get the device or devices to show data for
     if ( res.locals.dev_eui.indexOf(',') > -1 ) {
 
+        console.log('multiple dev_eui')
+
         deveui = res.locals.dev_eui.split(',')
 
     } else {
 
-      deveui = res.locals.dev_eui.split('', 1)
+      console.log('single dev_eui')
+
+      deveui = []
+      deveui.push(res.locals.dev_eui)
 
     }
 
