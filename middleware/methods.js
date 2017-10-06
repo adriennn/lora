@@ -18,7 +18,6 @@ methods.everynet.uplink = jayson.Method( function (args, done) {
 
 methods.everynet.downlink = jayson.Method( function (args, done) {
 
-    // FIXME if the dev_eui isn't found in the command cache this returns a RPC error and not the cache lookup error
     console.log('hit methods.everynet.downlink')
     try {
 
@@ -30,9 +29,9 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
 
             // TODO set pending to true if we have more commands in queue
             let result = {
-                "pending": false,
-                "confirmed": false,
-                "payload": data.encrypted_payload
+                  "pending"   : false
+                , "confirmed" : false
+                , "payload"   : data.encrypted_payload
             }
 
             // TODO wait for Cmd_Ack in TAlive message before deleting
@@ -46,7 +45,7 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
     } catch (err) {
 
       console.log('Error in methods.everynet.downlink: ', err.message)
-      done(null)
+      done('null')
     }
 })
 
