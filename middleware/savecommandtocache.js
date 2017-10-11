@@ -15,7 +15,6 @@ module.exports = (req, res, next) => {
       // Remove 0x
       mergedpayload = mergedpayload.replace(/0x/gi, "")
 
-      // TODO get user input in decimal and transform to hexadecimal including 0 padding if necessary
       console.log('Merged hexpayload: ', mergedpayload)
 
       try {
@@ -37,9 +36,9 @@ module.exports = (req, res, next) => {
             , url   : '/lora/' + res.locals.dev_eui
           })
 
-      } catch (e) {
+      } catch (err) {
 
-        return res.render('response', {'saved': e.toString()})
+        return next(err)
       }
 
     } else {

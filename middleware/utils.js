@@ -1,23 +1,26 @@
-const path = require('path')
-const fs   = require('fs')
-const http = require('http')
-const utils = {}
+require('dotenv').config()
 
-StopWatch = function()
-{
-    this.StartMilliseconds = 0;
-    this.ElapsedMilliseconds = 0;
+const apiurl = process.env.ONEMTOM_CONNECT
+const path   = require('path')
+const fs     = require('fs')
+const http   = require('http')
+const utils  = {}
+
+/*
+ * Timer to measure efficiency of extractions loops
+ */
+class Chrono {
+
+  Start() {
+    this.start = new Date().getTime()
+  }
+
+  Stop() {
+    return new Date().getTime() - this.start
+  }
 }
 
-StopWatch.prototype.Start = function()
-{
-    this.StartMilliseconds = new Date().getTime()
-}
-
-StopWatch.prototype.Stop = function()
-{
-    this.ElapsedMilliseconds = new Date().getTime() - this.StartMilliseconds
-}
+Chrono.start = 0
 
 utils.exportDataToFile = (data) => {
 
@@ -34,50 +37,56 @@ utils.exportDataToFile = (data) => {
 
 utils.decode1m2mpayload = (obj) => {
 
+  /*
+   * Decode the encrypted payload sent by 1m2m devices, the API takes in a HEX string
+   */
+
   return new Promise ( function (resolve, reject) {
 
       console.log('payload to decode from decode1m2mpayload(): ', obj)
 
-      const hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
-      let url = 'http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=' + hex_o
+      let hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
+      let url   = apiurl + hex_o
 
-      http.get(url, (res) => {
+      http.get(url, (response) => {
 
-          const { statusCode } = res
+          const { statusCode } = response
 
           if (statusCode !== 200) {
               let error = new Error(`Request Failed with status Code: ${statusCode}`)
-              console.error(error.message)
-              res.resume()
-              return
+              return response.resume()
           }
 
           let rawdata = ''
 
-          res.on('data', (chunk) => { rawdata += chunk })
+          response.on('data', (chunk) => { rawdata += chunk })
 
-          res.on('end', () => {
+          response.on('end', () => {
 
             try {
                 const parseddata = JSON.parse(rawdata)
                 // console.log('Parsed response data', parseddata.toString())
                 resolve(parseddata)
 
-            } catch (e) {
+            } catch (err) {
                 console.error('Error http res 1m2m API in decode1m2mpayload()', e)
-                reject(e.message)
+                reject(err)
             }
           })
 
-      }).on('error', (e) => {
-        console.error(`Got error: ${e.message}`)
-        reject(e.message)
+      }).on('error', (err) => {
+        console.error(`Got error: ${err.message}`)
+        reject(err)
       })
   })
 
 }
 
 utils.getQualityIndex = (AnIn1, AnIn2) => {
+
+    /*
+     * Pollution index definition for Winsen ZP01-MP503 gas sensor (input in mV)
+     */
 
     return
     AnIn1 < 250  && AnIn2 < 250  ? 'clean'  :
@@ -88,17 +97,23 @@ utils.getQualityIndex = (AnIn1, AnIn2) => {
 
 utils.convertTime = (s) => {
 
+    /*
+     * Get hh:mm:ss to show packet arrival time in live stream
+     */
+
     if (s) return new Date(s * 1e3).toISOString().slice(-13, -5)
     else return
 }
 
-utils.parseLog = (data, deveui) => {
+utils.extractData = (data, deveui, type) => {
+
+    // TODO db lookup before going further
 
     return new Promise ((resolve, reject) => {
 
         let devs = deveui
 
-        // init the filtered data obj to be returned by promise
+        // init the filtered data obj to be returned by the promise
         let fd = {}
 
         // Extract the elements with GenSens data
@@ -106,68 +121,83 @@ utils.parseLog = (data, deveui) => {
             return el.human_payload.MsgID === 'GenSens'
         })
 
-        // 0059ac000015013f & 14d
-
         /* data structure
 
         fd.deveui.data_raw {}
         fd.deveui.data_array []
         fd.deveui.data_array.Sensor []
 
-
         */
 
-        var s1 = new StopWatch();
+        var chrono = new Chrono()
 
-        s1.Start();
+        chrono.Start()
 
+
+        // TODO external function to extract GenSens, Analog, 1Wire, GPS + Vibrate
 
         // Loop through the list of devices and extract the sensors data
-        devs.forEach((dev, index) => {
+        try {
 
-            fd[dev] = fd[dev] || {}
-            fd[dev].data_raw = fd[dev].data_raw || {}
-            fd[dev].data_array = fd[dev].data_array || []
+          devs.forEach((dev, index) => {
 
-            console.log('fd: ', fd)
-            console.log('fd dev: ', fd[dev])
+              fd[dev] = fd[dev] || {}
+              fd[dev].data_raw = fd[dev].data_raw || {}
+              fd[dev].data_array = fd[dev].data_array || []
 
-            // Extract packets specific to a single device
-            fd[dev].data_raw = fd.gensens.filter ((el) => {
-              return el.dev_eui === dev
-            })
+              console.log('fd: ', fd)
+              console.log('fd dev: ', fd[dev])
 
-            // Object.keys(fd[dev].data_raw).forEach((el) => {
-            for (let i = 0, keys = Object.keys(fd[dev].data_raw); i < keys.length; i++) {
-            }
+              // Extract packets specific to a single device
+              fd[dev].data_raw = fd.gensens.filter ((el) => {
+                return el.dev_eui === dev
+              })
 
-            for ( let packet in fd[dev].data_raw ) {
+              // Object.keys(fd[dev].data_raw).forEach((el) => {
+              for (let i = 0, keys = Object.keys(fd[dev].data_raw); i < keys.length; i++) {
+              }
 
-                for ( let key in packet.human_payload ) {
+              for ( let packet in fd[dev].data_raw ) {
 
-                    // Data format for chartist-js
-                    // [{x: 'time', y: 'temp'},{...},...]
+                  for ( let key in packet.human_payload ) {
 
-                    fd[dev].data_array[key] = fd[dev].data_array[key] || []
+                      // Data format for chartist-js time series
+                      // [
+                      //      {x: 'time', y: 'temp'},
+                      //    , {...},...]
+                      //    , ...
+                      // ]
 
-                    if (packet.human_payload.hasOwnProperty(key)) {
+                      // TODO
+                      // Data format for chartist-js donut
+                      // Data format for chartist-js barchart
 
-                       fd[dev].data_array[key].push({
-                         'x': packet.rx_time,
-                         'y': parseFloat(packet.human_payload[key])
-                       })
-                    }
-                }
-            }
-        })
+                      fd[dev].data_array[key] = fd[dev].data_array[key] || []
 
-        console.log('fd at the end: ', fd)
+                      if (packet.human_payload.hasOwnProperty(key)) {
 
-        s1.Stop()
+                         fd[dev].data_array[key].push({
+                           'x': packet.rx_time,
+                           'y': parseFloat(packet.human_payload[key])
+                         })
+                      }
+                  }
+              }
 
-        console.log( 'time elapsed to parse data: ', s1.ElapsedMilliseconds )
+              console.log('fd[dev]: ', fd[dev])
+          })
 
-        resolve(fd)
+          console.log('fd at the end: ', fd)
+
+          console.log( 'Milliseconds taken to parse data: ', chrono.Stop() )
+
+          resolve(fd)
+
+        } catch (err) {
+
+          reject(err)
+
+        }
     })
 }
 

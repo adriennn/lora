@@ -4,17 +4,26 @@ block tabcontent
   p.h5 Show data from a given record.
   form(action='/lora/data/show/data',method='post',name="show")
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Command string
+      label.col-4.col-form-label.text-muted(for='') Resource
       div.col-8
-        select.form-control(id='',type='text',value='',placeholder='Reference command string',name='resource')
+        select.form-control(type='text',value='',placeholder='Choose what to show',name='resource')
           option(value="cache") Command cache
           option(value="command") Single command packet
           option(value="db") DB data
           option(value="visual") Data visualization
     div.form-group.row
-      label.col-4.col-form-label.text-muted(for='') Device unique ID
+      label.col-4.col-form-label.text-muted(for='') Data type
+      div.col-8
+        select.form-control(type='text',value='',placeholder='Choose which type of data',name='type')
+          option(value="gensens") General sensors
+          option(value="analog") Analog sensors
+          option(value="1wire") External temperature sensors
+          option(value="move") GPS and movement sensors
+    div.form-group.row
+      label.col-4.col-form-label.text-muted(for='') Device(s) unique ID(s)
       div.col-8
         input.form-control(id='',type='text',value='',placeholder='Separate multiple ids with commas (no spaces)',name='dev_eui')
     div.form-group.row
       div.col-12
-        input.btn.btn-success.float-right(type='submit',value='Show data')  
+        input.btn.btn-success.float-right(type='submit',value='Show data')
+          

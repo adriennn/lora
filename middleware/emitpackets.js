@@ -5,12 +5,13 @@ const express = require('express')
  */
 module.exports = (req, res, next) => {
 
-    console.log('hit parsePackets()', req.body)
+    console.log('hit emitPackets()', req.body)
 
     try  {
 
         let io = req.app.get('socketio')
 
+            // TODO strip gateway infos
             io.emit("rpcrequest", req.body)
 
             return next()

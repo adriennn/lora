@@ -39,3 +39,9 @@ Supported methods in the `methods`middleware currently include the Everynet core
 
 ## Backend
 If you are serving your app online, you will need to configure your web server to proxy requests to sockets.ioin addition to node to listen to live rpc calls.
+
+## TODO
+
+Move controllers to /controllers
+Make DB set / get
+Make token auth

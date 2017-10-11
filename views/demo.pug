@@ -13,22 +13,24 @@ block scriptsandstyles
       height: 100px !important;
       width: 200px !important;
     }
-
+    
 block tabcontent
   p.h5 Scan the QR code on your device
     .row(class="justify-content-center align-items-center")
       form(class="align-items-center",action="/lora/demo",id="sendcode",method="POST")
         .form-group
           video(autoplay,class="form-control")
-        .form-group
-          input(class="input-lg form-control",id="qr-url",name="url",placeholder="decoded url")
+    .row(class="justify-content-center align-items-center")
+      p(id="feedback", class="text-muted") Log
         
   script.
-
-    var scanButton = document.querySelector("#scan");
     
     var videoOutput = document.getElementsByTagName("video");
     var qrcode = new QrCode();
+    var feedback = document.getElementById('feedback');
+    var video = document.querySelector('video');
+    var canvas;
+    var track;
     
     qrcode.callback = function(err, result) {
     
@@ -38,19 +40,15 @@ block tabcontent
       if (err) {
         
         console.log(err);
+        feedback.innerHTML = err.toString();
                 
         } else {    
-                    
-        var inputQurl = document.querySelector("#qr-url");
-            inputQurl.value = result.result;
         
+        track.stop();
         document.getElementById("sendcode").submit(); 
             
       }
     }
-    
-    var video = document.querySelector('video');
-    var canvas;
 
     function takeSnapshot() {
     
@@ -70,13 +68,34 @@ block tabcontent
     }
 
     if (navigator.mediaDevices) {
-      navigator.mediaDevices.getUserMedia({video: true})
+      
+      var options = true;
+      
+      try{
+        navigator.mediaDevices.enumerateDevices()
+        .then(function(devices) {
+          devices.forEach(function(device) {
+          if (device.kind === 'videoinput') {
+            if(device.label.toLowerCase().search("back") >-1)
+            options={'deviceId': {'exact':device.deviceId}, 'facingMode':'environment'};
+          }
+          });
+        });
+      } catch(e) {
+        console.log(e);
+      }
+      
+        
+      navigator.mediaDevices.getUserMedia({video: options})
         .then(function(stream) {
           video.srcObject = stream;
-          video.addEventListener('click', takeSnapshot);
+          
+          track = stream.getTracks()[0];
+          
+          setInterval(takeSnapshot, 600);
         })
         .catch(function(error) {
-          document.body.textContent = 'Could not access the camera. Error: ' + error.name;
+          feedback.textContent = 'Could not access the camera. Error: ' + error.name;
         });
     }
   

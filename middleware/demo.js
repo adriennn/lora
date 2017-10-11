@@ -5,29 +5,21 @@ const ws_url = process.env.WS_CONNECT
 
 module.exports = (req, res, next) => {
 
-    let qrUrl = req.body.url
+    let qrurl = req.body.url
 
-    console.log(req.body)
+    let socket
+
+    console.log('req body: ', req.body)
 
     try {
 
-        let socket = io(ws_url, {transports: ['websocket']})
+        socket = io(ws_url, {transports: ['websocket']})
 
         socket.on('connect', ()=>{
-          socket.emit('bmd', qrUrl, (data) => {
+          socket.emit('bmd', qrurl, (data) => {
             console.log('websocket server respsone data: ', data);
           })
         })
-
-        socket.on('error', (err) => {
-          console.log('caught socket error: ', err)
-          return next(err)
-        })
-
-        socket.on('connect_error', (err) => {
-          console.log('caught socket connection error: ', err)
-          return next(err)
-        });
 
     } catch (err) {
 
@@ -35,14 +27,22 @@ module.exports = (req, res, next) => {
 
     }
 
+    socket.on('error', (err) => {
+      console.log('caught socket error: ', err)
+      return next(err)
+    })
 
+    socket.on('connect_error', (err) => {
+      console.log('caught socket connection error: ', err)
+      return next(err)
+    });
 
     // build api query and send it as promise and catch result to return it to user below
 
-    // send the decoded url/code from the qrcode
-
     // get token
     const token = 'fake'
+
+    // TODO don't actually send the token to the UI, keep it in auth db with userid ref
 
     res.render('button', {token: token})
 

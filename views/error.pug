@@ -1,8 +1,11 @@
 extends index
 
 block tabcontent
-  h5
-    |Error message: #{error.message}
-  h5
-    | Error status: #{error.status}
-  pre #{error.stack}
+  if error.stack
+    h5
+      |Error message: #{error.message}
+    h5
+      | Error status: #{error.status}
+    pre #{error.stack}
+  else 
+    pre #{error}

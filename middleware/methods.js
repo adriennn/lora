@@ -27,10 +27,12 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
 
         if ( data.encrypted_payload && args.dev_eui == data.dev_eui ) {
 
-            // TODO set pending to true if we have more commands in queue
+            // Convert pending status to boolean
+            data.pending === 'true' ? data.pending = true : data.pending = false
+
             let result = {
-                  "pending"   : false
-                , "confirmed" : false
+                  "pending"   : data.pending
+                , "confirmed" : false // we do not need delivery confirmation to device because we can read CmdAck
                 , "payload"   : data.encrypted_payload
             }
 
@@ -45,7 +47,7 @@ methods.everynet.downlink = jayson.Method( function (args, done) {
     } catch (err) {
 
       console.log('Error in methods.everynet.downlink: ', err.message)
-      done('null')
+      done(null, 'null')
     }
 })
 

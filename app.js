@@ -85,8 +85,16 @@ app.use((req, res, next) => {
   next()
 })
 
+// We don't serve favicons here
+app.get('/favicon.ico', (req, res) => {
+    res.sendstatus(204);
+});
+
 // error handler
 app.use((err, req, res, next) => {
+
+  // console.log(err)
+
   // set locals, only providing error in development
   res.locals.path = req.path
   res.locals.error = req.app.get('env') === 'development' ? err : {}

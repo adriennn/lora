@@ -14,7 +14,6 @@ module.exports = (req, res, next) => {
     // If it's an uplink we decode the payload
     if ( req.body.method === 'uplink' && req.body.params.payload ) {
 
-        // TODO check that the body is legit base64 before shipping to 1m2m api
         let decodepayload = utils.decode1m2mpayload(req.body.params.payload)
 
             decodepayload.then((obj) => {
@@ -22,6 +21,7 @@ module.exports = (req, res, next) => {
               req.body.params.human_payload = obj
 
               // Set the polluton scale for the winsen ZP01-MP503 module if the 1m2m 'Analog' message data is present
+              // TODO make this dynamic so we can set what sensors are on the Analog port
               if ( req.body.params.human_payload.MsgID == 'Analog' ) {
 
                   let anin1 = parseInt(req.body.params.human_payload.AnIn1, 10)
@@ -31,15 +31,17 @@ module.exports = (req, res, next) => {
               }
 
               // Make the time readable
-              let unixtime = req.body.params.rx_time ? req.body.params.rx_time : req.body.params.tx_time
+              let unixtime = req.body.params.rx_time || req.body.params.tx_time
 
+              // TODO local time
               req.body.params.human_time = utils.convertTime(unixtime)
 
-              // TODO put this in cache / queue / db
-              // check if it's a TAlive message so we an extract the CmdAck param and save it to the cache
+              // TODO
+              // check if it's a TAlive / Alive message so we an extract the CmdAck param and save it to the db
+              // so we can look up when creating new commands if the command sequence number matches the series
               // if (req.body.params.human_payload.MsgID == 'Alive') {
               //
-              //     cache.set(req.body.params.dev_eui, {"cmd_ack" : red.body.params.human_payload.CmdAck} )
+              //     queue.set(req.body.params.dev_eui, {"cmd_ack" : red.body.params.human_payload.CmdAck} )
               // }
 
               console.log('Added decoded payload to req.body: ', req.body)
@@ -51,7 +53,7 @@ module.exports = (req, res, next) => {
             return next(err)
         })
 
-    // Else we pass the req to the socket and the next middleware
+    // Else we pass the req to the next middleware
     } else {
 
         return next()

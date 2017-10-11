@@ -8,18 +8,27 @@ module.exports = (req, res, next) => {
 
     if (res.locals.resource !== 'visual') {
 
+      // This is the last data middleware
       let err = new Error()
       err.status = 404
       err.message = 'Data request error'
       return next(err)
     }
 
-    // TODO move this to utils.parselog() and do MongoDB lookup instead of file load
+    // TODO move this to utils.extractData() middleware and do MongoDB lookup instead of file load
     let data = JSON.parse(fs.readFileSync(path.join(__dirname, '/../config/packets.json'), 'utf8'))
-
+    let type = res.locals.type
     let deveui
 
-    // Get the device or devices to show data for
+    if ( !res.locals.dev_eui ) {
+
+      let err = new Error()
+      err.status = 403
+      err.message = 'DEV_EUI required'
+      return next(err)
+    }
+
+    // Get the device or devices DEV_EUI
     if ( res.locals.dev_eui.indexOf(',') > -1 ) {
 
         console.log('multiple dev_eui')
@@ -37,10 +46,11 @@ module.exports = (req, res, next) => {
 
     console.log('Parsed dev_eui field: ', deveui)
 
-    // Parse the logfiles currently in storage for GenSens data
-    let parsedata = utils.parseLog(data, deveui)
+    // Parse the logfiles currently in storage
+    // TODO pass thrid parameter with type of data wanted for visualization, e.g GenSens, Analog, 1Wire etc
+    let getData = utils.extractData(data, deveui, type)
 
-        parsedata.then((obj) => {
+        getData.then((obj) => {
 
           res.locals.records = JSON.stringify(obj)
 

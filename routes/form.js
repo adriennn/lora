@@ -7,6 +7,9 @@ const fs                 = require('fs')
 const saveCommandToCache = require(path.join(__dirname,'/../middleware/savecommandtocache.js'))
 const makeManualRpcCall  = require(path.join(__dirname,'/../middleware/manualrpccall.js'))
 const getParams          = require(path.join(__dirname,'/../middleware/getparams.js'))
+const sanitizeReq        = require(path.join(__dirname,'/../middleware/sanitize.js'))
+const { body }           = require('express-validator/check')
+
 
 formRouter.get('/test', (req, res, next) => {
   res.render('test', {
@@ -35,6 +38,7 @@ formRouter.get('/send', (req, res, next) => {
   })
 })
 
-formRouter.post('*', getParams, saveCommandToCache, makeManualRpcCall)
+// We enforce strict alphanumeric input for all form fields because there' is no need for other characters
+formRouter.post('*', body('*.*').isAlphanumeric(), sanitizeReq, getParams, saveCommandToCache, makeManualRpcCall)
 
 module.exports = formRouter
