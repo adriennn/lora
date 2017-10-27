@@ -85,13 +85,51 @@ block tabcontent
     'use strict';
     
     var df = !{data};
-    console.log(df);
-
-    df.gh.forEach(item => item.x = new Date(item.x * 1e3));
-    df.cl.forEach(item => item.x = new Date(item.x * 1e3));
-    df.gu.forEach(item => item.x = new Date(item.x * 1e3));
-    df.cu.forEach(item => item.x = new Date(item.x * 1e3));
     
+    function typeOf(obj) {
+      return {}.toString.call(obj).split(' ')[1].slice(0, -1).toLowerCase();
+    }
+    
+    //- sensors data is in {df}.{dev_eui}.{data}.[Temp | BaromBar | Humidity]
+    console.log(df);
+      
+    for (var device in df) {
+            
+      if (df.hasOwnProperty(device)) {
+                  
+        for (var sensor in df[device].data) {
+                    
+          if (df[device].data.hasOwnProperty(sensor)) {
+                                    
+            df[device].data[sensor].forEach((item) => {
+              
+              item.x = new Date(item.x * 1e3)
+            })
+          }
+        }
+      }
+    }
+      
+    var mySeries = []
+        
+    for (var device in df) {
+      if (df.hasOwnProperty(device)) {
+          
+        for (var sensor in df[device].data) {
+          if (df[device].data.hasOwnProperty(sensor)) {
+                        
+            var myDeviceData = {
+              name: device + '-' + sensor,
+              data: df[device].data[sensor]
+            }
+                        
+            mySeries.push(myDeviceData)
+  
+          }
+        }
+      }
+    }
+      
     var options = {
       height: '400',
       axisX: {
@@ -117,24 +155,25 @@ block tabcontent
     };
         
     var data = {
-      series: [
-        { 
-          name: 'Greenhouse',
-          data: df.gh
-        },
-        {
-          name: 'Barn',
-          data: df.cl
-        },
-        {
-          name: 'Humid cellar',
-          data: df.cu
-        },
-        {
-          name: 'Humid gh',
-          data: df.gu
-        }
-      ]
+      series: mySeries
+      //- [
+      //-   { 
+      //-     name: 'Greenhouse',
+      //-     data: df.gh
+      //-   },
+      //-   {
+      //-     name: 'Barn',
+      //-     data: df.cl
+      //-   },
+      //-   {
+      //-     name: 'Humid cellar',
+      //-     data: df.cu
+      //-   },
+      //-   {
+      //-     name: 'Humid gh',
+      //-     data: df.gu
+      //-   }
+      //- ]
     };
     
     var responsiveOptions = [

@@ -1,0 +1,52 @@
+extends index
+
+block scriptsandstyles
+  style(type='text/css').
+
+block tabcontent
+  
+  #deviceblock(role='tablist')
+  .card
+    #formheading.card-header.text-right(role='tab')
+      h6.mb-0.text-white
+        a(data-toggle='collapse', data-parent='#deviceblock', href='#formcollapse',class="btn btn-success text-white") +
+    #formcollapse.collapse(role='tabpanel')
+      .card-block
+        form(action='/lora/form?save',method='post',name="device")
+          //- We put the current device list to the form so we can use it in the backend without querying the db to return the new list
+          input(type="hidden",name="devlist",value=devices)
+          div.form-group.row
+            label.col-4.col-form-label.text-muted(for='') Device unique ID
+            div.col-8
+              input.form-control(id='',type='text',value='',placeholder='DEV_EUI',name='dev_eui')
+          div.form-group.row
+            label.col-4.col-form-label.text-muted(for='') Application ID
+            div.col-8
+              input.form-control(id='',type='text',value='',placeholder='APP_EUI',name='app_eui')
+          div.form-group.row
+            label.col-4.col-form-label.text-muted(for='') Command Sequence
+            div.col-8
+              input.form-control(id='',type='text',value='',placeholder='current CmdAck value if known',name='cmd_ack')
+          div.form-group.row
+            div.col-12
+              input.btn.btn-success.float-right(type='submit',value='Save')
+      each device in devices
+        .card
+          .card-header(id=device.dev_eui,role='tab')
+            h6.mb-0
+              a.collapsed(data-toggle='collapse', data-parent='#deviceblock', href=device.dev_eui)
+                | #{device.dev_eui}
+          .collapse(role='tabpanel', id=device.dev_eui)
+            .card-block
+              ul.list-group
+                each parameters in device
+                  li.list-group-item
+                    span | Paramater and value
+            
+                  
+  script(src="https://code.jquery.com/jquery-3.2.1.slim.js",integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",crossorigin="anonymous")
+  //- script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/popper.min.js")
+  script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js", integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1", crossorigin="anonymous")
+      
+      
+      

@@ -11,8 +11,7 @@ module.exports = (req, res, next) => {
 
         let io = req.app.get('socketio')
 
-            // TODO strip gateway infos
-            io.emit("rpcrequest", req.body)
+            io.emit("rpcrequest", req.body.params)
 
             return next()
     }

@@ -2,6 +2,8 @@ const { validationResult } = require('express-validator/check');
 
 module.exports = ( req, res,next ) => {
 
+    console.log('Hit sanitizeReq()')
+
     try {
 
         const err = validationResult(req)

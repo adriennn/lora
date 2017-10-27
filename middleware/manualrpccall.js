@@ -3,6 +3,12 @@ const rpcclient = require(path.join(__dirname,'./rpcclient.js'))
 
 module.exports = (req, res, next) => {
 
+    // If there's app_eui in the params we skip this middleware
+    // TODO middlewarerouting logive in the route form
+    if (res.locals.app_eui) {
+      return next()
+    }
+
     console.log('params from manualRpcCall(): ', res.locals)
 
     try {
@@ -27,13 +33,13 @@ module.exports = (req, res, next) => {
 
             console.log(err)
 
-            return req.render('response', {'error': err})
+            return next(err)
           }
         })
 
       } catch (err) {
 
-        return req.render('response', {'error': err})
+        return next(err)
       }
 
       res.on('http timeout', (err) => {
@@ -45,10 +51,10 @@ module.exports = (req, res, next) => {
       })
 
     } catch (e) {
-      // res.render('response', {"response": {"error": {"code": 'missing method', "message" : e.toString()}}})
-      let err = new Error(e.toString())
+      let err = new Error()
       err.status = 500
-      res.render('response', {'response': err})
+      err.message = e
+      return next(err)
     }
 
 }

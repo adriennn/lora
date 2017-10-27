@@ -42,6 +42,8 @@ If you are serving your app online, you will need to configure your web server t
 
 ## TODO
 
+put all middleware and controller in their own folder and rename hem index.js so we can load them with require(./path/to/folder instead of path/to/folder/and/file
 Move controllers to /controllers
-Make DB set / get
+Make new device mechanism
+Make db get
 Make token auth

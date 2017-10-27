@@ -4,18 +4,42 @@ const Device   = require('./device.js')
 
 /*
  *
- * Human Payload schema for storing decrypted data from uplink packets
+ * Denormalized Human Payload schema for storing decrypted data from uplink packets
  * the human payload obj is decrypted using 1m2m.eu API
+ * @params data - stringified
+ * @params type is one of [ 'GenSens', 'Alive', '1WireT', 'Analog', 'DailyRep', 'MoveStart', 'Reboot' ... ]
+ * @params
+ * @params
+ *
  */
 
 const humanPayloadSchema = new Schema({
-    data   : { type: String, required: true }
-  , type   : { type: String, required: true } // GenSens, Alive, 1Wire, Analog ...
-  , rxtime : { type: Date,   required: true, default: }
-  , device : [ [{ type: Schema.Types.ObjectId, ref: 'Device' }] ]
+    data   :  { type: Schema.Types.Mixed, required: true        }
+  , type   :  { type: String, required: true                    }
+  , time   :  { type: Date  , required: true, default: new Date }
+  , device : [{ type: Schema.Types.ObjectId , ref: 'Device', index: true }]
 })
 
-const HumanPayload = mongoose.model('HumanPayload', humanPayloadSchema)
+humanPayloadSchema.statics = {
+
+  function getMany(dev, n) {
+
+      let amount = n.parseInt(10)
+
+      let data = []
+
+      Object.keys(devices).forEach((dev) => {
+          data[dev] = this.find({device: dev}).sort({time : -1}).limit(amount).toArray().catch((err) => { return err })
+      })
+
+      return data
+  }
+
+}
+
+humanPayloadSchema.path('data').required(true, 'Payload data cannot be empty')
+
+const HumanPayload = mongoose.model('HumanPayload', humanPayloadSchema, 'HumanPayload')
 
 module.exports = HumanPayload
 
@@ -46,15 +70,6 @@ module.exports = HumanPayload
 }
 **/
 
-// Analog
-/**
-"human_payload": {
-  "MsgID": "Analog",
-  "Anin1": "240mV",
-  "Anin2": "50mV",
-}
-**/
-
 // Alive
 /**
 "human_payload": {
@@ -72,8 +87,16 @@ module.exports = HumanPayload
 
 // 1Wire
 /**
-"human_payload": {
-  "MsgID": "1Wire",
-
-}
+human_payload:
+ { MsgID: '1WireT',
+   OWID1: '0',
+   OWTemp1: '22.30',
+   OWID2: '0',
+   OWTemp2: '22.30',
+   OWID3: '0',
+   OWTemp3: '22.30',
+   OWID4: '0',
+   OWTemp4: '22.60',
+   OWID5: '',
+   OWTemp5: '22.00' }
 **/

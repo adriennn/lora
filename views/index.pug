@@ -4,14 +4,14 @@ block content
 
   .container
   
-    include header
+    //- include header
 
     .jumbotron
       .card
         .card-header
           nav.nav.nav-pills.flex-column.flex-sm-row
             //- each menuitem in data
-            each menuitem in [{id: 'listen',title:'Live stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id:'show',title:'Show',url:'/lora/data/show'},{id:'demo',title:'Demo',url:'/lora/demo'}]
+            each menuitem in [{id: 'listen',title:'Live stream',url:'/lora/form/listen'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id:'show',title:'Show',url:'/lora/data/show'},{id:'demo',title:'Demo',url:'/lora/demo'},{id: 'device',title:'Devices',url:'/lora/form/device'}]
               if (id == menuitem.id)
                 a(class='flex-sm-fill text-sm-center nav-link active' href=menuitem.url) #{menuitem.title}
               else
@@ -19,6 +19,6 @@ block content
                 
         .card-block
           block tabcontent
-            p Use this tool to send or fetch data to and from a known device or to register a new device on the network.
+            p Use this tool to manage you lorawan devices.
 
-      include footer
+      //- include footer

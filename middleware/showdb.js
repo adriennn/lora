@@ -1,5 +1,5 @@
 const path    = require('path')
-const dbUtils = require(path.join(__dirname,'./db.js'))
+const dbUtils = require(path.join(__dirname,'./dbutils.js'))
 
 module.exports = (req, res, next) => {
 
@@ -10,7 +10,8 @@ module.exports = (req, res, next) => {
 
   try {
 
-    res.locals.records = dbUtils.getAll(res.locals.dev_eui)
+    // TODO finish this
+    res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
 
   } catch (err) {
 

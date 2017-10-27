@@ -4,7 +4,6 @@ const apiurl = process.env.ONEMTOM_CONNECT
 const path   = require('path')
 const fs     = require('fs')
 const http   = require('http')
-const utils  = {}
 
 /*
  * Timer to measure efficiency of extractions loops
@@ -22,7 +21,7 @@ class Chrono {
 
 Chrono.start = 0
 
-utils.exportDataToFile = (data) => {
+exports.exportDataToFile = (data) => {
 
     let packet = data
 
@@ -35,7 +34,7 @@ utils.exportDataToFile = (data) => {
     fs.writeFileSync(path.join(__dirname, './../config/packets.json'), JSON.stringify(packetsdatabase))
 }
 
-utils.decode1m2mpayload = (obj) => {
+exports.decode1m2mpayload = (obj) => {
 
   /*
    * Decode the encrypted payload sent by 1m2m devices, the API takes in a HEX string
@@ -82,7 +81,7 @@ utils.decode1m2mpayload = (obj) => {
 
 }
 
-utils.getQualityIndex = (AnIn1, AnIn2) => {
+exports.getQualityIndex = (AnIn1, AnIn2) => {
 
     /*
      * Pollution index definition for Winsen ZP01-MP503 gas sensor (input in mV)
@@ -95,103 +94,120 @@ utils.getQualityIndex = (AnIn1, AnIn2) => {
                                    'high'
 }
 
-utils.convertTime = (s) => {
+exports.extractData = (deveui, mtype) => {
 
-    /*
-     * Get hh:mm:ss to show packet arrival time in live stream
-     */
-
-    if (s) return new Date(s * 1e3).toISOString().slice(-13, -5)
-    else return
-}
-
-utils.extractData = (data, deveui, type) => {
-
-    // TODO db lookup before going further
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname, '/../config/packets.json'), 'utf8'))
 
     return new Promise ((resolve, reject) => {
 
+        // deveui is passed as an array
         let devs = deveui
 
         // init the filtered data obj to be returned by the promise
         let fd = {}
+            fd.devices = {}
 
-        // Extract the elements with GenSens data
-        fd.gensens = data.filter((el) => {
-            return el.human_payload.MsgID === 'GenSens'
+        // Filter out anything that's not human_payload
+        fd['human_payloads'] = data.filter((el) => {
+            return el.human_payload !== undefined
         })
 
-        /* data structure
-
-        fd.deveui.data_raw {}
-        fd.deveui.data_array []
-        fd.deveui.data_array.Sensor []
-
-        */
+        // Filter the packets by type so we don't parse things we don't need
+        fd[mtype] = fd.human_payloads.filter((el) => {
+            return el.human_payload['MsgID'] === mtype
+        })
 
         var chrono = new Chrono()
 
         chrono.Start()
 
-
-        // TODO external function to extract GenSens, Analog, 1Wire, GPS + Vibrate
-
         // Loop through the list of devices and extract the sensors data
         try {
 
-          devs.forEach((dev, index) => {
+          devs.forEach((dev) => {
 
-              fd[dev] = fd[dev] || {}
-              fd[dev].data_raw = fd[dev].data_raw || {}
-              fd[dev].data_array = fd[dev].data_array || []
-
-              console.log('fd: ', fd)
-              console.log('fd dev: ', fd[dev])
+              fd.devices[dev] = fd.devices[dev] || {}
+              fd.devices[dev].raw = fd.devices[dev].raw || []
+              fd.devices[dev].data = fd.devices[dev].data || {}
 
               // Extract packets specific to a single device
-              fd[dev].data_raw = fd.gensens.filter ((el) => {
+              fd.devices[dev].raw = fd[mtype].filter ((el) => {
                 return el.dev_eui === dev
               })
 
-              // Object.keys(fd[dev].data_raw).forEach((el) => {
-              for (let i = 0, keys = Object.keys(fd[dev].data_raw); i < keys.length; i++) {
-              }
+              // Work in progress for some types of messages
+              var errwip = new Error
+              errwip.message = 'Not implemented yet'
+              errwip.status = 403
 
-              for ( let packet in fd[dev].data_raw ) {
+              // for ( let packet in dev.data_raw ) {
+              fd.devices[dev].raw.forEach(packet => {
 
-                  for ( let key in packet.human_payload ) {
+                // Build the data structure
+                switch (mtype) {
 
-                      // Data format for chartist-js time series
-                      // [
-                      //      {x: 'time', y: 'temp'},
-                      //    , {...},...]
-                      //    , ...
-                      // ]
+                  case 'GenSens' :
 
-                      // TODO
-                      // Data format for chartist-js donut
-                      // Data format for chartist-js barchart
+                    // We need to do hardcode this for now
+                    ['Temp', 'Humidity', 'BaromBar'].forEach((i) => {
 
-                      fd[dev].data_array[key] = fd[dev].data_array[key] || []
+                      fd.devices[dev].data[i] = fd.devices[dev].data[i] || []
 
-                      if (packet.human_payload.hasOwnProperty(key)) {
+                      fd.devices[dev].data[i].push({
+                        'x': packet.rx_time,
+                        'y': parseFloat(packet.human_payload[i])
+                      })
+                    })
 
-                         fd[dev].data_array[key].push({
-                           'x': packet.rx_time,
-                           'y': parseFloat(packet.human_payload[key])
-                         })
-                      }
-                  }
-              }
+                  break
 
-              console.log('fd[dev]: ', fd[dev])
+                  case 'Alive' :
+                    reject(errwip)
+                  break
+
+                  case '1WireT' :
+
+                    ['OWTemp1', 'OWTemp2', 'OWTemp3', 'OWTemp4', 'OWTemp5'].forEach((i) =>{
+
+                      fd.devices[dev].data[i] = fd.devices[dev].data[i] || []
+
+                      fd.devices[dev].data[i].push({
+                        'x': packet.rx_time,
+                        'y': parseFloat(packet.human_payload[i])
+                      })
+                    })
+
+                  break
+                  case 'Analog' :
+                    reject(errwip)
+                  break
+                  default : reject(errwip)
+
+                }
+
+                // console.log('fd data_array: ', fd.devices[dev].data_array)
+
+                // Data format for chartist-js donut
+                // Data format for chartist-js barchart
+                // Data format for chartist-js time series
+                // [
+                //      {x: 'time', y: 'temp'},
+                //    , {...},...]
+                //    , ...
+                // ]
+
+              })
+
+              delete fd.devices[dev].raw
           })
 
-          console.log('fd at the end: ', fd)
+          var stop = chrono.Stop()
+          console.log( `It took ${stop} ms to parse the data.`)
 
-          console.log( 'Milliseconds taken to parse data: ', chrono.Stop() )
+          delete fd.human_payloads
+          delete fd.GenSens
 
-          resolve(fd)
+          resolve(fd.devices)
 
         } catch (err) {
 
@@ -200,5 +216,3 @@ utils.extractData = (data, deveui, type) => {
         }
     })
 }
-
-module.exports = utils

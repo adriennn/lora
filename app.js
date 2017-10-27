@@ -61,6 +61,7 @@ app.use(csp({
                 ,  'https://gitcdn.github.io'
                 ,  'https://code.jquery.com'
                 ,  'https://cdn.jsdelivr.net'
+                ,  'https://maxcdn.bootstrapcdn.com'
               ],
     imgSrc: [  "'self'"
               , 'data:'
@@ -84,11 +85,6 @@ app.use((req, res, next) => {
   req.io = io
   next()
 })
-
-// We don't serve favicons here
-app.get('/favicon.ico', (req, res) => {
-    res.sendstatus(204);
-});
 
 // error handler
 app.use((err, req, res, next) => {

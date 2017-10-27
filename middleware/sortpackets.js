@@ -1,58 +1,53 @@
 const path  = require('path')
 const mongoose = require('mongoose')
 // const queue = require(path.join(__dirname,'./queue.js'))
-// const db    = require(path.join(__dirname,'./db.js'))
+const { dumpHumanPayloads, dumpPackets, incrementCmdAck, updateCmdAck } = require(path.join(__dirname,'./dbutils.js'))
 
 module.exports = (req, res, next) => {
 
-  console.log('hit sortpackets() req', req.body)
+  console.log('hit sortpackets()', req.body)
 
-  let dev_eui = req.body.params.dev_eui
-  let method = req.body.method
-
-  // For any incoming request we put it in a device queue which dispatch jobs according to methods types
-  // queue.createQueue(dev_eui, method)
-
-  // We make a specific schema for uplink packets, the other packets are just dumped into the db
-  // TODO
-
-
-  // TODO separate collections with linked schemas
-
-     /*DB*/      /*SCHEMA*/    /*DOCUMENT*/
-  ////////////  ////////////   ////////////
-  //        //  //        //   //        //
-  // DEVEUI //  // UPLINK //   // PACKET //
-  //        //  //        //   //        //
-  ////////////  ////////////   ////////////
-
-                 /*SCHEMA*/    /*DOCUMENT*/
-                ////////////   ////////////
-                //        //   //        //
-                // DLINK  //   // PACKET //
-                //        //   //        //
-                ////////////   ////////////
+  let params = req.body.params
+  // Add the method to the params for db dump
+  req.body.params.method = req.body.method
+  let method  = req.body.method
 
   try {
 
-      // Try to load up a schema with the dev_eui
-      // let myDevice = mongoose.model(dev_eui).schema
+    switch (method) {
+
+      case 'uplink':
+        // Put uplinks human_payload in a separate collection
+        dumpHumanPayloads(params.human_payload).then(() => {
+
+          // Also add the full packets to the dump
+          dumpPackets(params)
+
+        }).then(() => {
+
+          // Update the last time the device was seen
+          updateLastSeen(params.dev_eui, params.rx_time)
+
+          // Increment CmdAck value if the new command is accepted (i.e.if the new CmdAck is higher than what's in the db)
+          if ( params.human_payload.MsgID === 'Alive' ) incrementCmdAck(params.dev_eui, params.human_payload.CmdAck)
+
+        }).catch(err => { console.log('Error saving uplink packet to db') })
+
+        break
+      // Everything else we just dump
+      default: dumpPackets(params)
+      break
+    }
+
+    // This end the request cycle so if we are
+    return res.end()
 
   } catch (err) {
 
-      try {
+    console.log('Error in sortpackets(): ', err)
 
-          // If there's no schema for the device create a new one
-          // let myPacket = new myDevice()
-
-      } catch (err) {
-
-          return next(err)
-
-      }
+    return res.end()
 
   }
-
-  return res.end()
 
 }

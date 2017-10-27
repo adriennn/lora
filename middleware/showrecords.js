@@ -1,5 +1,4 @@
 const path  = require('path')
-const fs    = require('fs')
 const utils = require(path.join(__dirname,'./utils.js'))
 
 module.exports = (req, res, next) => {
@@ -15,8 +14,6 @@ module.exports = (req, res, next) => {
       return next(err)
     }
 
-    // TODO move this to utils.extractData() middleware and do MongoDB lookup instead of file load
-    let data = JSON.parse(fs.readFileSync(path.join(__dirname, '/../config/packets.json'), 'utf8'))
     let type = res.locals.type
     let deveui
 
@@ -47,10 +44,15 @@ module.exports = (req, res, next) => {
     console.log('Parsed dev_eui field: ', deveui)
 
     // Parse the logfiles currently in storage
-    // TODO pass thrid parameter with type of data wanted for visualization, e.g GenSens, Analog, 1Wire etc
-    let getData = utils.extractData(data, deveui, type)
+    let getData = utils.extractData(deveui, type)
 
         getData.then((obj) => {
+
+          // getData() returns an array of devices ith the dev_eui as keys and for each key, there is a 'data_array' array
+          // inside which the data for the sensors are grouped by type
+          // eg. obj.devices.mydeveui.data_array[Temp]
+          //     obj.devices.mydeveui.data_array[BaromBar]
+          // ...
 
           res.locals.records = JSON.stringify(obj)
 
