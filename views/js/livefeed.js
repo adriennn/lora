@@ -22,7 +22,7 @@ socket.on('rpcrequest', function (data) {
 
   var humantime;
   var msgid = '';
-  var deveui = data.params.dev_eui.toString();
+  var deveui = data.dev_eui.toString();
   var method = data.method.toString();
 
   //- dataline.classList.add('list-group-item');

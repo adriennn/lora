@@ -31,12 +31,12 @@ module.exports = (req, res, next) => {
           // Increment CmdAck value if the new command is accepted (i.e.if the new CmdAck is higher than what's in the db)
           if ( params.human_payload.MsgID === 'Alive' ) incrementCmdAck(params.dev_eui, params.human_payload.CmdAck)
 
-        }).catch(err => { console.log('Error saving uplink packet to db') })
+        }).catch(err => { console.log('Error saving uplink packet to db', err) })
 
         break
       // Everything else we just dump
       default: dumpPackets(params)
-      break
+        break
     }
 
     // This end the request cycle so if we are
