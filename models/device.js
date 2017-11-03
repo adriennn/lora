@@ -18,7 +18,7 @@ const deviceSchema = new Schema({
     devaddress : { type: String ,                 unique: true }
   , deveui     : { type: String , required: true, unique: true }
   , appeui     : { type: String , required: true               }
-  , cmdack     : { type: String , required: true               }
+  , cmdack     : { type: Number , default : 1                  }
   , vdd        : { type: String , default : 0                  }
   , added      : { type: Date   , default : new Date           }
   , lastseen   : { type: Date   , default : new Date           }

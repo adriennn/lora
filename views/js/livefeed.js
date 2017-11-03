@@ -9,8 +9,11 @@ socket.on('rpcrequest', function (data) {
 
     try {
 
-      let time = new Date(t * 1e3)
-      time.setHours(time.getHours()+(n*60*60*1000));
+      let n = 3;
+
+      let time = new Date(t * 1e3);
+          time.setHours(time.getHours()+(n*60*60*1000));
+
       return time.toISOString().slice(-13, -5)
 
     } catch (err) {
@@ -27,18 +30,18 @@ socket.on('rpcrequest', function (data) {
 
   if (data.method == 'downlink') {
     humantime = convertTime(data.tx_time);
-    dataline.classList.add('text-white bg-success');
+    dataline.classList.add('text-white','bg-success');
   }
   if (data.method == 'uplink') {
     humantime = convertTime(data.rx_time);
     msgid = data.human_payload.MsgID.toString();
-    dataline.classList.add('text-white bg-primary');
+    dataline.classList.add('text-white','bg-primary');
   }
   if (data.method == 'error') {
-    dataline.classList.add('text-white bg-danger');
+    dataline.classList.add('text-white','bg-danger');
   }
   if (data.method == 'status') {
-    dataline.classList.add('text-white bg-info');
+    dataline.classList.add('text-white','bg-info');
   }
 
   dataline.setAttribute("title", JSON.stringify(data, undefined, 3));
