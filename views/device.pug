@@ -8,10 +8,10 @@ block scriptsandstyles
 
 block tabcontent
   
-  .card
+  .card.mb-1
     #formheading.card-header.text-right(role='tab')
       h6.mb-0.text-white
-        a(data-toggle='collapse', href='#formcollapse',class="btn btn-success text-white") +
+        a(data-toggle='collapse', href='#formcollapse') &raquo Add a new device
     #formcollapse.collapse(role='tabpanel')
       .card-block
         form(action='/lora/form?save',method='post',name="device")
@@ -31,23 +31,19 @@ block tabcontent
             div.col-12
               input.btn.btn-success.float-right(type='submit',value='Save')
   each device in devicelist
-    //-.card
-      .card-header(id=device.deveui,role='tab')
-        h6.mb-0
-          | Device #{device.deveui}
-      .card-block
-        ul.list-group
-          each parameter, index in device
-            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'})= index + ' : ' + parameter
-            
-    a.list-group-item.list-group-item-action.flex-column.align-items-start(href='#')
+    - delete device.__v
+    - delete device._id
+    a.list-group-item.flex-column.align-items-start
       .d-flex.w-100.justify-content-between
         h6.mb-1 Device #{device.deveui}
         small.text-muted Last seen #{device.lastseen}
       p.mb-1
         ul.list-group
-          each parameter, index in device
-            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'})= index + ' : ' + parameter
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'Device Id :' #{device.deveui}
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'App Id :' #{device.appeui}
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'CmdAck :' #{device.cmdack}
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'Active :' #{device.active}
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'mV :' #{device.vdd}
             
   script(src="https://code.jquery.com/jquery-3.2.1.slim.js",integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",crossorigin="anonymous")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js")
