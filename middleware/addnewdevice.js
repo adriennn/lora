@@ -21,6 +21,13 @@ module.exports = ( req, res,next ) => {
 
       Device.find().lean().exec().then((data) => {
 
+        // Remove keys we don't want to share
+        Object.keys(data).forEach((key) => {
+          delete key.__v
+          delete key._id
+          delete key.added
+        })
+
         res.locals.devicelist = data
 
         res.render('device', {

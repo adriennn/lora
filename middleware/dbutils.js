@@ -24,6 +24,7 @@ exports.listDevices = (req, res, next) => {
       console.log('device list in listDevices: ', data)
 
       // We set the device list in res.locals so it can be passed to the view (in routes/form.js)
+      // TODO reverse obj order so the latest added dev is on top
       res.locals.devicelist = data || {}
 
       return next()

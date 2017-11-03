@@ -31,15 +31,12 @@ block tabcontent
             div.col-12
               input.btn.btn-success.float-right(type='submit',value='Save')
   each device in devicelist
-    - delete device.__v
-    - delete device._id
     a.list-group-item.flex-column.align-items-start
       .d-flex.w-100.justify-content-between
         h6.mb-1 Device #{device.deveui}
         small.text-muted Last seen #{device.lastseen}
       p.mb-1
         ul.list-group
-            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'Device Id :' #{device.deveui}
             li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'App Id :' #{device.appeui}
             li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'CmdAck :' #{device.cmdack}
             li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'}) 'Active :' #{device.active}
