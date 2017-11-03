@@ -25,15 +25,13 @@ socket.on('rpcrequest', function (data) {
   var deveui = data.dev_eui.toString();
   var method = data.method.toString();
 
-  //- dataline.classList.add('list-group-item');
-
   if (data.method == 'downlink') {
     humantime = convertTime(data.tx_time);
     dataline.classList.add('text-white bg-success');
   }
   if (data.method == 'uplink') {
     humantime = convertTime(data.rx_time);
-    msgid = data.params.human_payload.MsgID.toString();
+    msgid = data.human_payload.MsgID.toString();
     dataline.classList.add('text-white bg-primary');
   }
   if (data.method == 'error') {
