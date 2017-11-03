@@ -28,11 +28,11 @@ socket.on('rpcrequest', function (data) {
   //- dataline.classList.add('list-group-item');
 
   if (data.method == 'downlink') {
-    humantime = convertTime(tx_time);
+    humantime = convertTime(data.tx_time);
     dataline.classList.add('text-white bg-success');
   }
   if (data.method == 'uplink') {
-    humantime = convertTime(rx_time);
+    humantime = convertTime(data.rx_time);
     msgid = data.params.human_payload.MsgID.toString();
     dataline.classList.add('text-white bg-primary');
   }
