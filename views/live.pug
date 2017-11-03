@@ -1,0 +1,15 @@
+extends index
+
+block scriptsandstyles
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js")
+
+block tabcontent
+  p.h5 Data coming from all active devices.
+  #datablock
+
+  script.
+    var socket = io(!{JSON.stringify(iourl)});
+    console.log('io socket', socket)
+
+  script
+    include js/livefeed.js

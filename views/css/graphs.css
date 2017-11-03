@@ -1,0 +1,102 @@
+.ct-zoom-rect {
+  fill: rgba(0, 0, 0, 0);
+  stroke: grey;
+  stroke-width: 3px;
+}
+
+.ct-line {
+  stroke-width: 2px;
+}
+
+.ct-area, .ct-line {
+  pointer-events: none;
+}
+
+
+@color-base      : #3bafdA;
+@color-secondary : spin(@color-base, -(360 / 3));
+@color-tertiary  : spin(@color-base, (360 / 3));
+
+/* Below freezing */
+.ct-series-a .ct-line.ct-threshold-0 {
+    stroke: #ff00bf;
+}
+/* Very low */
+.ct-series-a .ct-line.ct-threshold-1 {
+    stroke:  #80b3ff;
+}
+/* ok range */
+.ct-series-a .ct-line.ct-threshold-2 {
+    /* stroke:  #5cd65c; */
+    stroke: @color-base;
+}
+/* Too high */
+.ct-series-a .ct-line.ct-threshold-3 {
+    stroke:  #ff9900;
+}
+
+/* Below freezing */
+.ct-series-b .ct-line.ct-threshold-0 {
+    stroke: #8c5c80;
+}
+/* Very low */
+.ct-series-b .ct-line.ct-threshold-1 {
+    stroke:  #86b4c9;
+}
+/* ok range */
+.ct-series-b .ct-line.ct-threshold-2 {
+    stroke:  #95ce6d;
+}
+/* Too high */
+.ct-series-b .ct-line.ct-threshold-3 {
+    stroke:  #efd856;
+}
+
+/* Humidity */
+.ct-series-c .ct-line.ct-threshold-0, .ct-series-b .ct-line.ct-threshold-1, .ct-series-c .ct-line.ct-threshold-2, .ct-series-c .ct-line.ct-threshold-3  {
+    stroke:  blue !important;
+}
+
+.ct-series-d .ct-line.ct-threshold-0, .ct-series-d .ct-line.ct-threshold-1, .ct-series-d .ct-line.ct-threshold-2, .ct-series-d .ct-line.ct-threshold-3  {
+    stroke:  lightblue !important;
+}
+
+/* Legends */
+
+.ct-legend {
+    position: relative;
+    z-index: 10;
+
+    li {
+        position: relative;
+        padding-left: 23px;
+        margin-bottom: 3px;
+    }
+
+    li:before {
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        left: 0;
+        content: '';
+        border: 3px solid transparent;
+        border-radius: 2px;
+    }
+
+    li.inactive:before {
+        background: transparent;
+    }
+
+    &.ct-legend-inside {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    @for $i from 0 to length($ct-series-colors) {
+        .ct-series-#{$i}:before {
+            background-color: nth($ct-series-colors, $i + 1);
+            border-color: nth($ct-series-colors, $i + 1);
+        }
+    }
+}

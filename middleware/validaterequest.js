@@ -2,18 +2,20 @@ const { validationResult } = require('express-validator/check');
 
 module.exports = ( req, res,next ) => {
 
-    console.log('Hit sanitizeReq()')
+    console.log('Hit sanitizeReq()', req.body)
 
     try {
 
         const err = validationResult(req)
 
-        if (!err.isEmpty()) {
+        // If there's an error return it to the view
+        if ( !err.isEmpty() ) {
 
-            // Return data check failure to error view
+            // Return datacheck failure to error view
             return next(JSON.stringify(err.mapped(), null, '\t'))
         }
 
+        // Else we can proceed with the next middleware
         return next()
 
     } catch (err) {

@@ -2,19 +2,19 @@ extends index
 
 block scriptsandstyles
   style(type='text/css').
+  
+  script.
+    console.log('device list', !{JSON.stringify(devicelist)})
 
 block tabcontent
   
-  #deviceblock(role='tablist')
   .card
     #formheading.card-header.text-right(role='tab')
       h6.mb-0.text-white
-        a(data-toggle='collapse', data-parent='#deviceblock', href='#formcollapse',class="btn btn-success text-white") +
+        a(data-toggle='collapse', href='#formcollapse',class="btn btn-success text-white") +
     #formcollapse.collapse(role='tabpanel')
       .card-block
         form(action='/lora/form?save',method='post',name="device")
-          //- We put the current device list to the form so we can use it in the backend without querying the db to return the new list
-          input(type="hidden",name="devlist",value=devices)
           div.form-group.row
             label.col-4.col-form-label.text-muted(for='') Device unique ID
             div.col-8
@@ -30,22 +30,27 @@ block tabcontent
           div.form-group.row
             div.col-12
               input.btn.btn-success.float-right(type='submit',value='Save')
-      each device in devices
-        .card
-          .card-header(id=device.dev_eui,role='tab')
-            h6.mb-0
-              a.collapsed(data-toggle='collapse', data-parent='#deviceblock', href=device.dev_eui)
-                | #{device.dev_eui}
-          .collapse(role='tabpanel', id=device.dev_eui)
-            .card-block
-              ul.list-group
-                each parameters in device
-                  li.list-group-item
-                    span | Paramater and value
+  each device in devicelist
+    //-.card
+      .card-header(id=device.deveui,role='tab')
+        h6.mb-0
+          | Device #{device.deveui}
+      .card-block
+        ul.list-group
+          each parameter, index in device
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'})= index + ' : ' + parameter
             
-                  
+    a.list-group-item.list-group-item-action.flex-column.align-items-start(href='#')
+      .d-flex.w-100.justify-content-between
+        h6.mb-1 Device #{device.deveui}
+        small.text-muted Last seen #{device.lastseen}
+      p.mb-1
+        ul.list-group
+          each parameter, index in device
+            li(class='list-group-item',style={'padding': 0, 'border': 'none', 'font-size': '0.7rem'})= index + ' : ' + parameter
+            
   script(src="https://code.jquery.com/jquery-3.2.1.slim.js",integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",crossorigin="anonymous")
-  //- script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/popper.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js")
   script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js", integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1", crossorigin="anonymous")
       
       

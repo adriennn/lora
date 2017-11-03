@@ -59,7 +59,7 @@ module.exports = (req, res, next) => {
 
                     if ( resp ) {
 
-                      console.log(`"Message with id ${resp} sent to queue:`)
+                      console.log(`"Message with id ${resp} sent to queue.`)
 
                       return res.render('response', {
                           saved : `Successfully saved message with id ${resp} to command queue ${queuename}.`

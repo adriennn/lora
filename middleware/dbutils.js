@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const path      = require('path')
 const mongoose  = require('mongoose')
-const mongo_url = process.env.MONGO_CONNECT
+const mongo_url = process.env.MONGO_URL
 const db        = mongoose.connect(mongo_url, { useMongoClient: true })
 
 // Set native nodejs promises for mongoose
@@ -15,21 +15,29 @@ exports.listDevices = (req, res, next) => {
 
   console.log('hit listDevices')
 
-  const Devices = require('./../models/device.js')
+  try {
 
-  return Devices.find().exec().then((data) => {
+    const Devices = require('./../models/device.js')
 
-    res.locals.devicelist = data
+    return Devices.find().lean().exec().then((data) => {
 
-    next()
+      console.log('device list in listDevices: ', data)
 
-  }).catch((err) => {
+      // We set the device list in res.locals so it can be passed to the view (in routes/form.js)
+      res.locals.devicelist = data || {}
 
-    console.log('Err in listDevices: ', err)
+      return next()
 
-    next(err)
-  })
+    }).catch((err) => {
 
+      console.log('Err in listDevices: ', err)
+
+      return next(err)
+    })
+
+  } catch (err) {
+    return next(err)
+  }
 }
 
 exports.getPayloads = (dev, n) => {

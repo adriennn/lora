@@ -5,207 +5,23 @@ block scriptsandstyles
   script(src='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js')
   script(src='https://rawgit.com/hansmaad/chartist-plugin-zoom/master/dist/chartist-plugin-zoom.min.js')
   script(src='https://rawgit.com/shbmbhrdwj/chartist-plugin-multithreshold/master/dist/chartist-plugin-multithreshold.min.js')
+  //- script(src='https://rawgit.com/CodeYellowBV/chartist-plugin-legend/master/chartist-plugin-legend.js')
   
   link(href='https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css', rel='stylesheet')
     
-  style(type='text/css').
-  
-    .ct-zoom-rect {
-      fill: rgba(0, 0, 0, 0);
-      stroke: grey;
-      stroke-width: 3px;
-    }
-    
-    .ct-line {
-      stroke-width: 2px;
-    }
-    
-    .ct-area, .ct-line {
-      pointer-events: none;
-    }
-
-    /* TOOO use less with mixins to create the shades */
-    /* Below freezing */
-    .ct-series-a .ct-line.ct-threshold-0 {
-        stroke: #ff00bf;
-    }
-    /* Very low */
-    .ct-series-a .ct-line.ct-threshold-1 {
-        stroke:  #80b3ff;
-    }
-    /* ok range */
-    .ct-series-a .ct-line.ct-threshold-2 {
-        stroke:  #5cd65c;
-    }
-    /* Too high */
-    .ct-series-a .ct-line.ct-threshold-3 {
-        stroke:  #ff9900;
-    }
-    
-    /* Below freezing */
-    .ct-series-b .ct-line.ct-threshold-0 {
-        stroke: #8c5c80;
-    }
-    /* Very low */
-    .ct-series-b .ct-line.ct-threshold-1 {
-        stroke:  #86b4c9;
-    }
-    /* ok range */
-    .ct-series-b .ct-line.ct-threshold-2 {
-        stroke:  #95ce6d;
-    }
-    /* Too high */
-    .ct-series-b .ct-line.ct-threshold-3 {
-        stroke:  #efd856;
-    }
-    
-    /* Humidity */
-    .ct-series-c .ct-line.ct-threshold-0, .ct-series-b .ct-line.ct-threshold-1, .ct-series-c .ct-line.ct-threshold-2, .ct-series-c .ct-line.ct-threshold-3  {
-        stroke:  blue !important;
-    }
-    
-    .ct-series-d .ct-line.ct-threshold-0, .ct-series-d .ct-line.ct-threshold-1, .ct-series-d .ct-line.ct-threshold-2, .ct-series-d .ct-line.ct-threshold-3  {
-        stroke:  lightblue !important;
-    }
+  style
+    include css/graphs.css
 
 block tabcontent
   #graph.ct-chart
 
-  div
-    p(class='small text-muted')
-      | Made with 
-      a(href='http://gionkunz.github.io/chartist-js')  Chartist 
-      | for 
-      a(href="https://lillklobbpermaculture.com/") Lillklobb Permaculture. 
-      | Select an area on the chart to zoom in on the data.
-    button#resetty.btn.btn-secondary Reset chart
+block tabfooter
+  .row
+    .float-right
+      button#reset.btn.btn-secondary Reset chart
 
   script.
-    
-    'use strict';
-    
     var df = !{data};
-    
-    function typeOf(obj) {
-      return {}.toString.call(obj).split(' ')[1].slice(0, -1).toLowerCase();
-    }
-    
-    //- sensors data is in {df}.{dev_eui}.{data}.[Temp | BaromBar | Humidity]
-    console.log(df);
-      
-    for (var device in df) {
-            
-      if (df.hasOwnProperty(device)) {
-                  
-        for (var sensor in df[device].data) {
-                    
-          if (df[device].data.hasOwnProperty(sensor)) {
-                                    
-            df[device].data[sensor].forEach((item) => {
-              
-              item.x = new Date(item.x * 1e3)
-            })
-          }
-        }
-      }
-    }
-      
-    var mySeries = []
-        
-    for (var device in df) {
-      if (df.hasOwnProperty(device)) {
-          
-        for (var sensor in df[device].data) {
-          if (df[device].data.hasOwnProperty(sensor)) {
-                        
-            var myDeviceData = {
-              name: device + '-' + sensor,
-              data: df[device].data[sensor]
-            }
-                        
-            mySeries.push(myDeviceData)
+  script
+    include js/graphs.js
   
-          }
-        }
-      }
-    }
-      
-    var options = {
-      height: '400',
-      axisX: {
-        type: Chartist.AutoScaleAxis,
-        labelInterpolationFnc: function(value) {
-          return moment(value).format('MMM D');
-        }
-      },
-      axisY: {
-        type: Chartist.AutoScaleAxis,
-        high: 100
-      },
-      plugins: [
-        Chartist.plugins.zoom({
-          onZoom : onZoom
-        }),
-        //- Chartist.plugins.ctThreshold({ threshold: threshold }),
-        Chartist.plugins.ctMultiThreshold({
-                threshold: [5, 10, 25]
-            })
-        //- Chartist.plugins.tooltip()
-      ]
-    };
-        
-    var data = {
-      series: mySeries
-      //- [
-      //-   { 
-      //-     name: 'Greenhouse',
-      //-     data: df.gh
-      //-   },
-      //-   {
-      //-     name: 'Barn',
-      //-     data: df.cl
-      //-   },
-      //-   {
-      //-     name: 'Humid cellar',
-      //-     data: df.cu
-      //-   },
-      //-   {
-      //-     name: 'Humid gh',
-      //-     data: df.gu
-      //-   }
-      //- ]
-    };
-    
-    var responsiveOptions = [
-      ['screen and (min-width: 400px)', {
-        showPoint: false,
-        height: '200'
-        }],
-      ['screen and (max-width: 399px)', {
-        height: '200'
-      }]
-    ];
-        
-    var chart = new Chartist.Line('#graph', data, options, responsiveOptions);
-    
-    var resetFnc;
-    
-    function onZoom(chart, reset) {
-      resetFnc = reset;
-    }
-    
-    var buttonReset = document.getElementById('resetty');
-      
-    buttonReset.addEventListener('click', function () {
-      resetFnc && resetFnc();
-    });
-    
-    // var buttonSet = document.getElementById('setty');
-    var inputSet = document.getElementById('inputty');
-    
-    /*buttonSet.addEventListener('click', function () {
-                              
-      options.plugins.ctMultiThreshold = {threshold: [1, 2, 5]};
-            
-      chart.update(null, options.plugins, true);
-    });*/
