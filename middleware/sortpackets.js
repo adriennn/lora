@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
   console.log('hit sortpackets()', req.body)
 
   let params = req.body.params
+  
   // Add the method to the params for db dump
   req.body.params.method = req.body.method
   let method  = req.body.method

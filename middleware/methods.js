@@ -10,9 +10,8 @@ exports.everynet = {}
 exports.everynet.uplink = jayson.Method( function (args, done) {
 
     // Here we don't care about sincronicity, done() can fire while the data is still being written
+    // Remove this once the db dump is functional
     utils.exportDataToFile(args)
-    // Svae to db
-    dbutils.dumpHumanPayloads(args)
 
     console.log('hit methods.everynet.uplink')
     done(null, 'ok')

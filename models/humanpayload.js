@@ -20,7 +20,7 @@ const humanPayloadSchema = new Schema({
   , device : [{ type: Schema.Types.ObjectId , ref: 'Device', index: true }]
 })
 
-humanPayloadSchema.statics = {
+humanPayloadSchema.methods = {
 
   function getMany(dev, n) {
 
