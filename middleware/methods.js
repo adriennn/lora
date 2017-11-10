@@ -21,21 +21,28 @@ exports.everynet.downlink = jayson.Method( async function (args, done) {
 
     console.log('hit methods.everynet.downlink')
 
-    // Get the next message from the device queue with a promise
-    let data = await queue.popMessage({qname:args.dev_eui})
+    try {
 
-    console.log("Data in queue message: ", data)
+      // Get the next message from the device queue with a promise
+      let data = await queue.popMessage({qname:args.dev_eui})
 
-    let result = {
-          "pending"   : data.pending
-        , "confirmed" : false
-        , "payload"   : data.encrypted_payload
+      console.log("Data in queue message: ", data)
+
+      let result = {
+            "pending"   : data.pending
+          , "confirmed" : false
+          , "payload"   : data.encrypted_payload
+      }
+
+      console.log('sending payload', result)
+
+      return done(null, result)
+
+    } catch (err) {
+
+      console.log(err)
+      return done(null)
     }
-
-    console.log('sending payload', result)
-
-    return done(null, result)
-
 })
 
 exports.everynet.notify = (args, done) => {

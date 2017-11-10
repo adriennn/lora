@@ -30,7 +30,6 @@ app.set('json replacer', ' ')
 app.set('json space', 4)
 app.set('socketio', io)
 
-// attach third-party middleware to app root
 app.use(csp({
   directives: {
     defaultSrc: [  "'self'"],

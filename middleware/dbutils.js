@@ -63,7 +63,9 @@ exports.dumpHumanPayloads = (data) => {
 
   return new Promise ( function (resolve, reject) {
 
-    console.log('hit dumpHumanPayloads')
+    console.log('hit dumpHumanPayloads', data)
+
+    data.MsgId = data.MsgId || 'empty'
 
     const Hpm = require('./../models/humanpayload.js')
 

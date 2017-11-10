@@ -20,22 +20,20 @@ const humanPayloadSchema = new Schema({
   , device : [{ type: Schema.Types.ObjectId , ref: 'Device', index: true }]
 })
 
-humanPayloadSchema.methods = {
+humanPayloadSchema.methods.getMany = function (dev, n) {
 
-  function getMany(dev, n) {
+  let amount = n.parseInt(10)
 
-      let amount = n.parseInt(10)
+  let data = []
 
-      let data = []
+  Object.keys(devices).forEach((dev) => {
+      data[dev] = this.find({device: dev}).sort({time : -1}).limit(amount).toArray().catch((err) => { return err })
+  })
 
-      Object.keys(devices).forEach((dev) => {
-          data[dev] = this.find({device: dev}).sort({time : -1}).limit(amount).toArray().catch((err) => { return err })
-      })
-
-      return data
-  }
-
+  return data
 }
+
+
 
 humanPayloadSchema.path('data').required(true, 'Payload data cannot be empty')
 

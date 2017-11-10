@@ -45,7 +45,7 @@ var options = {
   axisX: {
     type: Chartist.AutoScaleAxis,
     labelInterpolationFnc: function(value) {
-      return moment(value).format('MMM D');
+      return moment(value).format('D/M/YY HH:mm');
     }
   },
   axisY: {
@@ -76,10 +76,10 @@ var data = {
 var responsiveOptions = [
   ['screen and (min-width: 400px)', {
     showPoint: false,
-    height: '200'
+    height: '300'
     }],
   ['screen and (max-width: 399px)', {
-    height: '200'
+    height: '300'
   }]
 ];
 

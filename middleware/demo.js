@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const io = require('socket.io-client')
-const ws_url = process.env.WS_CONNECT
+const ws_url = process.env.WS_URL
 
 module.exports = (req, res, next) => {
 

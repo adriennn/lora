@@ -5,7 +5,7 @@ const express = require('express')
 const {decode1m2mpayload, getQualityIndex} = require(path.join(__dirname,'./utils.js'))
 
 /*
- * This middleware decrypts uplink packets with the 1m2m API to make them human-readable
+ * This middleware prepares uplink payloads to make them human-readable
  */
 module.exports = (req, res, next) => {
 
@@ -21,7 +21,6 @@ module.exports = (req, res, next) => {
               req.body.params.human_payload = obj
 
               // Set the polluton scale for the winsen ZP01-MP503 module if the 1m2m 'Analog' message data is present
-              // TODO make this dynamic so we can set what sensors are on the Analog port
               // TODO move to external middlware
               if ( req.body.params.human_payload.MsgID == 'Analog' ) {
 

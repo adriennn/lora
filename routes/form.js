@@ -12,6 +12,11 @@ const { body }           = require('express-validator/check')
 const addNewDevice       = require(path.join(__dirname,'/../middleware/addnewdevice.js'))
 const db                 = require(path.join(__dirname,'/../middleware/dbutils.js'))
 
+/*
+ * This is a user interface for making RCP calls to the RPC server in the app so you don't need to use curl to test the system
+ * note that if there's an error in the RPC response or one of the methods called fails, the UI cannot be notified so it just hangs
+ */
+
 formRouter.get('/test', (req, res, next) => {
   res.render('test', {
       title : 'Test RPC calls'
@@ -21,7 +26,7 @@ formRouter.get('/test', (req, res, next) => {
 
 formRouter.get('/live', (req, res, next) => {
 
-  const iosourceurl = process.env.IO_CONNECT
+  const iosourceurl = process.env.IO_URL
 
   console.log('io source: ', iosourceurl)
 
@@ -48,6 +53,6 @@ formRouter.get('/device', db.listDevices, (req, res, next) => {
 })
 
 // We enforce strict alphanumeric input for all form fields
-formRouter.post('*', body('*.*').isAlphanumeric(), validateReq, getParams, saveCommandToQueue, makeManualRpcCall, addNewDevice)
+formRouter.post('*', /*body('*.*').isAlphanumeric(), validateReq,*/ getParams, saveCommandToQueue, makeManualRpcCall, addNewDevice)
 
 module.exports = formRouter

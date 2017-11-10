@@ -1,8 +1,8 @@
 require('dotenv').config()
 
-const redis_url      = process.env.REDIS_CONNECT
+const redis_url      = process.env.REDIS_URL
 const redis_port     = process.env.REDIS_PORT
-const redis_password = process.env.REDIS_PWD
+const redis_password = process.env.REDIS_PWD || null
 const RSMQPromise    = require('rsmq-promise');
 const rsmq           = new RSMQPromise( {host: redis_url, port: redis_port, ns: "rsmq"} )
 

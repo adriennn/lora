@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const jayson     = require('jayson')
-const client_url = process.env.CLIENT_URL
+const client_url = process.env.RPC_CLIENT_URL
 const https      = process.env.HTTPS
 const client     = https ? jayson.client.https(client_url) : jayson.client.http(client_url)
 

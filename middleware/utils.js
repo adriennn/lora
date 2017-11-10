@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const apiurl = process.env.ONEMTOM_CONNECT
+const apiurl = process.env.ONEMTOM_URL
 const path   = require('path')
 const fs     = require('fs')
 const http   = require('http')
@@ -44,14 +44,21 @@ exports.decode1m2mpayload = (obj) => {
 
       console.log('payload to decode from decode1m2mpayload(): ', obj)
 
-      let hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
-      let url   = apiurl + hex_o
+      try {
 
-      http.get(url, (response) => {
+        let hex_o =  Buffer.from(obj.toString(), 'base64').toString('hex')
+        let url   = apiurl + hex_o
+
+        console.log('url for 1m2m API: ', url)
+
+        http.get(url, (response) => {
 
           const { statusCode } = response
 
-          if (statusCode !== 200) {
+          console.log('1m2m api response:', response)
+
+          if ( statusCode !== 200 ) {
+
               let error = new Error(`Request Failed with status Code: ${statusCode}`)
               return response.resume()
           }
@@ -62,23 +69,39 @@ exports.decode1m2mpayload = (obj) => {
 
           response.on('end', () => {
 
+            if ( Object.keys(rawdata).length === 0 ) {
+
+              err = new Error
+              err.message = '1m2m returned empty object'
+              return reject(err)
+            }
+
             try {
-                const parseddata = JSON.parse(rawdata)
-                // console.log('Parsed response data', parseddata.toString())
-                resolve(parseddata)
+
+              const parseddata = JSON.parse(rawdata)
+
+              console.log('Parsed 1m2m response data:', JSON.stringify(parseddata))
+
+              return resolve(parseddata)
 
             } catch (err) {
-                console.error('Error http res 1m2m API in decode1m2mpayload()', e)
-                reject(err)
+
+              console.error('Error in 1m2m API in decode1m2mpayload()', err)
+              return reject(err)
             }
           })
 
-      }).on('error', (err) => {
-        console.error(`Got error: ${err.message}`)
-        reject(err)
-      })
-  })
+        }).on('error', (err) => {
 
+          console.error(`Http get error: ${err.message}`)
+          return reject(err)
+        })
+
+      } catch (err) {
+
+        return reject(err)
+      }
+  })
 }
 
 exports.getQualityIndex = (AnIn1, AnIn2) => {
