@@ -128,8 +128,8 @@ app.use((req, res, next) => {
 
 // export both app and server to be enable the use of socketio in req and res everywhere
 module.exports = {app: app, server: server}
-console.log('app started')
-console.log('*********************************************************************************************************')
+console.log(`app started at ${process.env.APP_URL} on port ${process.env.PORT}`)
+console.log('*************************************************************')
 
 // setup socketio
 io.sockets.on('connection', (socket) => {
