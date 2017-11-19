@@ -10,24 +10,24 @@ module.exports = (req, res, next) => {
 
     try  {
 
-        let bot = req.app.get('bot')
+        // let bot = req.app.get('bot')
 
-        bot.use({
-          type: 'incoming',
-          name: 'hello-middleware',
-          controller: (bot, update) => {
-            return bot.reply(update, 'Hello!')
-          }
-        })
+        // bot.use({
+        //   type: 'incoming',
+        //   name: 'hello-middleware',
+        //   controller: (bot, update) => {
+        //     return bot.reply(update, 'Hello!')
+        //   }
+        // })
 
         // botmaster middlewae goes here
-        console.log('bot instance: ', JSON.stringify(bot))
+        // console.log('bot instance: ', JSON.stringify(bot))
 
-        return next()
+        return res.status(200).send('OK')
     }
 
     catch (err) {
 
-      return next(err)
+      return res.status(500).send('Internal Server Error')
     }
 }
