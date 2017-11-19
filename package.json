@@ -9,7 +9,9 @@
   "keywords": "lorawan lora radio iot expressjs jayson json-rpc rpc",
   "scripts": {
     "start": "pm2 -n lora -u www-data start bin/www --env development",
-    "prod": "pm2 -n lora -u www-data start bin/www --env production"
+    "prod": "pm2 -n lora -u www-data start bin/www --env production",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
@@ -33,6 +35,8 @@
     "rsmq-promise": "^1.0.0",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.3",
-    "ws": "^3.2.0"
-  }
+    "ws": "^3.2.0",
+    "snyk": "^1.49.3"
+  },
+  "snyk": true
 }
