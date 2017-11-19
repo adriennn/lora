@@ -8,11 +8,10 @@ const showCommand = require(path.join(__dirname,'/../middleware/showcommand.js')
 const showRecords = require(path.join(__dirname,'/../middleware/showrecords.js'))
 const showQueues  = require(path.join(__dirname,'/../middleware/showqueues.js'))
 
-
 /*
  *
  * Form router to show databases, queues, devices etc...
- * TODO show devices
+ * s
  */
 dataRouter.post('/show/data', getParams, showDb, showCache, showCommand, showQueues, showRecords)
 

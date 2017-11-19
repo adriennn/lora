@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const compression = require('compression')
 const express     = require('express')
 const path        = require('path')
@@ -6,7 +8,9 @@ const bodyParser  = require('body-parser')
 const jayson      = require('jayson')
 const csp         = require('helmet-csp')
 const bodylogger  = require('morgan-body')
-const botMaster   = require('botmaster')
+const Botmaster   = require('botmaster')
+const TelegramBot = require('botmaster-telegram')
+
 const app         = express()
 const server      = require('http').Server(app)
 const io          = require('socket.io')(server)
@@ -22,7 +26,6 @@ const telegramSettings = {}
 
 // webhook is at
 // https://root:PORT/telegram/webhook_TELEGRAM_WEBHOOK_ENDPOINT_HASH
-
 const telegramBot = new TelegramBot(telegramSettings)
 botmaster.addBot(telegramBot)
 
@@ -52,15 +55,15 @@ app.use(csp({
                   , 'wss://127.0.0.1:5000'
                   , 'http://127.0.0.1:5000'
                   , 'ws://127.0.0.1:5000'
-                  , 'https://garbagepla.net'
-                  , 'ws://garbagepla.net'
-                  , 'wss://garbagepla.net'
+                  , 'https://' + process.env.APP_WEB_URL
+                  , 'ws://'    + process.env.APP_WEB_URL
+                  , 'wss://'   + process.env.APP_WEB_URL
                   , 'https://api.telegram.org'
                 ],
 
     styleSrc: [  "'self'"
                , "'unsafe-inline'"
-               ,  'https://garbagepla.net'
+               ,  'https://' + process.env.APP_WEB_URL
                ,  'https://cdnjs.cloudflare.com'
                ,  'https://rawgit.com'
                ,  'https://gitcdn.github.io'
@@ -69,7 +72,7 @@ app.use(csp({
     scriptSrc: [  "'self'"
                 , "'unsafe-inline'"
                 ,  'https://cdnjs.cloudflare.com'
-                ,  'https://garbagepla.net'
+                ,  'https://' + process.env.APP_WEB_URL
                 ,  'https://cdnjs.cloudflare.com'
                 ,  'https://rawgit.com'
                 ,  'https://gitcdn.github.io'
@@ -89,11 +92,11 @@ app.use(bodyParser.json())
 
 // attach routes
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/lora/', mainRoute)
-app.use('/lora/form', formRoute)
-app.use('/lora/rpc', rpcRoute)
-app.use('/lora/data', dataRoute)
-app.use('/lora/telegram', botRoute)
+app.use(process.env.APP_ROOT             , mainRoute)
+app.use(process.env.APP_ROOT + 'form'    , formRoute)
+app.use(process.env.APP_ROOT + 'rpc'     , rpcRoute )
+app.use(process.env.APP_ROOT + 'data'    , dataRoute)
+app.use(process.env.APP_ROOT + 'telegram', botRoute )
 
 // enable accessing websockets and bot data app-wide
 app.use((req, res, next) => {
@@ -132,3 +135,7 @@ console.log('*******************************************************************
 io.sockets.on('connection', (socket) => {
   console.log('websocket client connect')
 })
+
+botmaster.on('update', (bot, update) => {
+  bot.reply(update, 'Major Tom to ground control.');
+});

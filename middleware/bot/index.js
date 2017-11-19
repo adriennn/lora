@@ -12,11 +12,18 @@ module.exports = (req, res, next) => {
 
         let bot = req.app.get('bot')
 
-            // botmaster middlewae goes here
+        bot.use({
+          type: 'incoming',
+          name: 'hello-middleware',
+          controller: (bot, update) => {
+            return bot.reply(update, 'Hello!')
+          }
+        })
 
-            console.log('bot data:', bot)
+        // botmaster middlewae goes here
+        console.log('bot instance: ', JSON.stringify(bot))
 
-            return next()
+        return next()
     }
 
     catch (err) {
