@@ -7,7 +7,7 @@ const demo    = require(path.join(__dirname,'../middleware/demo.js'))
 
 demoRouter.get('*', (req, res, next) => {
   res.render('demo', {
-    title: 'Zero-config IoT app management',
+    title: 'Zero-config lpwan device management',
     id: 'demo'
   })
 })

@@ -1,7 +1,6 @@
 const path    = require('path')
 const jayson  = require('jayson')
 const queue   = require(path.join(__dirname,'./queue.js'))
-// const cache   = require(path.join(__dirname,'./cache.js'))
 const utils   = require(path.join(__dirname,'./utils.js'))
 const dbutils = require(path.join(__dirname,'./dbutils.js'))
 
@@ -54,3 +53,5 @@ exports.everynet.join = (args, done) => {
     console.log('hit methods.everynet.join')
     done(null, 'ok')
 }
+
+exports.actility = {}

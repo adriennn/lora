@@ -1,17 +1,20 @@
 const path  = require('path')
 const mongoose = require('mongoose')
-// const queue = require(path.join(__dirname,'./queue.js'))
 const { dumpHumanPayloads, dumpPackets, incrementCmdAck, updateCmdAck } = require(path.join(__dirname,'./dbutils.js'))
+
+/*
+ * This middleware ends the JSON-RPC request cycle in the backend
+ */
 
 module.exports = (req, res, next) => {
 
   console.log('hit sortpackets()', req.body)
 
+  // Add the method to the params for db dump
   let params = req.body.params
 
-  // Add the method to the params for db dump
   req.body.params.method = req.body.method
-  let method  = req.body.method
+  let method             = req.body.method
 
   try {
 
@@ -34,7 +37,7 @@ module.exports = (req, res, next) => {
 
         }).catch(err => {
 
-          console.log('Error saving uplink packet to db: ', err)
+          console.log('Error saving uplink packet to db in sortpackets(): ', err)
           return res.end()
         })
 
@@ -43,7 +46,7 @@ module.exports = (req, res, next) => {
       default: dumpPackets(params)
         break
     }
-    // This middleware ends the request cycle in the backend
+
     return res.end()
 
   } catch (err) {

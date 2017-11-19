@@ -21,7 +21,7 @@ exports.listDevices = (req, res, next) => {
 
     return Devices.find().lean().exec().then((data) => {
 
-      console.log('device list in listDevices: ', data)
+      console.log('device list in listDevices(): ', data)
 
       // We set the device list in res.locals so it can be passed to the view (in routes/form.js)
       // TODO reverse obj order so the latest added dev is on top
@@ -78,7 +78,7 @@ exports.dumpHumanPayloads = (data) => {
 
     hpm.save().catch((err) => {
 
-      console.log(`Error in dbUtils.dumpData() for packet ${data.method}: `, err)
+      console.log(`Error in dbUtils.dumpHumanPayloads() for uplink packet: `, err)
       reject(err)
 
     }).then(() => {

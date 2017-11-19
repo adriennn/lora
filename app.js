@@ -6,18 +6,32 @@ const bodyParser  = require('body-parser')
 const jayson      = require('jayson')
 const csp         = require('helmet-csp')
 const bodylogger  = require('morgan-body')
+const botMaster   = require('botmaster')
 const app         = express()
 const server      = require('http').Server(app)
 const io          = require('socket.io')(server)
+const botmaster   = new Botmaster({server: server})
+
+bodylogger(app)
+
+// Setup the telegram bot
+const telegramSettings = {}
+      telegramSettings.credentials = {}
+      telegramSettings.credentials.authToken = process.env.TELEGRAM_TOKEN
+      telegramSettings.webhookEndpoint = '/webhook' + process.env.TELEGRAM_WEBHOOK_ENDPOINT_HASH
+
+// webhook is at
+// https://root:PORT/telegram/webhook_TELEGRAM_WEBHOOK_ENDPOINT_HASH
+
+const telegramBot = new TelegramBot(telegramSettings)
+botmaster.addBot(telegramBot)
 
 /* Routers */
 const mainRoute   = require('./routes/index')
 const formRoute   = require('./routes/form')
 const rpcRoute    = require('./routes/rpc')
 const dataRoute   = require('./routes/data')
-const demoRoute   = require('./routes/demo')
-
-bodylogger(app)
+const botRoute    = require('./routes/bot')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -29,6 +43,7 @@ app.set('subdomain offset', 2)
 app.set('json replacer', ' ')
 app.set('json space', 4)
 app.set('socketio', io)
+app.set('bot', botmaster)
 
 app.use(csp({
   directives: {
@@ -40,7 +55,7 @@ app.use(csp({
                   , 'https://garbagepla.net'
                   , 'ws://garbagepla.net'
                   , 'wss://garbagepla.net'
-                  , 'http://urho.eu/socket.io'
+                  , 'https://api.telegram.org'
                 ],
 
     styleSrc: [  "'self'"
@@ -78,10 +93,12 @@ app.use('/lora/', mainRoute)
 app.use('/lora/form', formRoute)
 app.use('/lora/rpc', rpcRoute)
 app.use('/lora/data', dataRoute)
-app.use('/lora/demo', demoRoute)
+app.use('/lora/telegram', botRoute)
 
+// enable accessing websockets and bot data app-wide
 app.use((req, res, next) => {
   req.io = io
+  req.bot = botmaster
   next()
 })
 
@@ -108,10 +125,10 @@ app.use((req, res, next) => {
 
 // export both app and server to be enable the use of socketio in req and res everywhere
 module.exports = {app: app, server: server}
-console.log('app started at http://localhost:5000/lora')
+console.log('app started')
 console.log('*********************************************************************************************************')
 
 // setup socketio
 io.sockets.on('connection', (socket) => {
-  console.log('client connect')
+  console.log('websocket client connect')
 })

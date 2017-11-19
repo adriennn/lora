@@ -1,5 +1,4 @@
 const path  = require('path')
-// const cache = require(path.join(__dirname,'./cache.js'))
 const queue = require(path.join(__dirname,'./queue.js'))
 
 module.exports = (req, res, next) => {
@@ -8,7 +7,7 @@ module.exports = (req, res, next) => {
   if ( !res.locals.method ) {
 
     // If there's app_eui in the params we skip this middleware
-    // TODO middleware routing in the route form
+    // TODO middleware routing in the form router
     if (res.locals.app_eui) {
       return next()
     }

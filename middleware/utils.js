@@ -140,9 +140,9 @@ exports.extractData = (deveui, mtype) => {
             return el.human_payload['MsgID'] === mtype
         })
 
+        // Testing only
         var chrono = new Chrono()
-
-        chrono.Start()
+            chrono.Start()
 
         // Loop through the list of devices and extract the sensors data
         try {

@@ -1,9 +1,7 @@
 const path            = require('path')
 const Device          = require('./../models/device.js')
-const { listDevices } = require(path.join(__dirname,'/../middleware/dbutils.js'))
-const db              = require(path.join(__dirname,'/../middleware/dbutils.js'))
 
-module.exports = ( req, res,next ) => {
+module.exports = ( req, res, next ) => {
 
     console.log('hit addNewDevice')
 

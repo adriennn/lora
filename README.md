@@ -34,8 +34,15 @@ If you are serving your app online, you will need to configure your web server t
 
 ## TODO
 
+- change all verbs to nouns in the api
+- allow programmation of several devices at the same time
 - rewrite promises with `await` where applicable
 - put middlewares and controllers in their own folder and rename to index.js to load them with require(./path/to/folder)
 - Move controllers to /controllers
 - Make db get
 - Make token auth
+- Make bot
+  - docs and command list
+  - read db data
+  - register device
+  - send commands
