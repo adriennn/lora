@@ -17,7 +17,7 @@ const humanPayloadSchema = new Schema({
     data   :  { type: Schema.Types.Mixed, required: true        }
   , type   :  { type: String, required: true                    }
   , time   :  { type: Date  , required: true, default: new Date }
-  , device : [{ type: Schema.Types.ObjectId , ref: 'Device', index: true }]
+  , device :  { type: String, required: true                    }
 })
 
 humanPayloadSchema.methods.getMany = function (dev, n) {
