@@ -55,7 +55,7 @@ exports.decode1m2mpayload = (obj) => {
 
           const { statusCode } = response
 
-          console.log('1m2m api response:', response)
+          // console.log('1m2m api response:', response)
 
           if ( statusCode !== 200 ) {
 
