@@ -5,6 +5,7 @@ const express = require('express')
  */
 
  incomingMiddleware = (bot, update) => {
+
    if (update.message.text === 'hi' ||
        update.message.text === 'Hi' ||
        update.message.text === 'hello' ||
@@ -38,7 +39,7 @@ module.exports = (req, res, next) => {
           controller: incomingMiddleware
         })
 
-        return res.status(200).send('OK')
+        // return res.status(200).send('OK')
     }
 
     catch (err) {
