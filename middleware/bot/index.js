@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
 
     console.log('hit bot controller: ', req.body)
 
-    let chatid= req.body.message.message_id
+    let chatid= req.body.message.chat.id
 
     try  {
 
