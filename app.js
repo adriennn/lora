@@ -5,29 +5,14 @@ const express     = require('express')
 const path        = require('path')
 const logger      = require('morgan')
 const bodyParser  = require('body-parser')
-const jayson      = require('jayson')
+// const jayson      = require('jayson')
 const csp         = require('helmet-csp')
 const bodylogger  = require('morgan-body')
-const Botmaster   = require('botmaster')
-const TelegramBot = require('botmaster-telegram')
-
 const app         = express()
 const server      = require('http').Server(app)
 const io          = require('socket.io')(server)
-const botmaster   = new Botmaster({server: server})
 
 bodylogger(app)
-
-// Setup the telegram bot
-const telegramSettings = {}
-      telegramSettings.credentials = {}
-      telegramSettings.credentials.authToken = process.env.TELEGRAM_TOKEN
-      telegramSettings.webhookEndpoint = '/webhook' + process.env.TELEGRAM_WEBHOOK_ENDPOINT_HASH
-
-// webhook is at
-// https://root:PORT/telegram/webhook_TELEGRAM_WEBHOOK_ENDPOINT_HASH
-const telegrambot = new TelegramBot(telegramSettings)
-botmaster.addBot(telegrambot)
 
 /* Routers */
 const mainRoute   = require('./routes/index')
@@ -46,8 +31,6 @@ app.set('subdomain offset', 2)
 app.set('json replacer', ' ')
 app.set('json space', 4)
 app.set('socketio', io)
-app.set('botmaster', botmaster)
-app.set('telegrambot', telegrambot)
 
 app.use(csp({
   directives: {
@@ -99,10 +82,9 @@ app.use(process.env.APP_ROOT + 'rpc'     , rpcRoute )
 app.use(process.env.APP_ROOT + 'data'    , dataRoute)
 app.use(process.env.APP_ROOT + 'telegram', botRoute )
 
-// enable accessing websockets and bot data app-wide
+// enable accessing websockets data app-wide
 app.use((req, res, next) => {
   req.io = io
-  req.bot = botmaster
   next()
 })
 
@@ -136,7 +118,3 @@ console.log('*************************************************************')
 io.sockets.on('connection', (socket) => {
   console.log('websocket client connect')
 })
-
-botmaster.on('update', (bot, update) => {
-  bot.reply(update, 'Major Tom to ground control.');
-});
