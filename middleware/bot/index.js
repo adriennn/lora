@@ -1,44 +1,23 @@
 const express = require('express')
+const TelegramBotClient = require('telegram-bot-client')
+const client = new TelegramBotClient(process.env.TELEGRAM_TOKEN)
+
 
 /*
  * This middleware allows the Telegram bot to interact with the app
  */
 
- // incomingMiddleware = (bot, update) => {
- //
- //   if (update.message.text === 'hi') {
- //     return bot.reply(update, 'well hi right back at you')
- //   }
- // }
-
 module.exports = (req, res, next) => {
 
     console.log('hit bot controller: ', req.body)
 
+    let chatid= req.body.message.message_id
+
     try  {
 
-        let bm = req.app.get('botmaster')
-        let tb = req.app.get('telegrambot')
-
-        bm.use({
-          type: 'incoming',
-          name: 'incoming-middleware',
-          controller: (bot, update) => {
-            console.log('bm bot', update)
-            return bot.reply(update, 'Oh hi Mark bm');
-          }
-        })
-
-        tb.use({
-          type: 'incoming',
-          name: 'incoming-middleware',
-          controller: (bot, update) => {
-            console.log('tb bot', update)
-            return bot.reply(update, 'Oh hi Mark tb');
-          }
-        })
-
+        client.sendMessage(chatid, 'Oh hi Mark');
         // return res.status(200).send('OK')
+        res.end()
     }
 
     catch (err) {
