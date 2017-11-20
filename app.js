@@ -26,8 +26,8 @@ const telegramSettings = {}
 
 // webhook is at
 // https://root:PORT/telegram/webhook_TELEGRAM_WEBHOOK_ENDPOINT_HASH
-const telegramBot = new TelegramBot(telegramSettings)
-botmaster.addBot(telegramBot)
+const telegrambot = new TelegramBot(telegramSettings)
+botmaster.addBot(telegrambot)
 
 /* Routers */
 const mainRoute   = require('./routes/index')
@@ -46,7 +46,8 @@ app.set('subdomain offset', 2)
 app.set('json replacer', ' ')
 app.set('json space', 4)
 app.set('socketio', io)
-app.set('bot', botmaster)
+app.set('botmaster', botmaster)
+app.set('telegrambot', telegrambot)
 
 app.use(csp({
   directives: {

@@ -4,26 +4,12 @@ const express = require('express')
  * This middleware allows the Telegram bot to interact with the app
  */
 
- incomingMiddleware = (bot, update) => {
-
-   if (update.message.text === 'hi' ||
-       update.message.text === 'Hi' ||
-       update.message.text === 'hello' ||
-       update.message.text === 'Hello') {
-     return bot.reply(update, 'well hi right back at you')
-
-   } else if (update.message.text.indexOf('weather') > -1) {
-
-     return bot.sendTextMessageTo('It is currently sunny in Philadelphia', update.sender.id)
-
-   } else {
-
-     const messages = ['I\'m sorry about this.',
-                       'But it seems like I couldn\'t understand your message.',
-                       'Could you try reformulating it?']
-     return bot.sendTextCascadeTo(messages, update.sender.id)
-   }
- }
+ // incomingMiddleware = (bot, update) => {
+ //
+ //   if (update.message.text === 'hi') {
+ //     return bot.reply(update, 'well hi right back at you')
+ //   }
+ // }
 
 module.exports = (req, res, next) => {
 
@@ -31,12 +17,25 @@ module.exports = (req, res, next) => {
 
     try  {
 
-        let tgBot = req.app.get('bot')
+        let bm = req.app.get('botmaster')
+        let tb = req.app.get('telegrambot')
 
-        tgBot.use({
+        bm.use({
           type: 'incoming',
           name: 'incoming-middleware',
-          controller: incomingMiddleware
+          controller: (bot, update) => {
+            console.log('bm bot', update)
+            return bot.reply(update, 'Oh hi Mark bm');
+          }
+        })
+
+        tb.use({
+          type: 'incoming',
+          name: 'incoming-middleware',
+          controller: (bot, update) => {
+            console.log('tb bot', update)
+            return bot.reply(update, 'Oh hi Mark tb');
+          }
         })
 
         // return res.status(200).send('OK')
