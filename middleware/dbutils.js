@@ -65,7 +65,7 @@ exports.dumpHumanPayloads = (data) => {
 
     console.log('hit dumpHumanPayloads', data)
 
-    data.MsgId = data.MsgId || 'empty'
+    data.MsgID = data.MsgID || 'empty'
 
     const Hpm = require('./../models/humanpayload')
 
@@ -127,7 +127,7 @@ exports.incrementDeviceCmdSeq = (dev, curr) => {
 
   // Use the schema own method
   // Device.updateCmdAck(dev, curr)
-  
+
   Device.findOneAndUpdate({ deveui: dev }, { $max: { cmdack: curr }}, {new: true}, (err, data) => { return err} )
 }
 
