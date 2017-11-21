@@ -9,7 +9,6 @@ module.exports = (req, res, next) => {
 
     console.log('hit bot controller: ', req.body)
 
-    let chatid= req.body.message.chat.id
 
     // let keyboard = JSON.stringify({
     // inline_keyboard: [
@@ -23,15 +22,14 @@ module.exports = (req, res, next) => {
     //   ]
     // })
 
-    let text = 'What do you want to do?'
+    try  {
 
-    let keyboard = '[[{“text”:”Text 1″,”callback_data”:”1″},{“text”:”Link 1″,”url”:”https://botpress.org”}],[{“text”:”Text2″,”callback_data”:”2″}]]'
+        let chatid= req.body.message.chat.id
+        let keyboard = '[[{“text”:”Text 1″,”callback_data”:”1″},{“text”:”Link 1″,”url”:”https://botpress.org”}],[{“text”:”Text2″,”callback_data”:”2″}]]'
 
-      try  {
-
-          client.sendMessage(chatid, text, keyboard).catch(err => {
-          console.log(err)
-          res.end()
+        client.sendMessage(chatid, 'What now?', keyboard).catch(err => {
+        console.log(err)
+        res.end()
       })
           // return res.status(200).send('OK')
           res.end()
