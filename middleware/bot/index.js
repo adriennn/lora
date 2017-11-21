@@ -26,7 +26,7 @@ module.exports = (req, res, next) => {
 
         let chatid= req.body.message.chat.id
 
-        client.sendMessage(chatid, 'What now?', '[[{“text”:”Text 1″,”callback_data”:”1″},{“text”:”Link 1″,”url”:”https://botpress.org”}],[{“text”:”Text2″,”callback_data”:”2″}]]').catch(err => {
+        client.sendMessage(chatid, 'What now?', JSON.parse('[[{“text”:”Text 1″,”callback_data”:”1″},{“text”:”Link 1″,”url”:”https://botpress.org”}],[{“text”:”Text2″,”callback_data”:”2″}]]')).catch(err => {
         console.log(err)
         res.end()
       })
