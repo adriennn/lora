@@ -1,5 +1,5 @@
-const path            = require('path')
-const Device          = require('./../models/device')
+const path   = require('path')
+const Device = require('./../models/device')
 
 module.exports = ( req, res, next ) => {
 
@@ -42,6 +42,8 @@ module.exports = ( req, res, next ) => {
       })
 
     }).catch((err) => {
+
+      console.log('failed to save new device', err)
 
       next(err)
     })

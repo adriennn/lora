@@ -13,6 +13,7 @@ module.exports = ( req, res,next ) => {
 
             // Return datacheck failure to error view
             if (process.env.NODE_ENV === 'production') {
+
               let error = new Error
               error.message = 'Form failed validation.'
               return next(error)
@@ -21,7 +22,7 @@ module.exports = ( req, res,next ) => {
             return next(JSON.stringify(err.mapped(), null, '\t'))
         }
 
-        // Else we can proceed with the next middleware
+        // Else if there's no validation error we can proceed with the next middleware
         return next()
 
     } catch (err) {

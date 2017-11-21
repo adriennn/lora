@@ -53,6 +53,6 @@ formRouter.get('/device', listDevices, (req, res, next) => {
 })
 
 // We enforce strict alphanumeric input for all form fields
-formRouter.post('*', /*body('*.*').isAlphanumeric(), validateReq,*/ getParams, saveCommandToQueue, makeManualRpcCall, addNewDevice)
+formRouter.post('*', body('*.*').isAlphanumeric(), validateReq, getParams, saveCommandToQueue, makeManualRpcCall, addNewDevice)
 
 module.exports = formRouter
