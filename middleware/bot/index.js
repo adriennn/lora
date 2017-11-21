@@ -11,19 +11,21 @@ module.exports = (req, res, next) => {
 
     let chatid= req.body.message.chat.id
 
-    let keyboard = JSON.stringify({
-    inline_keyboard: [
-        [
-          {text:'Add a device',callback_data:'device'},
-          {text:'Remove a device',callback_data:'remove'}
-        ],
-        [
-          {text:'List all devices',callback_data:'list'}
-        ]
-      ]
-    })
+    // let keyboard = JSON.stringify({
+    // inline_keyboard: [
+    //     [
+    //       {text:'Add a device',callback_data:'device'},
+    //       {text:'Remove a device',callback_data:'remove'}
+    //     ],
+    //     [
+    //       {text:'List all devices',callback_data:'list'}
+    //     ]
+    //   ]
+    // })
 
     let text = 'What do you want to do?'
+
+    let keyboard = '[[{“text”:”Text 1″,”callback_data”:”1″},{“text”:”Link 1″,”url”:”https://botpress.org”}],[{“text”:”Text2″,”callback_data”:”2″}]]'
 
       try  {
 
@@ -38,5 +40,5 @@ module.exports = (req, res, next) => {
       catch (err) {
 
         return res.status(500).send('Internal Server Error')
-      }
+    }
 }
