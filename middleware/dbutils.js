@@ -72,7 +72,7 @@ exports.dumpHumanPayloads = (data) => {
     let hpm = new Hpm ({
         data   : JSON.stringify(data)
       , time   : new Date
-      , type   : data.MsgId
+      , type   : data.MsgID
       , device : data.dev_eui
     })
 

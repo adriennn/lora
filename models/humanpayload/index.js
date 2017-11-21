@@ -15,7 +15,7 @@ const Device   = require('./../device')
 
 const humanPayloadSchema = new Schema({
     data   :  { type: Schema.Types.Mixed, required: true        }
-  , type   :  { type: String, required: true                    }
+  , type   :  { type: String                                    }
   , time   :  { type: Date  , required: true, default: new Date }
   , device :  { type: String, required: true                    }
 })
