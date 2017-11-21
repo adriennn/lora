@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
 
       try  {
 
-          client.sendMessage(chatid, text, keyboard).promise().catch(err => {
+          client.sendMessage(chatid, text, keyboard).catch(err => {
           console.log(err)
           res.end()
       })
