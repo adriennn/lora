@@ -41,8 +41,4 @@ If you are serving your app online, you will need to configure your web server t
 - Move controllers to /controllers
 - Make db get
 - Make token auth
-- Make bot
-  - docs and command list
-  - read db data
-  - register device
-  - send commands
+- migrate data from file to mongo

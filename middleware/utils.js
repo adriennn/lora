@@ -186,15 +186,13 @@ exports.extractData = (deveui, mtype) => {
 
                   case 'Alive' :
 
-                  ['Lat', 'Lon'].forEach((i) =>{
+                    // Getthe latlng from the Alive messgae
+                    fd.devices[dev].data.coords = fd.devices[dev].data.coords || []
 
-                    fd.devices[dev].data[i] = fd.devices[dev].data[i] || []
-
-                    fd.devices[dev].data[i].push({
+                    fd.devices[dev].data.coords.push({
                       'time': packet.rx_time,
                       'latlng': '[' + packet.human_payload.Lat + ',' + packet.human_payload.Lon + ']'
                     })
-                  })
 
                   break
 
@@ -231,12 +229,14 @@ exports.extractData = (deveui, mtype) => {
 
               })
 
+              // Remove data we dont usein the UI
               delete fd.devices[dev].raw
           })
 
           var stop = chrono.Stop()
           console.log( `It took ${stop} ms to parse the data.`)
 
+          // Remove data we dont usein the UI
           delete fd.human_payloads
           delete fd.GenSens
 
