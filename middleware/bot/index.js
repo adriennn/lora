@@ -14,8 +14,13 @@ module.exports = (req, res, next) => {
         let keyboard = {
             reply_markup: JSON.stringify({
               keyboard: [
-                ['1'],
-                ['2']
+                ['List devices'],
+                ['Add new device'],
+                ['Remove device'],
+                [
+                    {'text:':'Hallo', 'callback_data': '1'}
+                  , {'text':'Link','url':'https://garbagepla.net'}
+                ]
               ]
             })
         }
@@ -24,14 +29,16 @@ module.exports = (req, res, next) => {
 
         client.sendMessage(chatid, 'What now?', keyboard).catch(err => {
 
-        console.log(err)
-        res.end()
-      })
-          // return res.status(200).send('OK')
+          console.log(err)
           res.end()
+        })
+
+        res.end()
       }
 
       catch (err) {
+
+        console.log('error in bot controller', err)
 
         return res.end()
     }
