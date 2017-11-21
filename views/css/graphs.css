@@ -13,9 +13,9 @@
 }
 
 
-@color-base      : #3bafdA;
+/*@color-base      : #3bafdA;
 @color-secondary : spin(@color-base, -(360 / 3));
-@color-tertiary  : spin(@color-base, (360 / 3));
+@color-tertiary  : spin(@color-base, (360 / 3));*/
 
 /* Below freezing */
 .ct-series-a .ct-line.ct-threshold-0 {
@@ -99,4 +99,18 @@
             border-color: nth($ct-series-colors, $i + 1);
         }
     }
+}
+
+/* X axis labels orientation */
+.ct-chart-line .ct-label.ct-horizontal.ct-end {
+  display: block;
+  /*overflow: hidden;
+  text-overflow: ellipsis;*/
+  white-space: nowrap;
+  transform: rotate(45deg);
+  transform-origin: 0% 0;
+  /*text-align: right;
+  max-height: 1em;
+  min-width: 100px;
+  max-width: 100px;*/
 }

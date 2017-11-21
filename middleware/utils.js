@@ -185,7 +185,17 @@ exports.extractData = (deveui, mtype) => {
                   break
 
                   case 'Alive' :
-                    reject(errwip)
+
+                  ['Lat', 'Lon'].forEach((i) =>{
+
+                    fd.devices[dev].data[i] = fd.devices[dev].data[i] || []
+
+                    fd.devices[dev].data[i].push({
+                      'time': packet.rx_time,
+                      'latlng': '[' + packet.human_payload.Lat + ',' + packet.human_payload.Lon + ']'
+                    })
+                  })
+
                   break
 
                   case '1WireT' :

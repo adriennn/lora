@@ -45,7 +45,7 @@ var options = {
   axisX: {
     type: Chartist.AutoScaleAxis,
     labelInterpolationFnc: function(value) {
-      return moment(value).format('D/M/YY HH:mm');
+      return moment(value).format('D.M H:mm');
     }
   },
   axisY: {
