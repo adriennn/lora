@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
                 ['Add new device'],
                 ['Remove device'],
                 [
-                    {'text:':'Hallo', 'callback_data': '1'}
+                    {'text':'Hallo','callback_data': '1'}
                   , {'text':'Link','url':'https://garbagepla.net'}
                 ]
               ]
