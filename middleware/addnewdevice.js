@@ -1,5 +1,5 @@
 const path            = require('path')
-const Device          = require('./../models/device.js')
+const Device          = require('./../models/device')
 
 module.exports = ( req, res, next ) => {
 
@@ -19,7 +19,7 @@ module.exports = ( req, res, next ) => {
 
       Device.find().lean().exec().then((data) => {
 
-        // Remove keys we don't want to share
+        // Remove keys we don't want to share with the user interface
         Object.keys(data).forEach((key) => {
           delete key.__v
           delete key._id

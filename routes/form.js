@@ -10,7 +10,7 @@ const getParams          = require(path.join(__dirname,'/../middleware/getparams
 const validateReq        = require(path.join(__dirname,'/../middleware/validaterequest.js'))
 const { body }           = require('express-validator/check')
 const addNewDevice       = require(path.join(__dirname,'/../middleware/addnewdevice.js'))
-const db                 = require(path.join(__dirname,'/../middleware/dbutils.js'))
+const { listDevices }    = require(path.join(__dirname,'/../middleware/dbutils.js'))
 
 /*
  * This is a user interface for making RCP calls to the RPC server in the app so you don't need to use curl to test the system
@@ -26,7 +26,7 @@ formRouter.get('/test', (req, res, next) => {
 
 formRouter.get('/live', (req, res, next) => {
 
-  const iosourceurl = process.env.IO_URL 
+  const iosourceurl = process.env.IO_URL
 
   console.log('io source: ', iosourceurl)
 
@@ -44,7 +44,7 @@ formRouter.get('/send', (req, res, next) => {
   })
 })
 
-formRouter.get('/device', db.listDevices, (req, res, next) => {
+formRouter.get('/device', listDevices, (req, res, next) => {
   res.render('device', {
       title: 'Manage devices'
     , id: 'device'

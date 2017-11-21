@@ -27,33 +27,25 @@ const deviceSchema = new Schema({
   , latlng     : { type: String }
 })
 
-deviceSchema.methods = {
+const Device = mongoose.model('Device', deviceSchema, 'Device')
 
-   updateCmdAck: (dev, newVal) => {
+deviceSchema.statics.updateCmdAck = function (dev, newVal) {
 
-      // Update if the value in storage is lower than 'newVal'
-      this.findOneAndUpdate({ deveui: dev }, { $max: { cmdack: newVal }}, (err, data) => { return err} )
-
-      return this.save()
-   },
-
-   updateLastSeen: (dev, t) => {
-
-      // Update if the value in storage is lower than t
-      this.findOneAndUpdate({ deveui: dev }, { $max: { lastseen: t }}, (err, data) => { return err} )
-
-      return this.save()
-   },
-
-   setActive: (dev, isactive) => {
-
-       this.findOneAndUpdate({deveui: dev}, {active: isactive}, (err, data) => { return err})
-
-       return this.save()
-   }
-
+  // Update if the value in storage is lower than 'newVal'
+  this.findOneAndUpdate({ deveui: dev }, { $max: { cmdack: newVal }}, {new: true}, (err, data) => { return err} )
 }
 
-const Device = mongoose.model('Device', deviceSchema, 'Device')
+deviceSchema.statics.updateLastSeen = function (dev, t) {
+
+  console.log('device last seen method', dev)
+
+  // Update if the value in storage is lower than t
+  this.findOneAndUpdate({ deveui: dev }, { $max: { lastseen: t }}, {new: true}, (err, data) => { return err} )
+}
+
+deviceSchema.statics.setActive = function (dev, isactive) {
+
+   this.findOneAndUpdate({deveui: dev}, {active: isactive}, {new: true}, (err, data) => { return err})
+}
 
 module.exports = Device

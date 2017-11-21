@@ -17,7 +17,7 @@ exports.listDevices = (req, res, next) => {
 
   try {
 
-    const Devices = require('./../models/device.js')
+    const Devices = require('./../models/device')
 
     return Devices.find().lean().exec().then((data) => {
 
@@ -45,7 +45,7 @@ exports.getPayloads = (dev, n) => {
 
   console.log('hit getPayloads')
 
-  const Payloads = require('./../models/humanpayload.js')
+  const Payloads = require('./../models/humanpayload')
 
   // Use the schema own static
   return Payloads.getMany(dev, n).exec().then((data) => {
@@ -67,7 +67,7 @@ exports.dumpHumanPayloads = (data) => {
 
     data.MsgId = data.MsgId || 'empty'
 
-    const Hpm = require('./../models/humanpayload.js')
+    const Hpm = require('./../models/humanpayload')
 
     let hpm = new Hpm ({
         data   : JSON.stringify(data)
@@ -98,7 +98,7 @@ exports.dumpPackets = (data) => {
 
     console.log('data in dumpPackets', data)
 
-    const Dump = require('./../models/dump.js')
+    const Dump = require('./../models/dump')
 
     let dump = new Dump ({
         data   : JSON.stringify(data)
@@ -121,20 +121,25 @@ exports.dumpPackets = (data) => {
   })
 }
 
-exports.incrementCmdAck = (dev, curr) => {
+exports.incrementDeviceCmdSeq = (dev, curr) => {
 
-  const Device = require('./../models/device.js')
+  const Device = require('./../models/device')
 
   // Use the schema own method
-  Device.updateCmdAck(dev, curr)
+  // Device.updateCmdAck(dev, curr)
+  
+  Device.findOneAndUpdate({ deveui: dev }, { $max: { cmdack: curr }}, {new: true}, (err, data) => { return err} )
 }
 
-exports.updateLastSeen = (dev, t) => {
+exports.updateDeviceLastSeen = (dev, t) => {
 
-  const Device = require('./../models/device.js')
+  const Device = require('./../models/device')
 
   // Use the schema own method
-  Device.updateLastSeen(dev, t)
+  // Device.updateLastSeen(dev, t)
+
+  Device.findOneAndUpdate({ deveui: dev }, { $max: { lastseen: t }}, {new: true}, (err, data) => { return err} )
+
 }
 
 

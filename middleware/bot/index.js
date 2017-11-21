@@ -13,7 +13,10 @@ module.exports = (req, res, next) => {
 
     try  {
 
-        client.sendMessage(chatid, 'Oh hi Mark');
+        client.sendMessage(chatid, 'Oh hi Mark').promise().catch(err => {
+        console.log(err)
+        res.end()
+    })
         // return res.status(200).send('OK')
         res.end()
     }

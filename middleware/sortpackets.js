@@ -1,6 +1,6 @@
 const path  = require('path')
 const mongoose = require('mongoose')
-const { dumpHumanPayloads, dumpPackets, incrementCmdAck, updateCmdAck } = require(path.join(__dirname,'./dbutils.js'))
+const { dumpHumanPayloads, dumpPackets, incrementDeviceCmdSeq, updateDeviceLastSeen } = require(path.join(__dirname,'./dbutils.js'))
 
 /*
  * This middleware ends the JSON-RPC request cycle in the backend
@@ -29,11 +29,12 @@ module.exports = (req, res, next) => {
 
         }).then(() => {
 
-          // Update the last time the device was seen
-          updateLastSeen(params.dev_eui, params.rx_time)
+          // Update the last time the device was seen, defaults to when the function is called if the payload doesn't contain any time info
+          let time = params.rx_time || new Date()
+          updateDeviceLastSeen(params.dev_eui, time)
 
           // Increment CmdAck value if the new command is accepted (i.e.if the new CmdAck is higher than what's in the db)
-          if ( params.human_payload.MsgID === 'Alive' ) incrementCmdAck(params.dev_eui, params.human_payload.CmdAck)
+          if ( params.human_payload.MsgID === 'Alive' ) incrementDeviceCmdSeq(params.dev_eui, params.human_payload.CmdAck)
 
         }).catch(err => {
 

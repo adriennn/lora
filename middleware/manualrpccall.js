@@ -4,7 +4,7 @@ const rpcclient = require(path.join(__dirname,'./rpcclient.js'))
 module.exports = (req, res, next) => {
 
     // If there's app_eui in the params we skip this middleware
-    // TODO middlewarerouting logive in the route form
+    // TODO middleware routing in the route form
     if (res.locals.app_eui) {
       return next()
     }
@@ -47,7 +47,7 @@ module.exports = (req, res, next) => {
       })
 
       rpcclient.on('http timeout', (err) => {
-        console.log('http client timeout error: ', err)
+        console.log('rpc client timeout error: ', err)
       })
 
     } catch (e) {
