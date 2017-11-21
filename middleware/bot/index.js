@@ -9,24 +9,21 @@ module.exports = (req, res, next) => {
 
     console.log('hit bot controller: ', req.body)
 
-
-    let keyboard = JSON.stringify({
-    inline_keyboard: [
-        [
-          {text:'Add a device',callback_data:'device'},
-          {text:'Remove a device',callback_data:'remove'}
-        ],
-        [
-          {text:'List all devices',callback_data:'list'}
-        ]
-      ]
-    })
-
     try  {
+
+        let keyboard = {
+            reply_markup: JSON.stringify({
+              keyboard: [
+                ['1'],
+                ['2']
+              ]
+            })
+        }
 
         let chatid= req.body.message.chat.id
 
-        client.sendMessage(chatid, 'What now?', JSON.parse(keyboard)).catch(err => {
+        client.sendMessage(chatid, 'What now?', keyboard).catch(err => {
+
         console.log(err)
         res.end()
       })
@@ -36,6 +33,6 @@ module.exports = (req, res, next) => {
 
       catch (err) {
 
-        return res.status(500).send('Internal Server Error')
+        return res.end()
     }
 }
