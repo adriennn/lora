@@ -1,0 +1,8 @@
+#map {
+  width: auto;
+  height: 300px;
+}
+
+.card-body {
+  padding: 0 !Important;
+}

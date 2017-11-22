@@ -117,5 +117,5 @@ buttonReset.addEventListener('click', function () {
 
   options.plugins.ctMultiThreshold = {threshold: [1, 2, 5]};
 
-  chart.update(null, options.plugins, true);
+  chart.update(null, options.plugins.ctMultiThreshold, false);
 });*/

@@ -48,7 +48,7 @@ module.exports = (req, res, next) => {
 
         getData.then((obj) => {
 
-          // getData() returns an array of devices ith the dev_eui as keys and for each key, there is a 'data_array' array
+          // getData() returns an array of devices with the dev_eui as keys and for each key, there is a 'data_array' array
           // inside which the data for the sensors are grouped by type
           // eg. obj.devices.mydeveui.data_array[Temp]
           //     obj.devices.mydeveui.data_array[BaromBar]
@@ -56,11 +56,25 @@ module.exports = (req, res, next) => {
 
           res.locals.records = JSON.stringify(obj)
 
-          return res.render('records', {
-              title : 'Logged data'
-            , id    : 'records'
-            , data  :  res.locals.records
-          })
+          // If we any of the below, they contain cooridinates and we display the data on a map
+          if ( type === 'Alive' || 'Move' ) {
+
+            return res.render('map', {
+                title : 'Logged data'
+              , id    : 'records'
+              , data  :  res.locals.records
+            })
+
+          // Else we show the graph view
+          } else {
+
+            return res.render('records', {
+                title : 'Logged data'
+              , id    : 'records'
+              , data  :  res.locals.records
+            })
+
+          }
 
       }).catch((err) => {
 

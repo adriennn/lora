@@ -51,6 +51,7 @@ app.use(csp({
                ,  'https://cdnjs.cloudflare.com'
                ,  'https://rawgit.com'
                ,  'https://gitcdn.github.io'
+               ,  'https://unpkg.com'
              ],
 
     scriptSrc: [  "'self'"
@@ -63,6 +64,7 @@ app.use(csp({
                 ,  'https://code.jquery.com'
                 ,  'https://cdn.jsdelivr.net'
                 ,  'https://maxcdn.bootstrapcdn.com'
+                ,  'https://unpkg.com'
               ],
     imgSrc: [  "'self'"
               , 'data:'

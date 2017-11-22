@@ -1,0 +1,23 @@
+extends index
+
+block scriptsandstyles
+  script(src='https://unpkg.com/leaflet@1.2.0/dist/leaflet.js',integrity='sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==',crossorigin='')
+  script(src='https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js')
+  link(href='https://unpkg.com/leaflet@1.2.0/dist/leaflet.css', rel='stylesheet',integrity='sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==',crossorigin='')
+    
+  style
+    include css/map.css
+
+block tabcontent
+  #map
+
+block tabfooter
+  .row
+    .float-right
+      button#reset.btn.btn-secondary Reset map
+
+  script.
+    var points = !{data};
+  script
+    include js/map.js
+  
