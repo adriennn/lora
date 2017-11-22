@@ -1,12 +1,15 @@
 
-// TODO fetch the first latlgof the data for setting the view and once loaded fit all inside viewport
+// TODO fetch the first latlg of the data for setting the view and once loaded fit all inside viewport
+
+console.log('token: ', mapboxtoken.toString())
+
 var map = L.map('map').setView([60.20766, 24.76796], 14);
 
 var tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiYWRyaWVubm4iLCJhIjoiNWQ5ZTEwYzE0MTY5ZjcxYjIyNmExZDA0MGE2MzI2YWEifQ.WGCZQzbVhF87_Z_Yo1aMIQ'
+    accessToken: mapboxtoken
 });
 
 tiles.addTo(map);
@@ -22,8 +25,10 @@ for (var device in points) {
 
   points[device].data.coords.forEach((item) => {
 
+    // Simple markers
     // return new L.Marker(JSON.parse(item.latlng)).addTo(map);
 
+    // GeoJSON markers
     // let geoJsonFeature = {
     //   "type": "Feature",
     //   "properties": {

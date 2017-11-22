@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const path  = require('path')
 const utils = require(path.join(__dirname,'./utils.js'))
 
@@ -63,6 +65,7 @@ module.exports = (req, res, next) => {
                 title : 'Logged data'
               , id    : 'records'
               , data  :  res.locals.records
+              , token :  process.env.MAPBOX_TOKEN + ''
             })
 
           // Else we show the graph view
