@@ -48,39 +48,39 @@ module.exports = (req, res, next) => {
     // Parse the logfiles currently in storage
     let getData = utils.extractData(deveui, type)
 
-        getData.then((obj) => {
+    getData.then((obj) => {
 
-          // getData() returns an array of devices with the dev_eui as keys and for each key, there is a 'data_array' array
-          // inside which the data for the sensors are grouped by type
-          // eg. obj.devices.mydeveui.data_array[Temp]
-          //     obj.devices.mydeveui.data_array[BaromBar]
-          // ...
+      // getData() returns an array of devices with the dev_eui as keys and for each key, there is a 'data_array' array
+      // inside which the data for the sensors are grouped by type
+      // eg. obj.devices.mydeveui.data_array[Temp]
+      //     obj.devices.mydeveui.data_array[BaromBar]
+      // ...
 
-          res.locals.records = JSON.stringify(obj)
+      res.locals.records = JSON.stringify(obj)
 
-          // If we any of the below, they contain cooridinates and we display the data on a map
-          if ( type === 'Alive' || 'Move' ) {
+      // If we any of the below, they contain cooridinates and we display the data on a map
+      if ( type === 'Alive' || type === 'Move' ) {
 
-            return res.render('map', {
-                title : 'Logged data'
-              , id    : 'records'
-              , data  :  res.locals.records
-              , token :  process.env.MAPBOX_TOKEN + ''
-            })
+        return res.render('map', {
+            title : 'Logged data'
+          , id    : 'records'
+          , data  :  res.locals.records
+          , token :  process.env.MAPBOX_TOKEN + ''
+        })
 
-          // Else we show the graph view
-          } else {
+      // Else we show the graph view
+      } else {
 
-            return res.render('records', {
-                title : 'Logged data'
-              , id    : 'records'
-              , data  :  res.locals.records
-            })
+        return res.render('records', {
+            title : 'Logged data'
+          , id    : 'records'
+          , data  :  res.locals.records
+        })
 
-          }
+      }
 
-      }).catch((err) => {
+  }).catch((err) => {
 
-        return next(err)
-      })
+    return next(err)
+  })
 }

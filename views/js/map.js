@@ -1,7 +1,7 @@
 
 // TODO fetch the first latlg of the data for setting the view and once loaded fit all inside viewport
 
-console.log('token: ', mapboxtoken.toString())
+// console.log('token: ', mapboxtoken.toString())
 
 var map = L.map('map').setView([60.20766, 24.76796], 14);
 
