@@ -8,17 +8,18 @@ const client = new TelegramBotClient(process.env.TELEGRAM_TOKEN)
 module.exports = (req, res, next) => {
 
     console.log('hit bot controller: ', req.body)
+    console.log('hit bot: ', JSON.stringify(req.body))
 
     try  {
 
         let keyboard = {
             reply_markup: JSON.stringify({
               keyboard: [
-                ['List devices'],
-                ['Add new device'],
-                ['Remove device'],
-                [
-                    {'text':'Hallo','callback_data': '1'}
+                  ['List devices']
+                , ['Add new device']
+                , ['Remove device']
+                , [
+                    {'text':'Hello','callback_data': '1'}
                   , {'text':'Link','url':'https://garbagepla.net'}
                 ]
               ]

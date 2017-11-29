@@ -42,3 +42,4 @@ If you are serving your app online, you will need to configure your web server t
 - Make db get
 - Make token auth
 - migrate data from file to mongo
+- put legend and labels on graphs

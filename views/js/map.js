@@ -1,6 +1,11 @@
 
 // TODO fetch the first latlg of the data for setting the view and once loaded fit all inside viewport
 
+// TODO hexbins instead of heatmaps
+// npm install d3
+// npm install d3-hexbin
+// npm install leaflet
+
 // console.log('token: ', mapboxtoken.toString())
 
 var map = L.map('map').setView([60.20766, 24.76796], 14);

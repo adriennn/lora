@@ -113,9 +113,11 @@ buttonReset.addEventListener('click', function () {
 // var buttonSet = document.getElementById('setty');
 // var inputSet = document.getElementById('inputty');
 
+// TODO fix this now that the plugin has update() capabilities
+
 /*buttonSet.addEventListener('click', function () {
 
-  options.plugins.ctMultiThreshold = {threshold: [1, 2, 5]};
+  let newthreshold = {threshold: [1, 2, 5]};
 
-  chart.update(null, options.plugins.ctMultiThreshold, false);
+  chart.update(null, newthreshold, true);
 });*/

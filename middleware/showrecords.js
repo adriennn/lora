@@ -65,7 +65,7 @@ module.exports = (req, res, next) => {
             title : 'Logged data'
           , id    : 'records'
           , data  :  res.locals.records
-          , token :  process.env.MAPBOX_TOKEN + ''
+          , token :  process.env.MAPBOX_TOKEN
         })
 
       // Else we show the graph view
