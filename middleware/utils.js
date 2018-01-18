@@ -183,7 +183,10 @@ exports.extractData = (deveui, mtype) => {
                   break
 
                   case 'Alive' :
-                    // Getthe latlng from the Alive messgae
+                  case 'Move' :
+
+                    console.log('Extracting geo data')
+                    // Get the latlng from the Alive messgae
                     fd.devices[dev].data.coords = fd.devices[dev].data.coords || []
 
                     fd.devices[dev].data.coords.push({

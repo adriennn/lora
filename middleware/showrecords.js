@@ -16,6 +16,7 @@ module.exports = (req, res, next) => {
       return next(err)
     }
 
+    // Set the type of data the user wants
     let type = res.locals.type
     let deveui
 
@@ -35,7 +36,7 @@ module.exports = (req, res, next) => {
         deveui = res.locals.dev_eui.split(',')
 
     } else {
-
+      // Build a single value array to storethe only deveui
       console.log('single dev_eui')
 
       deveui = []
@@ -50,6 +51,8 @@ module.exports = (req, res, next) => {
 
     getData.then((obj) => {
 
+      console.log('Extracted data: ', obj)
+
       // getData() returns an array of devices with the dev_eui as keys and for each key, there is a 'data_array' array
       // inside which the data for the sensors are grouped by type
       // eg. obj.devices.mydeveui.data_array[Temp]
@@ -62,7 +65,7 @@ module.exports = (req, res, next) => {
       if ( type === 'Alive' || type === 'Move' ) {
 
         return res.render('map', {
-            title : 'Logged data'
+            title : 'Logged geographical data'
           , id    : 'records'
           , data  :  res.locals.records
           , token :  process.env.MAPBOX_TOKEN
