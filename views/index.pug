@@ -10,8 +10,31 @@ block content
       .card
         .card-header
           nav.nav.nav-pills.flex-column.flex-sm-row
-            //- each menuitem in data
-            each menuitem in [{id: 'live',title:'Live stream',url:'/lora/form/live'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id:'show',title:'Show',url:'/lora/data/show'},{id: 'device',title:'Devices',url:'/lora/form/device'}]
+            //- each menuitem in [{id: 'live',title:'Live stream',url:'/lora/form/live'},{id: 'send',title:'Send data',url:'/lora/form/send'},{id: 'test',title:'Test calls',url:'/lora/form/test'},{id:'show',title:'Show',url:'/lora/data/show'},{id: 'device',title:'Devices',url:'/lora/form/device'}]
+            - 
+              var menu = [{
+                id: "live",
+                title: "Live stream",
+                url: "/lora/form/live"
+              }, {
+                id: "send",
+                title: "Commands",
+                url: "/lora/form/send"
+              }, {
+                id: "test",
+                title: "Test",
+                url: "/lora/form/test"
+              }, {
+                id: "data",
+                title: "Data",
+                url: "/lora/data"
+              }, {
+                id: "device",
+                title: "Devices",
+                url: "/lora/form/device"
+              }]
+            
+            each menuitem in menu
               if (id == menuitem.id)
                 a(class='flex-sm-fill text-sm-center nav-link active' href=menuitem.url) #{menuitem.title}
               else

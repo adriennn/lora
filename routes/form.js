@@ -1,5 +1,4 @@
-require('dotenv').config()
-
+                           require('dotenv').config()
 const express            = require('express')
 const formRouter         = express.Router()
 const path               = require('path')
@@ -39,7 +38,7 @@ formRouter.get('/live', (req, res, next) => {
 
 formRouter.get('/send', (req, res, next) => {
   res.render('send', {
-      title: 'Send data to a device'
+      title: 'Send commands to devices'
     , id: 'send'
   })
 })

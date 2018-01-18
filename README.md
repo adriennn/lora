@@ -8,22 +8,31 @@ if you are using pm2, you can simply do: `npm start`
 
 Else from the root directory of the app type: `node ./www/bin`
 
-visit `localhost:PORT/lora` in your webrowser and you can send receive RPC and make manual RCP calls.
+visit `localhost:PORT/lora` in your webrowser to access the user interface.
 
 ## .ENV file
 
 You will need to have an `.env` file with the following:
 
 ```
-RPC_CLIENT_URL=.../lora/rpc
-IO_URL=...
-WS_URL=...
-MONGO_URL=mongodb:...
-REDIS_URL=...
-REDIS_PORT=...
+APP_URL=
+APP_ROOT=/lora/
+APP_WEB_URL=
+RPC_CLIENT_URL=rpc
+IO_URL=
+MONGO_URL=
+REDIS_URL=
+REDIS_PORT=
 ONEMTOM_URL=http://1m2m.eu/services/GETPAYLOAD?Human=0&PL=
-NODE_ENV=(development | production)
-PORT=...
+TELEGRAM_TOKEN= <NOT IN USE>
+TELEGRAM_PUBLIC_URL= <NOT IN USE>
+TELEGRAM_WEBHOOK_ENDPOINT_HASH= <NOT IN USE>
+NODE_ENV=development
+PORT=
+MAPBOX_TOKEN=
+APP_REQ_DELAY=
+APP_REQ_LIMIT=
+APP_REQ_WINDOW=
 ```
 
 ## LoraWAN Network Server providers
@@ -32,14 +41,11 @@ Supported methods in the `methods`middleware currently include the Everynet core
 ## Backend
 If you are serving your app online, you will need to configure your web server to proxy requests to nodejs and sockets.io to listen to live rpc calls.
 
-## TODO
+## Improvements
 
-- change all verbs to nouns in the private api
 - allow programmation of several devices at the same time
-- rewrite promises with `await` where applicable
-- put middlewares and controllers in their own folder and rename to index.js to load them with require(./path/to/folder)
 - Move controllers to /controllers
 - Make db get
-- Make token auth
+- Make simple token auth
 - migrate data from file to mongo
 - put legend and labels on graphs

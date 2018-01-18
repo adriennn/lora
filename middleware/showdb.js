@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
   try {
 
     // TODO finish this
+    // get 10 human payloads
     res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
 
   } catch (err) {

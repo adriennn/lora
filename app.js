@@ -1,11 +1,10 @@
-require('dotenv').config()
-
+                    require('dotenv').config()
 const compression = require('compression')
 const express     = require('express')
 const path        = require('path')
 const logger      = require('morgan')
 const bodyParser  = require('body-parser')
-// const jayson      = require('jayson')
+const Limiter     = require('express-rate-limit')
 const csp         = require('helmet-csp')
 const bodylogger  = require('morgan-body')
 const app         = express()
@@ -31,6 +30,15 @@ app.set('subdomain offset', 2)
 app.set('json replacer', ' ')
 app.set('json space', 4)
 app.set('socketio', io)
+
+const limiter = new Limiter({
+    windowMs: process.env.APP_REQ_WINDOW
+  , max: process.env.APP_REQ_LIMIT
+  , delayMs: process.env.APP_REQ_DELAY
+})
+
+//  Apply rate limits to all requests
+app.use(limiter);
 
 app.use(csp({
   directives: {
@@ -94,7 +102,6 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
 
   // console.log(err)
-
   // set locals, only providing error in development
   res.locals.path = req.path
   res.locals.error = req.app.get('env') === 'development' ? err : {}
@@ -114,7 +121,6 @@ app.use((req, res, next) => {
 // export both app and server to be enable the use of socketio in req and res everywhere
 module.exports = {app: app, server: server}
 console.log(`app started at ${process.env.APP_URL} on port ${process.env.PORT}`)
-console.log('*************************************************************')
 
 // setup socketio
 io.sockets.on('connection', (socket) => {

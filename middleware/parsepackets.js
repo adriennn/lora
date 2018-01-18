@@ -21,13 +21,12 @@ module.exports = (req, res, next) => {
               req.body.params.human_payload = obj
 
               // Set the polluton scale for the winsen ZP01-MP503 module if the 1m2m 'Analog' message data is present
-              // TODO move to external middlware
               if ( req.body.params.human_payload.MsgID == 'Analog' ) {
 
-                  let anin1 = parseInt(req.body.params.human_payload.AnIn1, 10)
-                  let anin2 = parseInt(req.body.params.human_payload.AnIn2, 10)
+                  let analog_input_1 = parseInt(req.body.params.human_payload.AnIn1, 10)
+                  let analog_input_2 = parseInt(req.body.params.human_payload.AnIn2, 10)
 
-                  req.body.params.human_payload.pollution_level = getQualityIndex(anin1, anin2)
+                  req.body.params.human_payload.pollution_level = getQualityIndex(analog_input_1, analog_input_2)
               }
 
               // consolidate the dev_eui into the human_payload
@@ -42,7 +41,7 @@ module.exports = (req, res, next) => {
             return next(err)
         })
 
-    // Else we pass the req to the next middleware
+    // Else if not an uplink we pass the req to the next middleware
     } else {
 
         return next()

@@ -104,17 +104,17 @@ exports.decode1m2mpayload = (obj) => {
   })
 }
 
-exports.getQualityIndex = (AnIn1, AnIn2) => {
+exports.getQualityIndex = (analog1, analog2) => {
 
     /*
      * Pollution index definition for Winsen ZP01-MP503 gas sensor (input in mV)
      */
 
     return
-    AnIn1 < 250  && AnIn2 < 250  ? 'clean'  :
-    AnIn1 < 250  && AnIn2 > 3000 ? 'light'  :
-    AnIn1 > 3000 && AnIn2 < 250  ? 'medium' :
-                                   'high'
+    analog1 < 250  && analog2 < 250  ? 'clean'  :
+    analog1 < 250  && analog2 > 3000 ? 'light'  :
+    analog1 > 3000 && analog2 < 250  ? 'medium' :
+                                       'high'
 }
 
 exports.extractData = (deveui, mtype) => {
@@ -126,7 +126,7 @@ exports.extractData = (deveui, mtype) => {
         // deveui is passed as an array
         let devs = deveui
 
-        // init the filtered data obj to be returned by the promise
+        // init the filtered data obj to be returned by the function
         let fd = {}
             fd.devices = {}
 
@@ -160,8 +160,8 @@ exports.extractData = (deveui, mtype) => {
 
               // Work in progress for some types of messages
               var errwip = new Error
-              errwip.message = 'Not implemented yet'
-              errwip.status = 403
+                  errwip.message = 'Not implemented yet'
+                  errwip.status = 403
 
               // for ( let packet in dev.data_raw ) {
               fd.devices[dev].raw.forEach(packet => {
@@ -170,7 +170,6 @@ exports.extractData = (deveui, mtype) => {
                 switch (mtype) {
 
                   case 'GenSens' :
-
                     // We need to do hardcode this for now
                     ['Temp', 'Humidity', 'BaromBar'].forEach((i) => {
 
@@ -181,11 +180,9 @@ exports.extractData = (deveui, mtype) => {
                         'y': parseFloat(packet.human_payload[i])
                       })
                     })
-
                   break
 
                   case 'Alive' :
-
                     // Getthe latlng from the Alive messgae
                     fd.devices[dev].data.coords = fd.devices[dev].data.coords || []
 
@@ -193,10 +190,11 @@ exports.extractData = (deveui, mtype) => {
                       'time': packet.rx_time,
                       'latlng': '[' + packet.human_payload.Lat + ',' + packet.human_payload.Lon + ']'
                     })
-
                   break
 
                   case '1WireT' :
+                  // Extract data from 1Wire temperature sensors packets
+                  // all 5 values are sent regardless of the amounf of actual sensors hooked to the device
 
                     ['OWTemp1', 'OWTemp2', 'OWTemp3', 'OWTemp4', 'OWTemp5'].forEach((i) =>{
 
@@ -207,11 +205,13 @@ exports.extractData = (deveui, mtype) => {
                         'y': parseFloat(packet.human_payload[i])
                       })
                     })
-
                   break
+
                   case 'Analog' :
+                  // TODO the analog sensors have two inputs
                     reject(errwip)
                   break
+
                   default : reject(errwip)
 
                 }
@@ -236,7 +236,7 @@ exports.extractData = (deveui, mtype) => {
           var stop = chrono.Stop()
           console.log( `It took ${stop} ms to parse the data.`)
 
-          // Remove data we dont usein the UI
+          // Remove data we dont use in the UI
           delete fd.human_payloads
           delete fd.GenSens
 
