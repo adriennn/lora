@@ -1,4 +1,6 @@
 // get the last LatLng of the series to set the map center
+// TODO dynamic zooming
+// TODO select random latlng from data as center
 var points_length = points[Object.keys(points)[0]].data.coords.length;
 var center = points[Object.keys(points)[0]].data.coords[points_length - 1].latlng;
 var map = L.map('map').setView(JSON.parse(center), 14);
