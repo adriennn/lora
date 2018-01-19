@@ -1,14 +1,7 @@
-
-// TODO fetch the first latlg of the data for setting the view and once loaded fit all inside viewport
-
-// TODO hexbins instead of heatmaps
-// npm install d3
-// npm install d3-hexbin
-// npm install leaflet
-
-// console.log('token: ', mapboxtoken.toString())
-
-var map = L.map('map').setView([60.20766, 24.76796], 14);
+// get the last LatLng of the series to set the map center
+var points_length = points[Object.keys(points)[0]].data.coords.length;
+var center = points[Object.keys(points)[0]].data.coords[points_length - 1].latlng;
+var map = L.map('map').setView(JSON.parse(center), 14);
 
 var tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',

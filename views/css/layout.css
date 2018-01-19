@@ -29,11 +29,11 @@ li {
   padding-left: 0 !important;
 }
 
-@media (min-width: 48em) {
+/*@media (min-width: 48em) {
   .container {
     max-width: 46rem;
   }
-}
+}*/
 
 .jumbotron {
   text-align: left;
@@ -46,4 +46,12 @@ li {
 
 .jumbotron .btn {
   padding: .75rem 1.5rem;
+}
+
+@media only screen and (max-width: 500px) {
+
+  .container , .jumbotron {
+    padding: 0;
+  }
+  
 }
