@@ -57,6 +57,7 @@ app.use(csp({
                , "'unsafe-inline'"
                ,  'https://' + process.env.APP_WEB_URL
                ,  'https://cdnjs.cloudflare.com'
+               ,  'https://maxcdn.bootstrapcdn.com'
                ,  'https://rawgit.com'
                ,  'https://gitcdn.github.io'
                ,  'https://unpkg.com'
