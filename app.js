@@ -10,6 +10,7 @@ const bodylogger  = require('morgan-body')
 const app         = express()
 const server      = require('http').Server(app)
 const io          = require('socket.io')(server)
+const app_root    = process.env.APP_ROOT
 
 bodylogger(app)
 
@@ -87,11 +88,11 @@ app.use(bodyParser.json())
 
 // attach routes
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(process.env.APP_ROOT             , mainRoute)
-app.use(process.env.APP_ROOT + 'form'    , formRoute)
-app.use(process.env.APP_ROOT + 'rpc'     , rpcRoute )
-app.use(process.env.APP_ROOT + 'data'    , dataRoute)
-app.use(process.env.APP_ROOT + 'telegram', botRoute )
+app.use( `${app_root}`        , mainRoute)
+app.use( `${app_root}form`    , formRoute)
+app.use( `${app_root}rpc`     , rpcRoute )
+app.use( `${app_root}data`    , dataRoute)
+app.use( `${app_root}telegram`, botRoute )
 
 // enable accessing websockets data app-wide
 app.use((req, res, next) => {

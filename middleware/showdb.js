@@ -10,9 +10,13 @@ module.exports = (req, res, next) => {
 
   try {
 
-    // TODO finish this
-    // get 10 human payloads
-    res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
+    async () => {
+
+      // TODO finish this
+      // Get 10 human payloads
+      await res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
+
+    }
 
   } catch (err) {
 

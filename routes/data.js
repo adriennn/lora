@@ -8,33 +8,36 @@ const showCommand = require(path.join(__dirname,'/../middleware/showcommand.js')
 const showRecords = require(path.join(__dirname,'/../middleware/showrecords.js'))
 const showQueues  = require(path.join(__dirname,'/../middleware/showqueues.js'))
 
-/*
- * Form router to show databases, queues, devices etc...
-  * use .param() to validate deveuis router-wide
+/**
+  * Form router to show databases, queues, devices etc...
+  * uses .param() to validate deveuis router-wide
   * @param [String] id - the actual value of the 'deveui' parameter
+  * @return POST - data middlewares
+  * @return GET - data view
   */
 router.param('deveui', (req, res, next, id) => {
 
  Devices.find(id, (err, device) => {
 
-   if (err) {
-     next(err)
+   if ( err ) {
 
-   } else if (device) {
+     return next(err)
+
+   } else if ( device ) {
 
      req.device = device;
-     next()
+     return next()
 
    } else {
 
-     next(new Error('Cannot find device'))
+     return next(new Error('Cannot find device'))
    }
  })
 })
 
 router.post('/', getParams, showDb, showCache, showCommand, showQueues, showRecords)
 
-/*
+/**
  * TODO
  * Routes for reading db, cache, queue, command and records for a given device
  * @param 'deveui' - the device unique id

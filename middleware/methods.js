@@ -4,6 +4,8 @@ const queue   = require(path.join(__dirname,'./queue.js'))
 const utils   = require(path.join(__dirname,'./utils.js'))
 const dbutils = require(path.join(__dirname,'./dbutils.js'))
 
+// TODO module.exports = {...}
+
 exports.everynet = {}
 
 exports.everynet.uplink = jayson.Method( function (args, done) {
