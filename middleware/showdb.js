@@ -14,8 +14,8 @@ module.exports = (req, res, next) => {
 
       // TODO finish this
       // Get 10 human payloads
-      await res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
-
+      //await res.locals.records = dbUtils.getHumanPayloads(res.locals.dev_eui, 10)
+      return 0;
     }
 
   } catch (err) {
